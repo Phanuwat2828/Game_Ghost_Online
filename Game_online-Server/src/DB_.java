@@ -9,7 +9,7 @@ public class DB_ implements Serializable{
         this.sender = sender;
         this.content = content;
     }
-
+    
     public String getSender(){
         return sender;
     }

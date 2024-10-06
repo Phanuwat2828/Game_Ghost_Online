@@ -12,7 +12,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 public class VS_Client {
-    private static final String SERVER = "26.12.207.51";
+    // private static final String SERVER = "26.12.207.51";
+    
+    private static final String SERVER = "localhost";
     private static final int PORT = 3000;
     private static final int BUFFER_SIZE = 65507; // ขนาดสูงสุดของ UDP packet
 
