@@ -1,8 +1,5 @@
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-
 import javax.swing.JFrame;
 
 public class Client_Bg extends JFrame{
