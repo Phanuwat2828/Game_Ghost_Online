@@ -24,7 +24,6 @@ public class Client_Jpanel extends JPanel {
     Image [] zombie_action_walk = new Image[10];
     Timer timer;
 
-// เพิ่มตัวแปร MediaTracker
     MediaTracker tracker = new MediaTracker(this);
 
     public Client_Jpanel(){
@@ -37,11 +36,11 @@ public class Client_Jpanel extends JPanel {
     public void img_zombie_walk() {
         for (int k = 0; k < 10; k++) {
             zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Zombie_walk" + (k + 1) + ".png");
-            tracker.addImage(zombie_action_walk[k], k);  // เพิ่มภาพเข้าไปใน tracker
+            tracker.addImage(zombie_action_walk[k], k); 
         }
         
         try {
-            tracker.waitForAll();  // รอให้โหลดภาพทั้งหมดก่อน
+            tracker.waitForAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -81,11 +80,9 @@ public class Client_Jpanel extends JPanel {
         super.paintComponent(g);
         g.drawImage(image_bg, 0, 0, 1555, 855, this);
     
-        // วาดภาพซอมบี้
         for(int i = 0; i < 30; i++){
-            // ยิ่งซอมบี้ช้ามาก ตัวคูณของ frameDelay จะยิ่งมาก ทำให้เปลี่ยนเฟรมช้าลง
-            int frameDelay = 500 / speedX[i]; // กำหนดความเร็วในการเปลี่ยนเฟรมตามความเร็วของซอมบี้
-            int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10); // คำนวณเฟรมตามความเร็วที่ปรับแล้ว
+            int frameDelay = 500 / speedX[i];
+            int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
             
             g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
         }
