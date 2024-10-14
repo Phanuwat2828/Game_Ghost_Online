@@ -8,7 +8,7 @@ public class Client_Bg extends JFrame{
         Client_Jpanel panel = new Client_Jpanel();
         bg.add(panel);
         bg.setVisible(true);
-    }
+    } 
     
     
     Client_Bg(){
