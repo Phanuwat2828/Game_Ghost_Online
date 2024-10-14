@@ -21,14 +21,12 @@ import javax.swing.JPanel;
 public class Client_Jpanel extends JPanel {
     String path_Bg = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "Image";
     Image image_bg = Toolkit.getDefaultToolkit().createImage(path_Bg + File.separator + "Background.png");
-    Image bg_black = Toolkit.getDefaultToolkit().createImage(path_Bg + File.separator + "Black.png");
-
+    String path_png = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "png";
     String path_gif = System.getProperty("user.dir")+File.separator +"Game_online-Client"+ File.separator + "src"+ File.separator + "Gif";
     Image image_gif =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Zombie_walk.gif");
     Image item_Ammo =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_gif.gif");
     Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
-    Image box =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Box.png");
-    Image bullet =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_2.png");
+    Image bullet =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Ammo_2.png");
     Image TextGameOver =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "GameOver.gif");
     
 
@@ -70,7 +68,7 @@ public class Client_Jpanel extends JPanel {
 
     public void img_zombie_walk() {
         for (int k = 0; k < 10; k++) {
-            zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Zombie_walk" + (k + 1) + ".png");
+            zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Zombie_walk" + (k + 1) + ".png");
             tracker.addImage(zombie_action_walk[k], k); 
         }
         
