@@ -20,6 +20,9 @@ public class Client_Jpanel extends JPanel {
 
     String path_gif = System.getProperty("user.dir")+File.separator +"Game_online-Client"+ File.separator + "src"+ File.separator + "Gif";
     Image image_gif =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Zombie_walk.gif");
+    Image item_Ammo =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_gif.gif");
+    Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
+
 
     Random rand = new Random();
     int [] axisX = new int[30];
@@ -27,6 +30,12 @@ public class Client_Jpanel extends JPanel {
     int [] speedX = new int[30];
     Image [] zombie_action_walk = new Image[10];
     boolean [] set_Visible = new boolean [30];
+    boolean[] Chance_Drop = new boolean[30];
+    boolean[] Chance_Drop_rare = new boolean[30];
+    boolean[] setVisible_item = new boolean[30];
+    // boolean[] item_axisX = new boolean[30];
+    // boolean[] item_axisY = new boolean[30];
+
     Timer timer;
 
     MediaTracker tracker = new MediaTracker(this);
@@ -54,6 +63,7 @@ public class Client_Jpanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e){
                 Zombie_Mange(e.getX(),e.getY());
+                getItem(e.getX(),e.getY());
             }
         });
     }
@@ -64,6 +74,7 @@ public class Client_Jpanel extends JPanel {
             axisY[i] = rand.nextInt(250,650); 
             speedX[i] = rand.nextInt(1, 5);
             set_Visible[i] = true;
+            Chance_Drop[i] = Chance_To_Drop(i);
         }
     }
 
@@ -81,9 +92,9 @@ public class Client_Jpanel extends JPanel {
 
     public void moveZombies() {
         for (int i = 0; i < 30; i++) {
-            axisX[i] += speedX[i];
-            if(axisX[i]> getWidth()){
-                set_Visible[i] = false;
+            if(axisX[i]> getWidth()-230){
+            }else if(set_Visible[i]){
+                axisX[i] += speedX[i];
             }
         }
     }
@@ -100,6 +111,18 @@ public class Client_Jpanel extends JPanel {
             }
         }
     }
+    public void getItem(int MouseAxisX, int MouseAxisY){
+        for(int i=0; i<30; i++){
+            if(!set_Visible[i] && setVisible_item[i]){
+                if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 && 
+                MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70){
+                    setVisible_item[i] = false;
+                    repaint();
+                    break;
+                }
+            }
+        }
+    }
 
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -110,9 +133,39 @@ public class Client_Jpanel extends JPanel {
             int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
             if(set_Visible[i]){
                 g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+            }else{
+                Drop_item(g,i);
             }
             
         }
-
+        
     }
+    
+    public void Drop_item(Graphics g,int i){
+        if(setVisible_item[i]){
+            if(Chance_Drop[i]){
+                g.drawImage(item_Ammo, axisX[i]+20, axisY[i]+20, 50, 50, this);
+            }else if (Chance_Drop_rare[i] == true){
+                g.drawImage(rare_item, axisX[i]+20, axisY[i]+20, 50, 50, this);
+            }
+        }
+    }
+
+
+    public boolean Chance_To_Drop(int i){
+        setVisible_item[i] = true;
+        int chance = rand.nextInt(100);
+        if(chance <= 10){
+            return true;
+        }
+        else{
+            chance = rand.nextInt(100);
+            if(chance <=5){
+                Chance_Drop_rare[i] =true;
+            }else{
+            }
+            return false;
+        }
+    }
+
 }
