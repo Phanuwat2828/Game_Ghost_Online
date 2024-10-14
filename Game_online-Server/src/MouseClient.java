@@ -6,7 +6,7 @@ import java.util.*;
 import javax.swing.*;
 
 public class MouseClient extends JFrame {
-    private static final String SERVER_IP = "26.245.160.254"; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
+    private static final String SERVER_IP = "26.12.207.51"; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
     private static final int SERVER_PORT = 12345;
 
     private Socket socket;
