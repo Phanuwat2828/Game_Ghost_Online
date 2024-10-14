@@ -29,47 +29,45 @@ public class VS_Client {
 
             System.out.println("Connect UDP Server");
 
-            while (true) {
+            DB_ message = new DB_();
 
-                // สร้างวัตถุ Message
-                DB_ message = new DB_(sender, name);
+            // แปลงวัตถุเป็นไบต์
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(message);
+            oos.flush();
+            byte[] data = baos.toByteArray();
 
-                // แปลงวัตถุเป็นไบต์
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
-                oos.writeObject(message);
-                oos.flush();
-                byte[] data = baos.toByteArray();
+            // ส่ง DatagramPacket ไปยังเซิร์ฟเวอร์
+            DatagramPacket packet = new DatagramPacket(data, data.length, address, PORT);
+            socket.send(packet);
 
-                // ส่ง DatagramPacket ไปยังเซิร์ฟเวอร์
-                DatagramPacket packet = new DatagramPacket(data, data.length, address, PORT);
-                socket.send(packet);
+            // รอรับการตอบกลับจากเซิร์ฟเวอร์
+            DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
+            socket.receive(responsePacket);
 
-                // รอรับการตอบกลับจากเซิร์ฟเวอร์
-                DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-                socket.receive(responsePacket);
+            // แปลงไบต์กลับเป็นวัตถุ
+            ByteArrayInputStream bais = new ByteArrayInputStream(responsePacket.getData(), 0,
+                    responsePacket.getLength());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            Object responseObj = ois.readObject();
 
-                // แปลงไบต์กลับเป็นวัตถุ
-                ByteArrayInputStream bais = new ByteArrayInputStream(responsePacket.getData(), 0,
-                        responsePacket.getLength());
-                ObjectInputStream ois = new ObjectInputStream(bais);
-                Object responseObj = ois.readObject();
+            // if (responseObj instanceof DB_) {
+            DB_ response = (DB_) responseObj;
+            System.out.println("Send to Server: ");
+            System.out.println("Call Back From Server: " + response);
 
-                // if (responseObj instanceof DB_) {
-                DB_ response = (DB_) responseObj;
-                System.out.println("Send to Server: ");
-                System.out.println("Call Back From Server: " + response);
-
-                for (int i = 0; i < 5; i++) {
-                    System.out.println(response.gettest(4));
-                }
-                // }
-
-            }
         } catch (UnknownHostException ex) {
             System.out.println("Server Not Fond : " + ex.getMessage());
         } catch (IOException | ClassNotFoundException ex) {
             System.out.println("Error Connection : " + ex.getMessage());
         }
     }
+}
+
+/**
+ * InnerVS_Client
+ */
+class Thread_client {
+
 }
