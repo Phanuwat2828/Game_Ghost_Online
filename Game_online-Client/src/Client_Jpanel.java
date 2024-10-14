@@ -28,6 +28,7 @@ public class Client_Jpanel extends JPanel {
     Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
     Image bullet =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Ammo_2.png");
     Image TextGameOver =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "GameOver.gif");
+    Image wink =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Wink2.gif");
 
     
     
@@ -48,7 +49,11 @@ public class Client_Jpanel extends JPanel {
     boolean[] Chance_Drop_rare = new boolean[30];
     boolean[] Dropped_item = new boolean[30];
     boolean GameOver = false;
+    boolean GameWin = false;
+    boolean AddBullet = false;
     int bullets = 20;
+    int amountBullet;
+    int CountDead = 0;
 
     MediaTracker tracker = new MediaTracker(this);
 
@@ -60,7 +65,7 @@ public class Client_Jpanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                Bullets_Manage(-1);
+                Bullets_Manage(-1,null);
                 Zombie_Mange(e.getX(),e.getY());
                 getItem(e.getX(),e.getY());
             }
@@ -149,11 +154,11 @@ public class Client_Jpanel extends JPanel {
             if(!Status_Zombie[i] && Dropped_item[i]){
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70){
-                    Bullets_Manage(1);
+                    Bullets_Manage(1,null);
                     if(Chance_Drop_rare[i]){
-                        Bullets_Manage(20);
+                        Bullets_Manage(20,null);
                     }else if(Chance_Drop[i]){
-                        Bullets_Manage(10);
+                        Bullets_Manage(10,null);
                     }
                     Dropped_item[i] = false;
                     break;
@@ -168,40 +173,40 @@ public class Client_Jpanel extends JPanel {
         super.paintComponent(g);
         g.drawImage(image_bg, 0, 0, 1555, 855, this);
         BulletBar(g);
-        
         for(int i = 0; i < 30; i++){
             if(!GameOver){
                 int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500; 
-            int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
-            if(Status_Zombie[i]){
-                //g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
-                g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
-            }else{
-                Drop_item(g,i);
-            }
-            
-            if(Health[i] <= 0){
-                Status_Zombie[i] = false;
-                continue;
-            }
-            if(Status_Zombie[i]){
-                if(Percent_HP[i] >= 80){
-                    g.setColor(Color.GREEN);
-                } else if (Percent_HP[i] >= 60) {
-                    g.setColor(Color.YELLOW);   
-                } else if (Percent_HP[i] >= 40) {
-                    g.setColor(Color.ORANGE);
-                } else{
+                int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
+                if(Status_Zombie[i]){
+                    //g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+                    g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+                }else{
+                    Drop_item(g,i);
+                }
+                
+                if(Health[i] <= 0){
+                    Status_Zombie[i] = false;
+                    CountDead++;
+                    continue;
+                }
+                if(Status_Zombie[i]){
+                    if(Percent_HP[i] >= 80){
+                        g.setColor(Color.GREEN);
+                    } else if (Percent_HP[i] >= 60) {
+                        g.setColor(Color.YELLOW);   
+                    } else if (Percent_HP[i] >= 40) {
+                        g.setColor(Color.ORANGE);
+                    } else{
                     g.setColor(Color.RED);
                 }
                 g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 5);
             }
-                
-            }
-            else{
-                Game_Over(g);
-            }
+            
         }
+        else if(GameOver){
+            Game_Over(g);
+        }
+    }
     }
     public void Drop_item(Graphics g,int i){
         if(Dropped_item[i]){
@@ -248,7 +253,9 @@ public class Client_Jpanel extends JPanel {
     public int getZombieY(int i){
         return this.axisY[i];
     }
-    public void Bullets_Manage(int amountBullet){
+
+    public void Bullets_Manage(int amountBullet,Graphics g){
+        this.amountBullet = amountBullet;
         if(bullets ==0){
             if(amountBullet>1){
                 bullets += amountBullet;
@@ -257,19 +264,35 @@ public class Client_Jpanel extends JPanel {
             bullets += amountBullet;
         }
         if(amountBullet>1){
+            AddBullet = true;
             repaint();
-            //g.drawString("+"+amountBullet, 85, 155);
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                 @Override
+                public void run() {
+                    AddBullet = false;
+                    repaint();
+                }
+            }, 5000);
         }
     }
     public void BulletBar(Graphics g){
         Font f = new Font("Tahoma",Font.BOLD,20);
+        Font add = new Font("Tahoma",Font.BOLD,20);
         g.setColor(Color.black);
         g.fillRect(20,20, 150, 150);
         g.setColor(Color.WHITE);
         g.setFont(f);
-        g.drawString("bullets", 60, 55);
+        g.drawString("bullet", 65, 55);
         g.drawString(bullets+"", 85, 155);
         g.drawImage(bullet, 45, 47, 100, 100, this);
+        if(AddBullet){
+            g.setFont(add);
+            g.drawImage(rare_item, 45, 47, 100, 100, this);
+            g.drawImage(wink, 120,75, 50, 50, this);
+            g.drawImage(wink, 25,100, 50, 50, this);
+        }
+
     }
 
     public void Game_Over(Graphics g){
@@ -278,5 +301,27 @@ public class Client_Jpanel extends JPanel {
         g.drawImage(TextGameOver, 500, 150, 500, 500, this);
         g.drawImage(image_gif, 450, 300, 150, 200, this);
         g.drawImage(image_gif, 900, 300, 150, 200, this);
+    }
+    public void Game_Win(Graphics g){
+        g.setColor(new Color(0, 0, 0, 150)); // Semi-transparent background
+        g.fillRect(0, 0, getWidth(), getHeight()); // Cover the entire panel
+    
+        g.setFont(new Font("Tahoma", Font.BOLD, 70)); // Set the font for the text
+        g.setColor(Color.YELLOW); // Use yellow to stand out
+        g.drawString("YOU WIN!", 600, 300); // Display the winner text
+    
+        g.setFont(new Font("Tahoma", Font.PLAIN, 30)); // Smaller text for additional message
+        g.setColor(Color.WHITE);
+        g.drawString("Congratulations, all zombies defeated!", 500, 400);
+
+    }
+    public int checkdead(){
+        int count=0;
+        for(int i = 0; i <30;i++){
+            if(Status_Zombie[i] = false){
+                count++;
+            }
+        }
+        return count;
     }
 }
