@@ -30,6 +30,8 @@ public class Client_Jpanel extends JPanel {
     Image box =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Box.png");
     Image bullet =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_2.png");
     Image TextGameOver =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "GameOver.gif");
+
+    
     
 
 
@@ -48,7 +50,6 @@ public class Client_Jpanel extends JPanel {
     boolean[] Chance_Drop_rare = new boolean[30];
     boolean[] Dropped_item = new boolean[30];
     boolean GameOver = false;
-    int CountClicks = 0;
     int bullets = 20;
 
     MediaTracker tracker = new MediaTracker(this);
@@ -195,7 +196,6 @@ public class Client_Jpanel extends JPanel {
                 } else{
                     g.setColor(Color.RED);
                 }
-                // g.drawRect(axisX[i], axisY[i], 100, 100);
                 g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 5);
             }
                 
