@@ -36,7 +36,7 @@ public class Client_Jpanel extends JPanel {
         setSize(1920, 1080);
         Defualt_Zombie();
         img_zombie_walk();
-        Zombie_Movement(); // เรียกเพียงครั้งเดียว
+        Zombie_Movement();
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
@@ -75,7 +75,7 @@ public class Client_Jpanel extends JPanel {
             speedX[i] = rand.nextInt(1, 5);
             Status_Zombie[i] = true;
             Max_HP[i] = 100;
-            Health[i] = Max_HP[i]; // กำหนด Health ให้เท่ากับ Max_HP
+            Health[i] = Max_HP[i]; 
             Percent_HP[i] = 100;
         }
     }
@@ -146,22 +146,18 @@ public class Client_Jpanel extends JPanel {
         }
     }
     
-    // ฟังก์ชันเพิ่มตำแหน่ง X ของ Zombie
     public void addZombieX(int i, int num){
         axisX[i] += num;
     }
     
-    // ฟังก์ชันเพิ่มตำแหน่ง Y ของ Zombie
     public void addZombieY(int i, int num){
         axisY[i] += num;
     }
     
-    // ฟังก์ชันรับค่า X ของ Zombie
     public int getZombieX(int i){
         return this.axisX[i];
     }
     
-    // ฟังก์ชันรับค่า Y ของ Zombie
     public int getZombieY(int i){
         return this.axisY[i];
     }
