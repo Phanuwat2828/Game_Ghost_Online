@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.awt.MediaTracker;
 import javax.swing.JPanel;
 
 
@@ -19,12 +20,16 @@ public class Client_Jpanel extends JPanel {
 
     String path_gif = System.getProperty("user.dir")+File.separator +"Game_online-Client"+ File.separator + "src"+ File.separator + "Gif";
     Image image_gif =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Zombie_walk.gif");
+
     Random rand = new Random();
     int [] axisX = new int[30];
     int [] axisY = new int[30];
     int [] speedX = new int[30];
     boolean [] set_Visible = new boolean [30];
+    Image [] zombie_action_walk = new Image[10];
     Timer timer;
+
+    MediaTracker tracker = new MediaTracker(this);
 
     public Client_Jpanel(){
         setSize(1920, 1080);
@@ -36,6 +41,21 @@ public class Client_Jpanel extends JPanel {
                 Zombie_Mange(e.getX(),e.getY());
             }
         });
+        img_zombie_walk();
+        Zombie_Movement();
+    }
+
+    public void img_zombie_walk() {
+        for (int k = 0; k < 10; k++) {
+            zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Zombie_walk" + (k + 1) + ".png");
+            tracker.addImage(zombie_action_walk[k], k); 
+        }
+        
+        try {
+            tracker.waitForAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void Defualt_Zombie(){
@@ -82,14 +102,19 @@ public class Client_Jpanel extends JPanel {
         }
 
     }
-
+  
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        g.drawImage(image_bg,0,0,1555,855,this);
-        for(int i=0; i<30;i++){
+        g.drawImage(image_bg, 0, 0, 1555, 855, this);
+    
+        for(int i = 0; i < 30; i++){
+            int frameDelay = 500 / speedX[i];
+            int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
+            
             if(set_Visible[i]){
-                g.drawImage(image_gif,axisX[i],axisY[i],100,100,this);
+                g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);   
             }
         }
     }
+    
 }
