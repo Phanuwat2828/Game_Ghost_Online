@@ -33,8 +33,7 @@ public class Client_Jpanel extends JPanel {
     boolean[] Chance_Drop = new boolean[30];
     boolean[] Chance_Drop_rare = new boolean[30];
     boolean[] setVisible_item = new boolean[30];
-    // boolean[] item_axisX = new boolean[30];
-    // boolean[] item_axisY = new boolean[30];
+
 
     Timer timer;
 
@@ -105,6 +104,7 @@ public class Client_Jpanel extends JPanel {
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100){
                     set_Visible[i] = false;
+                    setVisible_item[i] = true;
                     repaint();
                     break;
                 }
@@ -117,7 +117,6 @@ public class Client_Jpanel extends JPanel {
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70){
                     setVisible_item[i] = false;
-                    repaint();
                     break;
                 }
             }
@@ -153,14 +152,13 @@ public class Client_Jpanel extends JPanel {
 
 
     public boolean Chance_To_Drop(int i){
-        setVisible_item[i] = true;
         int chance = rand.nextInt(100);
-        if(chance <= 10){
+        if(chance <= 20){
             return true;
         }
         else{
             chance = rand.nextInt(100);
-            if(chance <=5){
+            if(chance <=10){
                 Chance_Drop_rare[i] =true;
             }else{
             }
