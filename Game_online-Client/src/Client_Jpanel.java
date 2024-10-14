@@ -7,6 +7,10 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.MediaTracker;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JPanel;
 
 
@@ -22,6 +26,7 @@ public class Client_Jpanel extends JPanel {
     int [] axisY = new int[30];
     int [] speedX = new int[30];
     Image [] zombie_action_walk = new Image[10];
+    boolean [] set_Visible = new boolean [30];
     Timer timer;
 
     MediaTracker tracker = new MediaTracker(this);
@@ -44,6 +49,13 @@ public class Client_Jpanel extends JPanel {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        Zombie_Movement();
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                Zombie_Mange(e.getX(),e.getY());
+            }
+        });
     }
 
     public void Defualt_Zombie(){
@@ -51,6 +63,7 @@ public class Client_Jpanel extends JPanel {
             axisX[i] = rand.nextInt(20,419);
             axisY[i] = rand.nextInt(250,650); 
             speedX[i] = rand.nextInt(1, 5);
+            set_Visible[i] = true;
         }
     }
 
@@ -69,9 +82,21 @@ public class Client_Jpanel extends JPanel {
     public void moveZombies() {
         for (int i = 0; i < 30; i++) {
             axisX[i] += speedX[i];
-
-            if (axisX[i] > getWidth()) {
-                axisX[i] = -100; 
+            if(axisX[i]> getWidth()){
+                set_Visible[i] = false;
+            }
+        }
+    }
+    
+    public void Zombie_Mange(int MouseAxisX, int MouseAxisY){
+        for(int i=0; i<30; i++){
+            if(set_Visible[i]){
+                if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 && 
+                MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100){
+                    set_Visible[i] = false;
+                    repaint();
+                    break;
+                }
             }
         }
     }
@@ -83,8 +108,11 @@ public class Client_Jpanel extends JPanel {
         for(int i = 0; i < 30; i++){
             int frameDelay = 500 / speedX[i];
             int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
+            if(set_Visible[i]){
+                g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+            }
             
-            g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
         }
+
     }
 }
