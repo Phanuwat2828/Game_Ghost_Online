@@ -6,6 +6,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.MediaTracker;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.MediaTracker;
@@ -15,9 +21,11 @@ public class Client_Jpanel extends JPanel {
     String path_Bg = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "Image";
     Image image_bg = Toolkit.getDefaultToolkit().createImage(path_Bg + File.separator + "Background.png");
 
-    String path_gif = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "Gif";
-    Image image_gif = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Zombie_walk.gif");
-
+    String path_gif = System.getProperty("user.dir")+File.separator +"Game_online-Client"+ File.separator + "src"+ File.separator + "Gif";
+    Image image_gif =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Zombie_walk.gif");
+    Image item_Ammo =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_gif.gif");
+    Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
+    
     Random rand = new Random();
     int[] axisX = new int[30];
     int[] axisY = new int[30];
@@ -29,6 +37,9 @@ public class Client_Jpanel extends JPanel {
     int[] Percent_HP = new int[30];
     int[] Damage = new int[30];
     Timer timer;
+    boolean[] Chance_Drop = new boolean[30];
+    boolean[] Chance_Drop_rare = new boolean[30];
+    boolean[] Dropped_item = new boolean[30];
 
     MediaTracker tracker = new MediaTracker(this);
 
@@ -36,11 +47,12 @@ public class Client_Jpanel extends JPanel {
         setSize(1920, 1080);
         Defualt_Zombie();
         img_zombie_walk();
-        Zombie_Movement();
+        Zombie_Movement(); // เรียกเพียงครั้งเดียว
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
                 Zombie_Mange(e.getX(),e.getY());
+                getItem(e.getX(),e.getY());
             }
         });
     }
@@ -77,6 +89,7 @@ public class Client_Jpanel extends JPanel {
             Max_HP[i] = 100;
             Health[i] = Max_HP[i]; 
             Percent_HP[i] = 100;
+            Chance_Drop[i] = Chance_To_Drop(i);
         }
     }
 
@@ -93,11 +106,9 @@ public class Client_Jpanel extends JPanel {
 
     public void moveZombies() {
         for (int i = 0; i < 30; i++) {
-            if(Status_Zombie[i]){
+            if(axisX[i]> getWidth()-230){
+            }else if(Status_Zombie[i]){
                 axisX[i] += speedX[i];
-                if(axisX[i] > getWidth()){
-                    Status_Zombie[i] = false;
-                }
             }
         }
     }
@@ -107,6 +118,7 @@ public class Client_Jpanel extends JPanel {
             if(Status_Zombie[i]){
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100){
+                    Dropped_item[i] = true;
                     Damage[i] = 20;
                     Health[i] -= Damage[i];
                     Percent_HP[i] = (Health[i] * 100) / Max_HP[i]; // แก้ไขการคำนวณ Percent_HP
@@ -115,6 +127,18 @@ public class Client_Jpanel extends JPanel {
             }
         }
     }
+    public void getItem(int MouseAxisX, int MouseAxisY){
+        for(int i=0; i<30; i++){
+            if(!Status_Zombie[i] && Dropped_item[i]){
+                if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 && 
+                MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70){
+                    Dropped_item[i] = false;
+                    break;
+                }
+            }
+        }
+    }
+
   
     @Override
     protected void paintComponent(Graphics g){
@@ -124,6 +148,11 @@ public class Client_Jpanel extends JPanel {
         for(int i = 0; i < 30; i++){
             int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500; 
             int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
+            if(Status_Zombie[i]){
+                g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+            }else{
+                Drop_item(g,i);
+            }
             
             if(Health[i] <= 0){
                 Status_Zombie[i] = false;
@@ -139,25 +168,54 @@ public class Client_Jpanel extends JPanel {
                 } else{
                     g.setColor(Color.RED);
                 }
-                g.drawRect(axisX[i], axisY[i], 100, 100);
-                g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 15);
+                // g.drawRect(axisX[i], axisY[i], 100, 100);
+                g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 5);
                 g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
             }
         }
     }
+    public void Drop_item(Graphics g,int i){
+        if(Dropped_item[i]){
+            if(Chance_Drop[i]){
+                g.drawImage(item_Ammo, axisX[i]+20, axisY[i]+20, 50, 50, this);
+            }else if (Chance_Drop_rare[i] == true){
+                g.drawImage(rare_item, axisX[i]+20, axisY[i]+20, 50, 50, this);
+            }
+        }
+    }
+
+
+    public boolean Chance_To_Drop(int i){
+        int chance = rand.nextInt(100);
+        if(chance <= 20){
+            return true;
+        }
+        else{
+            chance = rand.nextInt(100);
+            if(chance <=10){
+                Chance_Drop_rare[i] =true;
+            }else{
+            }
+            return false;
+        }
+    }
     
+    // ฟังก์ชันเพิ่มตำแหน่ง X ของ Zombie
     public void addZombieX(int i, int num){
         axisX[i] += num;
     }
     
+    // ฟังก์ชันเพิ่มตำแหน่ง Y ของ Zombie
     public void addZombieY(int i, int num){
         axisY[i] += num;
     }
     
+    // ฟังก์ชันรับค่า X ของ Zombie
     public int getZombieX(int i){
         return this.axisX[i];
     }
     
+    // ฟังก์ชันรับค่า Y ของ Zombie
     public int getZombieY(int i){
         return this.axisY[i];
     }
