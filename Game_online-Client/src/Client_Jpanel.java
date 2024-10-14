@@ -30,7 +30,7 @@ public class Client_Jpanel extends JPanel {
         setSize(1920, 1080);
         Defualt_Zombie();
         img_zombie_walk();
-        startZombieMovement();
+        Zombie_Movement();
     }
 
     public void img_zombie_walk() {
@@ -55,7 +55,7 @@ public class Client_Jpanel extends JPanel {
     }
 
 
-    public void startZombieMovement() {
+    public void Zombie_Movement() {
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
