@@ -16,6 +16,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.MediaTracker;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 
 public class Client_Jpanel extends JPanel {
@@ -29,7 +37,13 @@ public class Client_Jpanel extends JPanel {
     Image bullet =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Ammo_2.png");
     Image TextGameOver =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "GameOver.gif");
     Image wink =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Wink2.gif");
+    Image Border2 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border2.PNG");
+    Image Border3 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border3.PNG");
 
+
+    String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "sound";
+    File audioFile_shoot = new File(pathSound + File.separator + "pistol-shot-233473.wav");
+    File audioFile_Items = new File(pathSound + File.separator + "item-pick-up-38258.wav");
     
     
 
@@ -65,6 +79,9 @@ public class Client_Jpanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
+                if(bullets > 0){
+                    Sound(audioFile_shoot);
+                }
                 Bullets_Manage(-1,null);
                 Zombie_Mange(e.getX(),e.getY());
                 getItem(e.getX(),e.getY());
@@ -265,6 +282,7 @@ public class Client_Jpanel extends JPanel {
         }
         if(amountBullet>1){
             AddBullet = true;
+            Sound(audioFile_Items);
             repaint();
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
@@ -280,15 +298,17 @@ public class Client_Jpanel extends JPanel {
         Font f = new Font("Tahoma",Font.BOLD,20);
         Font add = new Font("Tahoma",Font.BOLD,20);
         g.setColor(Color.black);
-        g.fillRect(20,20, 150, 150);
+        //g.fillRect(20,20, 150, 150);
+        g.drawImage(Border2, 0, 0, 250, 250, this);
+        g.drawImage(Border3, 27, 127, 200, 100, this);
         g.setColor(Color.WHITE);
         g.setFont(f);
-        g.drawString("bullet", 65, 55);
-        g.drawString(bullets+"", 85, 155);
-        g.drawImage(bullet, 45, 47, 100, 100, this);
+        g.drawString("bullet", 95, 85);
+        g.drawString(bullets+"", 115, 185);
+        g.drawImage(bullet, 75, 77, 100, 100, this);
         if(AddBullet){
             g.setFont(add);
-            g.drawImage(rare_item, 45, 47, 100, 100, this);
+            g.drawImage(rare_item,75 , 77, 100, 100, this);
             g.drawImage(wink, 120,75, 50, 50, this);
             g.drawImage(wink, 25,100, 50, 50, this);
         }
@@ -309,10 +329,6 @@ public class Client_Jpanel extends JPanel {
         g.setFont(new Font("Tahoma", Font.BOLD, 70)); // Set the font for the text
         g.setColor(Color.YELLOW); // Use yellow to stand out
         g.drawString("YOU WIN!", 600, 300); // Display the winner text
-    
-        g.setFont(new Font("Tahoma", Font.PLAIN, 30)); // Smaller text for additional message
-        g.setColor(Color.WHITE);
-        g.drawString("Congratulations, all zombies defeated!", 500, 400);
 
     }
     public int checkdead(){
@@ -324,4 +340,29 @@ public class Client_Jpanel extends JPanel {
         }
         return count;
     }
+    
+    public void Sound(File audioFile) {
+    new Thread(() -> {
+        try {
+            AudioInputStream stream = AudioSystem.getAudioInputStream(audioFile);
+            AudioFormat format = stream.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, format);
+            Clip clip = (Clip) AudioSystem.getLine(info);
+            clip.open(stream);
+            clip.start();
+            // Optional: loop the sound if needed
+            // clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // Wait for the clip to finish playing
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    clip.close();
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }).start();
+}
+
+   
 }
