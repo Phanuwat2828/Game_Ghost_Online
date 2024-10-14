@@ -39,7 +39,7 @@ public class Client_Jpanel extends JPanel {
     Timer timer;
     boolean[] Chance_Drop = new boolean[30];
     boolean[] Chance_Drop_rare = new boolean[30];
-    boolean[] setVisible_item = new boolean[30];
+    boolean[] Dropped_item = new boolean[30];
 
     MediaTracker tracker = new MediaTracker(this);
 
@@ -118,7 +118,7 @@ public class Client_Jpanel extends JPanel {
             if(Status_Zombie[i]){
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100){
-                    setVisible_item[i] = true;
+                    Dropped_item[i] = true;
                     Damage[i] = 20;
                     Health[i] -= Damage[i];
                     Percent_HP[i] = (Health[i] * 100) / Max_HP[i]; // แก้ไขการคำนวณ Percent_HP
@@ -129,10 +129,10 @@ public class Client_Jpanel extends JPanel {
     }
     public void getItem(int MouseAxisX, int MouseAxisY){
         for(int i=0; i<30; i++){
-            if(!Status_Zombie[i] && setVisible_item[i]){
+            if(!Status_Zombie[i] && Dropped_item[i]){
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70){
-                    setVisible_item[i] = false;
+                    Dropped_item[i] = false;
                     break;
                 }
             }
@@ -175,7 +175,7 @@ public class Client_Jpanel extends JPanel {
         }
     }
     public void Drop_item(Graphics g,int i){
-        if(setVisible_item[i]){
+        if(Dropped_item[i]){
             if(Chance_Drop[i]){
                 g.drawImage(item_Ammo, axisX[i]+20, axisY[i]+20, 50, 50, this);
             }else if (Chance_Drop_rare[i] == true){
