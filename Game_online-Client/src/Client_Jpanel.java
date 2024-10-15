@@ -55,7 +55,7 @@ public class Client_Jpanel extends JPanel {
         setSize(1920, 1080);
         Defualt_Zombie();
         img_zombie_walk();
-        Zombie_Movement(); // เรียกเพียงครั้งเดียว
+        Zombie_Movement();
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
@@ -136,7 +136,7 @@ public class Client_Jpanel extends JPanel {
                         Dropped_item[i] = true;
                         Damage[i] = 20;
                         Health[i] -= Damage[i];
-                        Percent_HP[i] = (Health[i] * 100) / Max_HP[i]; // แก้ไขการคำนวณ Percent_HP
+                        Percent_HP[i] = (Health[i] * 100) / Max_HP[i];
                         repaint();
                     }
                 }
@@ -173,7 +173,6 @@ public class Client_Jpanel extends JPanel {
                 int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500; 
             int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
             if(Status_Zombie[i]){
-                //g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
                 g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
             }else{
                 Drop_item(g,i);
@@ -193,7 +192,6 @@ public class Client_Jpanel extends JPanel {
                 } else{
                     g.setColor(Color.RED);
                 }
-                // g.drawRect(axisX[i], axisY[i], 100, 100);
                 g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 5);
             }
                 
