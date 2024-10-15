@@ -67,14 +67,12 @@ public class Client_Jpanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                if(!GameOver){
-                    if(bullets > 0){
-                        Sound(audioFile_shoot);
-                    }
-                    Bullets_Manage(-1,null);
-                    Zombie_Mange(e.getX(),e.getY());
-                    getItem(e.getX(),e.getY());
+                if(bullets > 0){
+                    Sound(audioFile_shoot);
                 }
+                Bullets_Manage(-1,null);
+                Zombie_Mange(e.getX(),e.getY());
+                getItem(e.getX(),e.getY());
             }
         });
         
