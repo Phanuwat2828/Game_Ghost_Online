@@ -68,8 +68,9 @@ public class Client_Jpanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e){
                 if(bullets > 0){
-                    Sound(audioFile_shoot);
+                        Sound(audioFile_shoot);
                 }
+                
                 Bullets_Manage(-1,null);
                 Zombie_Mange(e.getX(),e.getY());
                 getItem(e.getX(),e.getY());
@@ -173,6 +174,7 @@ public class Client_Jpanel extends JPanel {
             if(!Status_Zombie[i] && Dropped_item[i]){
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70){
+                    
                     Bullets_Manage(1,null);
                     if(Chance_Drop_rare[i]){
                         Bullets_Manage(20,null);
