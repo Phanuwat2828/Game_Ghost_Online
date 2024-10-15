@@ -67,12 +67,18 @@ public class Client_Jpanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
+
+                //เพิ่มเสียงตอนยิงเฉยๆ
                 if(bullets > 0){
-                        Sound(audioFile_shoot);
+                    Sound(audioFile_shoot);
                 }
-                
+                //คำนวณจัดการกระสุนหลังจากยิง
                 Bullets_Manage(-1,null);
+
+                //จัดการเรื่องคลิก zombie
                 Zombie_Mange(e.getX(),e.getY());
+                
+                //จัดการเรื่องการดรอป ไอเท็มและ คลิกเก็บไอเท็ม
                 getItem(e.getX(),e.getY());
             }
         });
