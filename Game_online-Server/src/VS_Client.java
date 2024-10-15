@@ -59,7 +59,7 @@ public class VS_Client {
 
                 if (responseObj instanceof DB_) {
                     DB_ response = (DB_) responseObj;
-                System.out.println("Send to Server: "+content);
+                    System.out.println("Send to Server: "+content);
                     System.out.println("Call Back From Server: " + response);
                 }
             
