@@ -7,23 +7,15 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.MediaTracker;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.MediaTracker;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 
 public class Client_Jpanel extends JPanel {
@@ -45,9 +37,7 @@ public class Client_Jpanel extends JPanel {
     File audioFile_shoot = new File(pathSound + File.separator + "pistol-shot-233473.wav");
     File audioFile_Items = new File(pathSound + File.separator + "item-pick-up-38258.wav");
     
-    
-
-
+    ZombieThread[] zombieThreads = new ZombieThread[30];
     Random rand = new Random();
     int[] axisX = new int[30];
     int[] axisY = new int[30];
@@ -68,9 +58,7 @@ public class Client_Jpanel extends JPanel {
     int bullets = 20;
     int amountBullet;
     int CountDead = 0;
-
     MediaTracker tracker = new MediaTracker(this);
-
     public Client_Jpanel(){
         setSize(1920, 1080);
         Defualt_Zombie();
@@ -87,6 +75,8 @@ public class Client_Jpanel extends JPanel {
                 getItem(e.getX(),e.getY());
             }
         });
+        
+        
     }
 
     public void img_zombie_walk() {
@@ -94,21 +84,10 @@ public class Client_Jpanel extends JPanel {
             zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Zombie_walk" + (k + 1) + ".png");
             tracker.addImage(zombie_action_walk[k], k); 
         }
-        
         try {
             tracker.waitForAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        
-        for (int k = 0; k < 10; k++) {
-            if (zombie_action_walk[k] == null) {
-                System.out.println("Zombie_walk" + (k + 1) + ".png");
-            }
-        }
-        
-        if (image_bg == null) {
-            System.out.println("Background.png");
         }
     }
 
@@ -125,6 +104,29 @@ public class Client_Jpanel extends JPanel {
         }
     }
 
+    public void startZombieThreads() {
+        for (int i = 0; i < 30; i++) {
+            zombieThreads[i] = new ZombieThread(i, this);
+            zombieThreads[i].start();
+        }
+    }
+    
+
+    public void stopAllZombies() {
+        for (int i = 0; i < 30; i++) {
+            if (zombieThreads[i] != null) {
+                zombieThreads[i].stopZombie(); 
+                try {
+                    zombieThreads[i].join();  // รอให้ thread หยุดทำงาน
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                
+            }
+        }
+    }
+    
+
     public void Zombie_Movement() {
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -135,7 +137,7 @@ public class Client_Jpanel extends JPanel {
             }
         }, 0, 50); 
     }
-
+    
     public void moveZombies() {
         for (int i = 0; i < 30; i++) {
             if(axisX[i]> getWidth()-230){
@@ -200,10 +202,10 @@ public class Client_Jpanel extends JPanel {
                 }else{
                     Drop_item(g,i);
                 }
-                
+               
                 if(Health[i] <= 0){
                     Status_Zombie[i] = false;
-                    CountDead++;
+                    
                     continue;
                 }
                 if(Status_Zombie[i]){
@@ -215,14 +217,20 @@ public class Client_Jpanel extends JPanel {
                         g.setColor(Color.ORANGE);
                     } else{
                     g.setColor(Color.RED);
-                }
-                g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 5);
+                    }
+                    g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 5);
             }
             
         }
         else if(GameOver){
             Game_Over(g);
+        }else if(checkdead() == 30){
+            GameWin = true;
+            Game_Win(g);
         }
+        g.setFont(new Font("Tahoma", Font.BOLD, 30));
+        g.setColor(Color.WHITE);
+        g.drawString("Zombie Dead : " + checkdead()+" / 30", 50, 50);
     }
     }
     public void Drop_item(Graphics g,int i){
@@ -321,20 +329,20 @@ public class Client_Jpanel extends JPanel {
         g.drawImage(TextGameOver, 500, 150, 500, 500, this);
         g.drawImage(image_gif, 450, 300, 150, 200, this);
         g.drawImage(image_gif, 900, 300, 150, 200, this);
+        stopAllZombies();
+        repaint();
     }
     public void Game_Win(Graphics g){
-        g.setColor(new Color(0, 0, 0, 150)); // Semi-transparent background
-        g.fillRect(0, 0, getWidth(), getHeight()); // Cover the entire panel
-    
-        g.setFont(new Font("Tahoma", Font.BOLD, 70)); // Set the font for the text
-        g.setColor(Color.YELLOW); // Use yellow to stand out
-        g.drawString("YOU WIN!", 600, 300); // Display the winner text
-
+        g.setColor(new Color(0, 0, 0, 150)); 
+        g.fillRect(0, 0, getWidth(), getHeight());
+        g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+        g.setColor(Color.YELLOW); 
+        g.drawString("YOU WIN!", 600, 300); 
     }
     public int checkdead(){
         int count=0;
         for(int i = 0; i <30;i++){
-            if(Status_Zombie[i] = false){
+            if(Status_Zombie[i] == false){
                 count++;
             }
         }
@@ -350,9 +358,7 @@ public class Client_Jpanel extends JPanel {
             Clip clip = (Clip) AudioSystem.getLine(info);
             clip.open(stream);
             clip.start();
-            // Optional: loop the sound if needed
-            // clip.loop(Clip.LOOP_CONTINUOUSLY);
-            // Wait for the clip to finish playing
+         
             clip.addLineListener(event -> {
                 if (event.getType() == LineEvent.Type.STOP) {
                     clip.close();
@@ -363,6 +369,7 @@ public class Client_Jpanel extends JPanel {
         }
     }).start();
 }
-
-   
-}
+    public boolean isZombieAlive(int i) {
+        return Status_Zombie[i];
+    }
+}   
