@@ -25,13 +25,11 @@ public class MouseServer {
         }
     }
 
-    // ส่งข้อมูลไปยัง Client ทุกตัว ยกเว้นผู้ส่ง
-    public static void broadcast(String message, ClientHandler excludeUser) {
+    // ส่งข้อมูลไปยังทุก Client รวมถึงผู้ส่ง
+    public static void broadcast(String message) {
         synchronized (clientHandlers) {
             for (ClientHandler aClient : clientHandlers) {
-                if (aClient != excludeUser) {
-                    aClient.sendMessage(message);
-                }
+                aClient.sendMessage(message);
             }
         }
     }
@@ -40,10 +38,9 @@ public class MouseServer {
     public static void sendExistingMousePositions(ClientHandler newClient) {
         synchronized (clientHandlers) {
             for (ClientHandler aClient : clientHandlers) {
-                if (aClient != newClient) {
-                    aClient.lastMousePosition.ifPresent(pos -> {
-                        newClient.sendMessage("MOVE," + aClient.clientId + "," + pos.x + "," + pos.y);
-                    });
+                if (aClient != newClient && aClient.lastMousePosition.isPresent()) {
+                    Point pos = aClient.lastMousePosition.get();
+                    newClient.sendMessage("MOVE," + aClient.clientId + "," + pos.x + "," + pos.y);
                 }
             }
         }
@@ -53,6 +50,8 @@ public class MouseServer {
     public static void removeClient(ClientHandler clientHandler) {
         clientHandlers.remove(clientHandler);
         System.out.println("Client #" + clientHandler.clientId + " ถูกลบ: " + clientHandler.socket.getInetAddress());
+        // แจ้งให้ Client อื่นรู้ว่า Client นี้ได้ออกไป
+        broadcast("DISCONNECT," + clientHandler.clientId);
     }
 
     static class ClientHandler implements Runnable {
@@ -68,6 +67,8 @@ public class MouseServer {
             try {
                 in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
                 out = new PrintWriter(this.socket.getOutputStream(), true);
+                // ส่ง Client ID ให้กับ Client
+                out.println("ID," + this.clientId);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -91,8 +92,8 @@ public class MouseServer {
                         int x = Integer.parseInt(parts[1]);
                         int y = Integer.parseInt(parts[2]);
                         lastMousePosition = Optional.of(new Point(x, y));
-                        // ส่งต่อข้อมูลให้ Client อื่นๆ พร้อมระบุว่าเป็น Client ไหน
-                        MouseServer.broadcast("MOVE," + clientId + "," + x + "," + y, this);
+                        // ส่งต่อข้อมูลให้ทุก Client พร้อมระบุว่าเป็น Client ไหน
+                        broadcast("MOVE," + clientId + "," + x + "," + y);
                     }
                 }
             } catch (IOException e) {

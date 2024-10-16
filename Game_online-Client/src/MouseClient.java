@@ -6,7 +6,7 @@ import java.util.*;
 import javax.swing.*;
 
 public class MouseClient extends JFrame {
-    private static final String SERVER_IP = "26.12.207.51"; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
+    private static final String SERVER_IP = "localhost"; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
     private static final int SERVER_PORT = 12345;
 
     private Socket socket;
@@ -42,10 +42,11 @@ public class MouseClient extends JFrame {
             drawingPanel.addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
-                    String msg = "MOVE," + e.getX() + "," + e.getY();
-                    out.println(msg);
-                    // เราจะไม่อัพเดตตำแหน่งเมาส์ของตัวเอง เพราะ Server
-                    // จะกระจายข้อมูลให้ทุกคนรวมถึงเรา
+                    if (clientId != -1) { // ตรวจสอบว่ามี clientId แล้ว
+                        String msg = "MOVE," + e.getX() + "," + e.getY();
+                        out.println(msg);
+                        // ไม่ต้องอัพเดตตำแหน่งเมาส์ของตัวเองที่นี่ เพราะจะได้รับจาก Server
+                    }
                 }
             });
 
@@ -74,21 +75,33 @@ public class MouseClient extends JFrame {
             String message;
             try {
                 while ((message = in.readLine()) != null) {
-                    // คาดว่า message มีรูปแบบ "MOVE,clientId,x,y"
+                    // ประมวลผลข้อความที่ได้รับ
+                    // คาดว่า message มีรูปแบบ "ID,clientId" หรือ "MOVE,clientId,x,y" หรือ
+                    // "DISCONNECT,clientId"
                     String[] parts = message.split(",");
-                    if (parts.length == 4 && parts[0].equals("MOVE")) {
-                        int id = Integer.parseInt(parts[1]);
-                        int x = Integer.parseInt(parts[2]);
-                        int y = Integer.parseInt(parts[3]);
-
-                        // ถ้า clientId ยังไม่ถูกกำหนด, กำหนดมันจากข้อความแรกที่รับมา
-                        if (clientId == -1) {
-                            clientId = id; // สมมติว่าข้อมูลแรกที่รับมาเป็นตัวเรา
-                        }
-
-                        // ถ้าไม่ใช่ตัวเราเอง, อัพเดตตำแหน่งเมาส์
-                        if (id != clientId) {
-                            updateRemoteMouse(id, x, y);
+                    if (parts.length >= 2) {
+                        switch (parts[0]) {
+                            case "ID":
+                                // กำหนด clientId ของตัวเอง
+                                clientId = Integer.parseInt(parts[1]);
+                                System.out.println("ได้รับ clientId ของตัวเอง: " + clientId);
+                                break;
+                            case "MOVE":
+                                if (parts.length == 4) {
+                                    int id = Integer.parseInt(parts[1]);
+                                    int x = Integer.parseInt(parts[2]);
+                                    int y = Integer.parseInt(parts[3]);
+                                    updateRemoteMouse(id, x, y);
+                                }
+                                break;
+                            case "DISCONNECT":
+                                if (parts.length == 2) {
+                                    int id = Integer.parseInt(parts[1]);
+                                    removeRemoteMouse(id);
+                                }
+                                break;
+                            default:
+                                System.out.println("ข้อความที่ไม่รู้จัก: " + message);
                         }
                     }
                 }
@@ -110,7 +123,11 @@ public class MouseClient extends JFrame {
                 for (Map.Entry<Integer, Point> entry : remoteMousePositions.entrySet()) {
                     int id = entry.getKey();
                     Point p = entry.getValue();
-                    g.setColor(Color.RED);
+                    if (id == clientId) {
+                        g.setColor(Color.BLUE); // สีสำหรับเมาส์ของตัวเอง
+                    } else {
+                        g.setColor(Color.RED); // สีสำหรับเมาส์ของ Client อื่น
+                    }
                     g.fillOval(p.x - 5, p.y - 5, 10, 10);
                     g.drawString("Client #" + id, p.x + 5, p.y - 5);
                 }
