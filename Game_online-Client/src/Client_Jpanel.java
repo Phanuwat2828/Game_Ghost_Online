@@ -84,7 +84,6 @@ public class Client_Jpanel extends JPanel {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private JLabel statusLabel;
     private Map<Integer, Point> remoteMousePositions = Collections.synchronizedMap(new HashMap<>());
     private int clientId = -1; // ใช้ในการระบุว่าเป็น Client ตัวไหน
     // ===========================
@@ -96,7 +95,6 @@ public class Client_Jpanel extends JPanel {
         Defualt_Zombie();
         img_zombie_walk();
         Zombie_Movement();
-
         try {
             socket = new Socket(SERVER_IP, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

@@ -4,7 +4,7 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MouseServer {
+public class Server_01 {
     private static final int PORT = 12345;
     private static Set<ClientHandler> clientHandlers = Collections.synchronizedSet(new HashSet<>());
     private static AtomicInteger clientIdCounter = new AtomicInteger(0);
@@ -99,7 +99,7 @@ public class MouseServer {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                MouseServer.removeClient(this);
+                Server_01.removeClient(this);
                 try {
                     socket.close();
                 } catch (IOException e) {
