@@ -254,7 +254,7 @@ public class Client_Jpanel extends JPanel {
         else{
             chance = rand.nextInt(100);
             if(chance <=10){
-                Chance_Drop_rare[i] =true;
+                Chance_Drop_rare[i] = true;
             }else{
             }
             return false;
