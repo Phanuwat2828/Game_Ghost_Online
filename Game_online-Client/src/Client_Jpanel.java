@@ -25,10 +25,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 
 public class Client_Jpanel extends JPanel {
     String path_Bg = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src"
@@ -326,7 +324,6 @@ public class Client_Jpanel extends JPanel {
 
                 if (Health[i] <= 0) {
                     Status_Zombie[i] = false;
-
                     continue;
                 }
                 if (Status_Zombie[i]) {
