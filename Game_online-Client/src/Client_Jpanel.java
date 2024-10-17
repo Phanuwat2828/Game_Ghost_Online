@@ -17,6 +17,8 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
 import javax.swing.JPanel;
+import java.util.Arrays;
+
 
 public class Client_Jpanel extends JPanel {
     String path_Bg = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "Image";
@@ -31,6 +33,7 @@ public class Client_Jpanel extends JPanel {
     Image wink =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Wink2.gif");
     Image Border2 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border2.PNG");
     Image Border3 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border3.PNG");
+    Image frame1 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame1.PNG");
 
 
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "sound";
@@ -55,9 +58,10 @@ public class Client_Jpanel extends JPanel {
     boolean GameOver = false;
     boolean GameWin = false;
     boolean AddBullet = false;
-    int bullets = 20;
+    int bullets = 500;
     int amountBullet;
     int CountDead = 0;
+    boolean retry_Game=false;
     MediaTracker tracker = new MediaTracker(this);
     public Client_Jpanel(){
         setSize(1920, 1080);
@@ -67,19 +71,22 @@ public class Client_Jpanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-
-                //เพิ่มเสียงตอนยิงเฉยๆ
-                if(bullets > 0){
-                    Sound(audioFile_shoot);
+                if(GameOver || GameWin){
+                    Check_Click_Retry(e.getX(),e.getY());
+                }else{
+                    //เพิ่มเสียงตอนยิงเฉยๆ
+                    if(bullets > 0){
+                        Sound(audioFile_shoot);
+                    }
+                    //คำนวณจัดการกระสุนหลังจากยิง
+                    Bullets_Manage(-1,null);
+    
+                    //จัดการเรื่องคลิก zombie
+                    Zombie_Mange(e.getX(),e.getY());
+                    
+                    //จัดการเรื่องการดรอป ไอเท็มและ คลิกเก็บไอเท็ม
+                    getItem(e.getX(),e.getY());
                 }
-                //คำนวณจัดการกระสุนหลังจากยิง
-                Bullets_Manage(-1,null);
-
-                //จัดการเรื่องคลิก zombie
-                Zombie_Mange(e.getX(),e.getY());
-                
-                //จัดการเรื่องการดรอป ไอเท็มและ คลิกเก็บไอเท็ม
-                getItem(e.getX(),e.getY());
             }
         });
         
@@ -109,6 +116,7 @@ public class Client_Jpanel extends JPanel {
             Percent_HP[i] = 100;
             Chance_Drop[i] = Chance_To_Drop(i);
         }
+        Arrays.sort(axisY);
     }
 
     public void startZombieThreads() {
@@ -201,19 +209,15 @@ public class Client_Jpanel extends JPanel {
         g.drawImage(image_bg, 0, 0, 1555, 855, this);
         BulletBar(g);
         for(int i = 0; i < 30; i++){
-            if(!GameOver){
-                int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500; 
-                int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
-                if(Status_Zombie[i]){
-                    //g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
-                    g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
-                }else{
-                    Drop_item(g,i);
-                }
+            if(GameOver){
+                Game_Over(g);
+            }else if(GameWin){
+                Game_Win(g);
+            }else {
+                PaintZombie(g,i);
                
                 if(Health[i] <= 0){
                     Status_Zombie[i] = false;
-                    
                     continue;
                 }
                 if(Status_Zombie[i]){
@@ -227,20 +231,31 @@ public class Client_Jpanel extends JPanel {
                     g.setColor(Color.RED);
                     }
                     g.fillRect(axisX[i], axisY[i] + 120, Percent_HP[i], 5);
+                } 
             }
-            
+        
+            g.setFont(new Font("Tahoma", Font.BOLD, 25));
+            g.setColor(Color.WHITE);
+            g.drawString("Zombie Dead : " + Check_Amount_Dead()+" / 30", 50, 30);
+
         }
-        else if(GameOver){
-            Game_Over(g);
-        }else if(checkdead() == 30){
-            GameWin = true;
-            Game_Win(g);
+            if (Check_Amount_Dead() == 30) {
+                GameWin = true;
+            }
+    }
+
+    public void PaintZombie(Graphics g, int i){
+        int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500; 
+                int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
+                
+                if(Status_Zombie[i]){
+                    g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+                }else{
+                    Drop_item(g,i);
         }
-        g.setFont(new Font("Tahoma", Font.BOLD, 30));
-        g.setColor(Color.WHITE);
-        g.drawString("Zombie Dead : " + checkdead()+" / 30", 50, 50);
     }
-    }
+
+
     public void Drop_item(Graphics g,int i){
         if(Dropped_item[i]){
             if(Chance_Drop[i]){
@@ -325,8 +340,8 @@ public class Client_Jpanel extends JPanel {
         if(AddBullet){
             g.setFont(add);
             g.drawImage(rare_item,75 , 77, 100, 100, this);
-            g.drawImage(wink, 120,75, 50, 50, this);
-            g.drawImage(wink, 25,100, 50, 50, this);
+            g.drawImage(wink, 150,75, 50, 50, this);
+            g.drawImage(wink, 60,100, 50, 50, this);
         }
 
     }
@@ -337,17 +352,28 @@ public class Client_Jpanel extends JPanel {
         g.drawImage(TextGameOver, 500, 150, 500, 500, this);
         g.drawImage(image_gif, 450, 300, 150, 200, this);
         g.drawImage(image_gif, 900, 300, 150, 200, this);
+        g.drawImage(frame1, 590, 450, 300, 220, this);
+        g.setColor(Color.WHITE);
+        g.drawString("try agin", 700, 570);
+
+
+        //g.add(retry);
+
         stopAllZombies();
         repaint();
     }
+
     public void Game_Win(Graphics g){
-        g.setColor(new Color(0, 0, 0, 150)); 
+        g.setColor(new Color(0, 0, 0, 10)); 
         g.fillRect(0, 0, getWidth(), getHeight());
         g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
         g.setColor(Color.YELLOW); 
-        g.drawString("YOU WIN!", 600, 300); 
+        g.drawString("WAVE  1  ", 600, 400); 
+        g.drawString("CLEAR", 630, 500); 
+        repaint();
     }
-    public int checkdead(){
+
+    public int Check_Amount_Dead(){
         int count=0;
         for(int i = 0; i <30;i++){
             if(Status_Zombie[i] == false){
@@ -379,5 +405,15 @@ public class Client_Jpanel extends JPanel {
 }
     public boolean isZombieAlive(int i) {
         return Status_Zombie[i];
+    }
+
+    public void Check_Click_Retry(int MouseAxisX, int MouseAxisY){
+        if(MouseAxisX >= 590 && MouseAxisX <= 590 + 890 && 
+                MouseAxisY >= 450 && MouseAxisY <= 450 + 670){
+            retry_Game = true;
+        }
+    }
+    public boolean check_retry() {
+        return retry_Game;
     }
 }   
