@@ -77,7 +77,7 @@ public class Client_Jpanel extends JPanel {
 
     // =========================== to_server
     private static final String SERVER_IP = "26.245.160.254"; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
-    private static final int SERVER_PORT = 12345;
+    private static final int SERVER_PORT = 3000;
 
     private Socket socket;
     private BufferedReader in;

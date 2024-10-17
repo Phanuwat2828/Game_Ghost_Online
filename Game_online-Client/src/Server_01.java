@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Server_01 {
-    private static final int PORT = 12345;
+    private static final int PORT = 3000;
     private static Set<ClientHandler> clientHandlers = Collections.synchronizedSet(new HashSet<>());
     private static AtomicInteger clientIdCounter = new AtomicInteger(0);
 
