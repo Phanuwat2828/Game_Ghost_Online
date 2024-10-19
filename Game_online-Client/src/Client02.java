@@ -19,9 +19,20 @@ public class Client02 {
                 Map<String, Object> data = entry.getValue();
                 int[] position = (int[]) data.get("position");
                 boolean status = (boolean) data.get("status");
-
-                System.out.println(
-                        "Name: " + name + ", X: " + position[0] + ", Y: " + position[1] + ", Status: " + status);
+                int Speed = (int) data.get("Speed");
+                int Hp_ = (int) data.get("Hp_");
+                int Hp_percent = (int) data.get("Hp_percent");
+                int Hp_max = (int) data.get("Hp_max");
+                Boolean Chance_Drop = (Boolean) data.get("Chance_Drop");
+                Boolean Chance_Drop_rare = (Boolean) data.get("Chance_Drop_rare");
+                System.out.println("=================== " + name + " =======================");
+                System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
+                System.out.println("Status: " + status);
+                System.out.println("Speed: " + Speed);
+                System.out.println("HP: " + Hp_ + "/" + Hp_max + " (" + Hp_percent + "%)");
+                System.out.println("Chance to Drop: " + Chance_Drop);
+                System.out.println("Chance to Drop Rare: " + Chance_Drop_rare);
+                System.out.println("=========================================================");
             }
 
             // ปิดการเชื่อมต่อ
@@ -31,4 +42,5 @@ public class Client02 {
             e.printStackTrace();
         }
     }
+
 }

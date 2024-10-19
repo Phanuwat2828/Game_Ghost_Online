@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Collections;
@@ -74,10 +75,13 @@ public class Client_Jpanel extends JPanel {
     int bullets = 20;
     int amountBullet;
     int CountDead = 0;
+    int mouseX = 0;
+    int mouseY = 0;
 
     // =========================== to_server
     private static final String SERVER_IP = "26.245.160.254"; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
-    private static final int SERVER_PORT = 3000;
+    private static final int SERVER_PORT1 = 3000;
+    private static final int SERVER_PORT2 = 9090;
 
     private Socket socket;
     private BufferedReader in;
@@ -90,11 +94,11 @@ public class Client_Jpanel extends JPanel {
 
     public Client_Jpanel() {
         setSize(1920, 1080);
-        Defualt_Zombie();
         img_zombie_walk();
-        Zombie_Movement();
+        recive_data th = new recive_data(this);
+        th.start();
         try {
-            socket = new Socket(SERVER_IP, SERVER_PORT);
+            socket = new Socket(SERVER_IP, SERVER_PORT1);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -117,6 +121,8 @@ public class Client_Jpanel extends JPanel {
             addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
+                    mouseX = e.getX();
+                    mouseY = e.getY();
                     if (clientId != -1) { // ตรวจสอบว่ามี clientId แล้ว
                         String msg = "MOVE," + e.getX() + "," + e.getY();
                         out.println(msg);
@@ -131,6 +137,36 @@ public class Client_Jpanel extends JPanel {
             System.out.println("ไม่สามารถเชื่อมต่อกับ Server ได้");
         }
 
+    }
+
+    public int getMouseX() {
+        return this.mouseX;
+    }
+
+    public int getMouseY() {
+        return this.mouseY;
+    }
+
+    public void setAll_data(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
+            boolean Chance_Drop_, boolean Chance_Drop_rare_) {
+        axisX[index] = x;
+        axisY[index] = y;
+        speedX[index] = speed;
+        Status_Zombie[index] = status;
+        Health[index] = hp;
+        Max_HP[index] = max_hp;
+        Percent_HP[index] = percent_hp;
+        Chance_Drop[index] = Chance_Drop_;
+        Chance_Drop_rare[index] = Chance_Drop_rare_;
+        // System.out.println("=================== " + index +
+        // "=======================");
+        // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
+        // System.out.println("Status: " + status);
+        // System.out.println("Speed: " + speed);
+        // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
+        // System.out.println("Chance to Drop: " + chanceDrop);
+        // System.out.println("Chance to Drop Rare: " + chanceDropRare);
+        // System.out.println("=========================================================");
     }
 
     class IncomingReader implements Runnable {
@@ -199,19 +235,6 @@ public class Client_Jpanel extends JPanel {
         }
     }
 
-    public void Defualt_Zombie() {
-        for (int i = 0; i < 30; i++) {
-            axisX[i] = rand.nextInt(20, 419);
-            axisY[i] = rand.nextInt(250, 650);
-            speedX[i] = rand.nextInt(1, 5);
-            Status_Zombie[i] = true;
-            Max_HP[i] = 100;
-            Health[i] = Max_HP[i];
-            Percent_HP[i] = 100;
-            Chance_Drop[i] = Chance_To_Drop(i);
-        }
-    }
-
     public void startZombieThreads() {
         for (int i = 0; i < 30; i++) {
             zombieThreads[i] = new ZombieThread(i, this);
@@ -230,30 +253,6 @@ public class Client_Jpanel extends JPanel {
                 }
 
             }
-        }
-    }
-
-    public void Zombie_Movement() {
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                moveZombies();
-                repaint();
-            }
-        }, 0, 50);
-    }
-
-    public void moveZombies() {
-        for (int i = 0; i < 30; i++) {
-            if (axisX[i] > getWidth() - 230) {
-                GameOver = true;
-                repaint();
-            } else if (GameOver) {
-            } else if (Status_Zombie[i]) {
-                axisX[i] += speedX[i];
-            }
-
         }
     }
 
@@ -491,5 +490,58 @@ public class Client_Jpanel extends JPanel {
 
     public boolean isZombieAlive(int i) {
         return Status_Zombie[i];
+    }
+}
+
+class recive_data extends Thread {
+    private Client_Jpanel panel;
+
+    recive_data(Client_Jpanel panel) {
+        this.panel = panel;
+    }
+
+    public void run() {
+        while (true) {
+            try (Socket socket = new Socket("localhost", 9090);
+                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+                // รับข้อมูล Map ผ่าน ObjectInputStream
+                Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
+                int index = 0;
+
+                // แสดงข้อมูลมอนสเตอร์แต่ละตัว
+                for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
+                    String name = entry.getKey();
+                    Map<String, Object> data = entry.getValue();
+
+                    int[] position = (int[]) data.get("position");
+                    boolean status = (boolean) data.get("status");
+                    int speed = (int) data.get("Speed");
+                    int hp_ = (int) data.get("Hp_");
+                    int hp_percent = (int) data.get("Hp_percent");
+                    int hp_max = (int) data.get("Hp_max");
+                    Boolean chanceDrop = (Boolean) data.get("Chance_Drop");
+                    Boolean chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
+
+                    this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max, hp_percent,
+                            chanceDrop, chanceDropRare);
+                    this.panel.repaint();
+                    index++;
+                    // System.out.println("=================== " + name +
+                    // "=======================");
+                    // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
+                    // System.out.println("Status: " + status);
+                    // System.out.println("Speed: " + speed);
+                    // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
+                    // System.out.println("Chance to Drop: " + chanceDrop);
+                    // System.out.println("Chance to Drop Rare: " + chanceDropRare);
+                    // System.out.println("=========================================================");
+                }
+                in.close();
+                socket.close();
+                Thread.sleep(50); // รอการอัพเดตครั้งต่อไป
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
