@@ -20,19 +20,5 @@ public class Client_Bg extends JFrame {
         setSize(1920, 1080);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        addMouseMotionListener(new MouseMotionListener() {
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'mouseDragged'");
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                setTitle("x :" + e.getX() + " " + "Y :" + e.getY());
-            }
-
-        });
     }
 }

@@ -7,10 +7,11 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.io.*;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Server02 {
-
-    private static final Random random = new Random(); // สร้าง Random instance เดียวเพื่อใช้งาน
     private static final int MONSTER_COUNT = 30; // จำนวนมอนสเตอร์
 
     public static void main(String[] args) {
@@ -60,8 +61,12 @@ class ClientHandler implements Runnable {
             // รับข้อมูลจาก client
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String clientMessage;
+
             while ((clientMessage = in.readLine()) != null) {
                 System.out.println("Received from client: " + clientMessage);
+                String[] xy = clientMessage.split("[,]");
+                data.Zombie_Mange(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]));
+
             }
 
             // ปิดการเชื่อมต่อ
@@ -78,6 +83,8 @@ class ClientHandler implements Runnable {
 // ส่วนของ Create_Data และ Data จะยังคงเหมือนเดิม
 class Create_Data {
     private Data data;
+    private int click_X = 0;
+    private int click_Y = 0;
 
     Create_Data(Data data) {
         this.data = data;
@@ -114,14 +121,23 @@ class Create_Data {
 class Data {
     private Map<String, Map<String, Object>> monsterData = new LinkedHashMap<>();
     private static Random random = new Random();
+    private int[] X;
+    private int[] Y;
 
     Data(int MONSTER_COUNT) {
+        X = new int[MONSTER_COUNT];
+        Y = new int[MONSTER_COUNT];
+        for (int i = 0; i < MONSTER_COUNT; i++) {
+            X[i] = random.nextInt(20, 419);
+            Y[i] = random.nextInt(250, 650);
+        }
+        Arrays.sort(Y);
         for (int i = 0; i < MONSTER_COUNT; i++) {
             Map<String, Object> data_monster = new HashMap<>();
             Boolean Chance_Drop = Chance_To_Drop();
             Boolean rare = Chance_To_Drop_rare(Chance_Drop);
 
-            data_monster.put("position", new int[] { random.nextInt(20, 419), random.nextInt(250, 650) });
+            data_monster.put("position", new int[] { X[i], Y[i] });
             data_monster.put("status", true);
             data_monster.put("Speed", random.nextInt(1, 5));
             data_monster.put("Hp_", 100);
@@ -130,6 +146,51 @@ class Data {
             data_monster.put("Chance_Drop_rare", rare);
             data_monster.put("Chance_Drop", Chance_Drop);
             monsterData.put("monster" + (i + 1), data_monster);
+        }
+    }
+
+    // public void Zombie_Mange(int MouseAxisX, int MouseAxisY) {
+    // for (int i = 0; i < 30; i++) {
+    // if (Status_Zombie[i]) {
+    // if (MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 &&
+    // MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100) {
+    // if (bullets > 0) {
+    // Dropped_item[i] = true;
+    // Damage[i] = 20;
+    // Health[i] -= Damage[i];
+    // Percent_HP[i] = (Health[i] * 100) / Max_HP[i];
+    // repaint();
+    // }
+    // }
+    // }
+    // }
+    // }
+
+    public void Zombie_Mange(int Mousex, int Mousey) {
+        for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
+            String name = entry.getKey();
+            Map<String, Object> data_now = entry.getValue();
+            Boolean status = (Boolean) data_now.get("status");
+            int[] position = (int[]) data_now.get("position");
+            int Hp = (int) data_now.get("Hp_");
+            int max = (int) data_now.get("Hp_max");
+
+            int x = position[0];
+            int y = position[1];
+
+            if (status) {
+                if (Mousex >= x && Mousex <= x + 100 &&
+                        Mousey >= y && Mousey <= y + 100) {
+                    // Dropped_item[i] = true;
+                    monsterData.get(name).put("Hp_", Hp - 20);
+                    monsterData.get(name).put("Hp_percent", (Hp * 100) / max);
+                    // Percent_HP[i] = (Health[i] * 100) / Max_HP[i];
+                    if (Hp - 20 <= 0) {
+                        monsterData.get(name).put("status", false);
+                    }
+                }
+
+            }
         }
     }
 

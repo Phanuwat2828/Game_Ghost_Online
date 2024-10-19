@@ -115,12 +115,13 @@ public class Client_Jpanel extends JPanel {
                 public void mouseClicked(MouseEvent e) {
                     if (bullets > 0) {
                         Sound(audioFile_shoot);
+                        out2.println(e.getX() + "," + e.getY());
                     }
 
                     Bullets_Manage(-1, null);
-                    // Zombie_Mange(e.getX(), e.getY());
-                    // getItem(e.getX(), e.getY());
-                    out2.println("CLICK," + e.getX() + "," + e.getY());
+                    Zombie_Mange(e.getX(), e.getY());
+                    getItem(e.getX(), e.getY());
+
                 }
             });
             addMouseMotionListener(new MouseMotionAdapter() {
@@ -162,6 +163,25 @@ public class Client_Jpanel extends JPanel {
         Percent_HP[index] = percent_hp;
         Chance_Drop[index] = Chance_Drop_;
         Chance_Drop_rare[index] = Chance_Drop_rare_;
+        // System.out.println("=================== " + index +
+        // "=======================");
+        // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
+        // System.out.println("Status: " + status);
+        // System.out.println("Speed: " + speed);
+        // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
+        // System.out.println("Chance to Drop: " + chanceDrop);
+        // System.out.println("Chance to Drop Rare: " + chanceDropRare);
+        // System.out.println("=========================================================");
+    }
+
+    public void setAll_data02(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp) {
+        axisX[index] = x;
+        axisY[index] = y;
+        speedX[index] = speed;
+        Status_Zombie[index] = status;
+        Health[index] = hp;
+        Max_HP[index] = max_hp;
+        Percent_HP[index] = percent_hp;
         // System.out.println("=================== " + index +
         // "=======================");
         // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
@@ -505,8 +525,9 @@ class recive_data extends Thread {
     }
 
     public void run() {
+        boolean first = true;
         while (true) {
-            try (Socket socket = new Socket("localhost", 9090);
+            try (Socket socket = new Socket("26.245.160.254", 9090);
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
                 // รับข้อมูล Map ผ่าน ObjectInputStream
                 Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
@@ -516,18 +537,24 @@ class recive_data extends Thread {
                 for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
                     String name = entry.getKey();
                     Map<String, Object> data = entry.getValue();
-
+                    Boolean chanceDrop = false;
+                    Boolean chanceDropRare = false;
                     int[] position = (int[]) data.get("position");
                     boolean status = (boolean) data.get("status");
                     int speed = (int) data.get("Speed");
                     int hp_ = (int) data.get("Hp_");
                     int hp_percent = (int) data.get("Hp_percent");
                     int hp_max = (int) data.get("Hp_max");
-                    Boolean chanceDrop = (Boolean) data.get("Chance_Drop");
-                    Boolean chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
+                    if (first) {
+                        chanceDrop = (Boolean) data.get("Chance_Drop");
+                        chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
+                        this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max, hp_percent,
+                                chanceDrop, chanceDropRare);
+                    } else {
+                        this.panel.setAll_data02(index, position[0], position[1], speed, status, hp_, hp_max,
+                                hp_percent);
+                    }
 
-                    this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max, hp_percent,
-                            chanceDrop, chanceDropRare);
                     this.panel.repaint();
                     index++;
                     // System.out.println("=================== " + name +
@@ -540,6 +567,7 @@ class recive_data extends Thread {
                     // System.out.println("Chance to Drop Rare: " + chanceDropRare);
                     // System.out.println("=========================================================");
                 }
+                first = false;
                 in.close();
                 socket.close();
                 Thread.sleep(50); // รอการอัพเดตครั้งต่อไป
