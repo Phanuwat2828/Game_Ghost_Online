@@ -113,14 +113,14 @@ public class Client_Jpanel extends JPanel {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (bullets > 0) {
+                    if (bullets > 0 && getItem(e.getX(), e.getY())) {
                         Sound(audioFile_shoot);
                         out2.println(e.getX() + "," + e.getY());
                     }
 
                     Bullets_Manage(-1, null);
-                    Zombie_Mange(e.getX(), e.getY());
-                    getItem(e.getX(), e.getY());
+
+                    // Zombie_Mange(e.getX(), e.getY());
 
                 }
             });
@@ -153,7 +153,7 @@ public class Client_Jpanel extends JPanel {
     }
 
     public void setAll_data(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
-            boolean Chance_Drop_, boolean Chance_Drop_rare_) {
+            boolean Chance_Drop_, boolean Chance_Drop_rare_, boolean dropped) {
         axisX[index] = x;
         axisY[index] = y;
         speedX[index] = speed;
@@ -163,6 +163,7 @@ public class Client_Jpanel extends JPanel {
         Percent_HP[index] = percent_hp;
         Chance_Drop[index] = Chance_Drop_;
         Chance_Drop_rare[index] = Chance_Drop_rare_;
+        Dropped_item[index] = dropped;
         // System.out.println("=================== " + index +
         // "=======================");
         // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
@@ -280,29 +281,13 @@ public class Client_Jpanel extends JPanel {
         }
     }
 
-    public void Zombie_Mange(int MouseAxisX, int MouseAxisY) {
-        for (int i = 0; i < 30; i++) {
-            if (Status_Zombie[i]) {
-                if (MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 &&
-                        MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100) {
-                    if (bullets > 0) {
-                        Dropped_item[i] = true;
-                        Damage[i] = 20;
-                        Health[i] -= Damage[i];
-                        Percent_HP[i] = (Health[i] * 100) / Max_HP[i];
-                        repaint();
-                    }
-                }
-            }
-        }
-    }
-
-    public void getItem(int MouseAxisX, int MouseAxisY) {
+    public boolean getItem(int MouseAxisX, int MouseAxisY) {
+        boolean status = true;
         for (int i = 0; i < 30; i++) {
             if (!Status_Zombie[i] && Dropped_item[i]) {
                 if (MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 &&
                         MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70) {
-
+                    status = false;
                     Bullets_Manage(1, null);
                     if (Chance_Drop_rare[i]) {
                         Bullets_Manage(20, null);
@@ -314,6 +299,7 @@ public class Client_Jpanel extends JPanel {
                 }
             }
         }
+        return status;
     }
 
     @Override
@@ -339,8 +325,14 @@ public class Client_Jpanel extends JPanel {
                 int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500;
                 int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
                 if (Status_Zombie[i]) {
+                    Font font = new Font("Arial", Font.BOLD, 16);
                     // g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+                    g.setColor(Color.GREEN);
+                    g.setFont(font);
+                    g.drawString("Drop item : " + Chance_Drop[i], axisX[i], axisY[i] - 10);
+                    g.drawRect(axisX[i], axisY[i], 100, 100);
                     g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
+
                 } else {
                     Drop_item(g, i);
                 }
@@ -381,20 +373,6 @@ public class Client_Jpanel extends JPanel {
             } else if (Chance_Drop_rare[i] == true) {
                 g.drawImage(rare_item, axisX[i] + 20, axisY[i] + 20, 50, 50, this);
             }
-        }
-    }
-
-    public boolean Chance_To_Drop(int i) {
-        int chance = rand.nextInt(100);
-        if (chance <= 20) {
-            return true;
-        } else {
-            chance = rand.nextInt(100);
-            if (chance <= 10) {
-                Chance_Drop_rare[i] = true;
-            } else {
-            }
-            return false;
         }
     }
 
@@ -539,17 +517,20 @@ class recive_data extends Thread {
                     Map<String, Object> data = entry.getValue();
                     Boolean chanceDrop = false;
                     Boolean chanceDropRare = false;
+                    Boolean dropped = false;
                     int[] position = (int[]) data.get("position");
                     boolean status = (boolean) data.get("status");
                     int speed = (int) data.get("Speed");
                     int hp_ = (int) data.get("Hp_");
                     int hp_percent = (int) data.get("Hp_percent");
                     int hp_max = (int) data.get("Hp_max");
+
                     if (first) {
                         chanceDrop = (Boolean) data.get("Chance_Drop");
                         chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
+                        dropped = (Boolean) data.get("dropped");
                         this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max, hp_percent,
-                                chanceDrop, chanceDropRare);
+                                chanceDrop, chanceDropRare, dropped);
                     } else {
                         this.panel.setAll_data02(index, position[0], position[1], speed, status, hp_, hp_max,
                                 hp_percent);

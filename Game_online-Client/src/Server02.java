@@ -140,6 +140,7 @@ class Data {
             data_monster.put("position", new int[] { X[i], Y[i] });
             data_monster.put("status", true);
             data_monster.put("Speed", random.nextInt(1, 5));
+            data_monster.put("dropped", true);
             data_monster.put("Hp_", 100);
             data_monster.put("Hp_max", 100);
             data_monster.put("Hp_percent", 100);
