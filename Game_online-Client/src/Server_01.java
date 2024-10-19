@@ -85,7 +85,7 @@ public class Server_01 {
             String message;
             try {
                 while ((message = in.readLine()) != null) {
-                    System.out.println("ได้รับจาก Client #" + clientId + ": " + message);
+                    // System.out.println("ได้รับจาก Client #" + clientId + ": " + message);
                     // คาดว่า message มีรูปแบบ "MOVE,x,y"
                     String[] parts = message.split(",");
                     if (parts.length == 3 && parts[0].equals("MOVE")) {

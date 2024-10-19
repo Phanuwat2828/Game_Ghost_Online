@@ -86,6 +86,8 @@ public class Client_Jpanel extends JPanel {
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private Socket socket2;
+    private PrintWriter out2;
     private Map<Integer, Point> remoteMousePositions = Collections.synchronizedMap(new HashMap<>());
     private int clientId = -1; // ใช้ในการระบุว่าเป็น Client ตัวไหน
     // ===========================
@@ -101,6 +103,8 @@ public class Client_Jpanel extends JPanel {
             socket = new Socket(SERVER_IP, SERVER_PORT1);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
+            socket2 = new Socket(SERVER_IP, SERVER_PORT2);
+            out2 = new PrintWriter(socket2.getOutputStream(), true);
 
             // เริ่ม Thread สำหรับรับข้อมูลจาก Server
             new Thread(new IncomingReader()).start();
@@ -114,8 +118,9 @@ public class Client_Jpanel extends JPanel {
                     }
 
                     Bullets_Manage(-1, null);
-                    Zombie_Mange(e.getX(), e.getY());
-                    getItem(e.getX(), e.getY());
+                    // Zombie_Mange(e.getX(), e.getY());
+                    // getItem(e.getX(), e.getY());
+                    out2.println("CLICK," + e.getX() + "," + e.getY());
                 }
             });
             addMouseMotionListener(new MouseMotionAdapter() {
@@ -130,7 +135,6 @@ public class Client_Jpanel extends JPanel {
                     }
                 }
             });
-
             System.out.println("เชื่อมต่อกับ Server สำเร็จ");
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,4 +1,3 @@
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -7,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.io.*;
 
 public class Server02 {
 
@@ -19,23 +19,15 @@ public class Server02 {
             Data data = new Data(MONSTER_COUNT);
             Create_Data cr = new Create_Data(data);
             cr.Zombie_Movement();
+
             while (true) {
                 try {
                     // รอการเชื่อมต่อจาก client
                     Socket socket = serverSocket.accept();
-                    System.out.println("Client connected.");
-                    // สร้าง LinkedHashMap เพื่อเก็บข้อมูลมอนสเตอร์
 
-                    // ส่งข้อมูล Map ผ่าน ObjectOutputStream
-                    ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                    out.writeObject(data.getMonsterData());
-                    out.flush(); // ควรเรียก flush เพื่อให้มั่นใจว่าข้อมูลถูกส่งออกไป
-                    System.out.println("Monster data sent to the client.");
-
-                    // ปิดการเชื่อมต่อ
-
-                    out.close();
-                    socket.close();
+                    // สร้าง Thread ใหม่สำหรับการจัดการ client
+                    ClientHandler clientHandler = new ClientHandler(socket, data);
+                    new Thread(clientHandler).start(); // เริ่ม Thread ใหม่
                 } catch (Exception e) {
                     System.err.println("Error while handling client connection: " + e.getMessage());
                 }
@@ -44,9 +36,46 @@ public class Server02 {
             e.printStackTrace();
         }
     }
-
 }
 
+// คลาสสำหรับจัดการ client
+class ClientHandler implements Runnable {
+    private Socket socket;
+    private Data data;
+
+    public ClientHandler(Socket socket, Data data) {
+        this.socket = socket;
+        this.data = data;
+    }
+
+    @Override
+    public void run() {
+        try {
+            // ใช้ BufferedOutputStream เพื่อเพิ่มประสิทธิภาพ
+            BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+            out.writeObject(data.getMonsterData());
+            out.flush(); // ควรเรียก flush เพื่อให้มั่นใจว่าข้อมูลถูกส่งออกไป
+
+            // รับข้อมูลจาก client
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String clientMessage;
+            while ((clientMessage = in.readLine()) != null) {
+                System.out.println("Received from client: " + clientMessage);
+            }
+
+            // ปิดการเชื่อมต่อ
+            in.close();
+            out.close();
+            socket.close();
+
+        } catch (Exception e) {
+            System.err.println("Error in client handler: " + e.getMessage());
+        }
+    }
+}
+
+// ส่วนของ Create_Data และ Data จะยังคงเหมือนเดิม
 class Create_Data {
     private Data data;
 
@@ -65,7 +94,6 @@ class Create_Data {
     }
 
     public void moveZombies() {
-
         Map<String, Map<String, Object>> monsterMap = this.data.getMonsterData();
         for (Map.Entry<String, Map<String, Object>> entry : monsterMap.entrySet()) {
             String name = entry.getKey();
@@ -75,14 +103,6 @@ class Create_Data {
             int speed = (int) data_now.get("Speed");
             int[] value = new int[2];
             value[1] = position[1];
-            // if (value[0] > 1920 - 230) {
-            // // gameover
-            // } else if (false) {
-            // // before game0ver
-            // } else if (status) {
-            // value[0] = position[0] + speed;
-            // this.data.setPosition(value, name);
-            // }
             if (status) {
                 value[0] = position[0] + speed;
                 this.data.setPosition(value, name);
@@ -115,40 +135,19 @@ class Data {
 
     public static Boolean Chance_To_Drop() {
         int chance = random.nextInt(100);
-        if (chance <= 20) {
-            return true;
-        } else {
-            return false;
-        }
+        return chance <= 20;
     }
 
     public static Boolean Chance_To_Drop_rare(boolean chance_) {
         int chance = random.nextInt(100);
-        if (chance <= 10 && !chance_) {
-            return true;
-        } else {
-            return false;
-        }
+        return chance <= 10 && !chance_;
     }
 
     public Map<String, Map<String, Object>> getMonsterData() {
         return monsterData;
     }
 
-    public void setMonsterData(Map<String, Map<String, Object>> monsterData) {
-        this.monsterData = monsterData;
-    }
-
     public void setPosition(int[] value, String name_monster) {
         this.monsterData.get(name_monster).put("position", value);
     }
-
 }
-
-// {
-// "monster":{
-// "position":{1,2}
-// }
-// }
-
-// monsterData.get("monster").put("position", new int[]{3, 4});
