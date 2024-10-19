@@ -246,7 +246,7 @@ public class Client_Jpanel extends JPanel {
 
     public void PaintZombie(Graphics g, int i){
         int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500; 
-                int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
+        int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
                 
                 if(Status_Zombie[i]){
                     g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
