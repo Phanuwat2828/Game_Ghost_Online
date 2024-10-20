@@ -12,7 +12,6 @@ public class Client_Bg extends JFrame{
     public static void main(String[] args) {
         Client_Bg bg = new Client_Bg();
         bg.startGame();
-        //wave[1] = new Client_Jpanel(2,40,0);
         bg.setVisible(true);
     } 
     
@@ -45,11 +44,11 @@ public class Client_Bg extends JFrame{
             WaveNow ++;
         }
         if(WaveNow ==1){
-            wave[WaveNow] = new Client_Jpanel(1, 15, 1);
+            wave[WaveNow] = new Client_Jpanel(1, 15, 0);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==2){
-            wave[WaveNow] = new Client_Jpanel(2, 20, 1);
+            wave[WaveNow] = new Client_Jpanel(2, 20, 0);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==3){
