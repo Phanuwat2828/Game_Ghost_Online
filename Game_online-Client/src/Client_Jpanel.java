@@ -419,27 +419,38 @@ public class Client_Jpanel extends JPanel {
     //     }
     // }
     public void Game_Win(Graphics g) {
-        g.setColor(new Color(0, 0, 0, 10)); 
-        g.fillRect(0, 0, getWidth(), getHeight());
-        g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
-        g.setColor(Color.YELLOW); 
-        g.drawString("WAVE  " + Wave, 600, 400); 
-        g.drawString("CLEAR", 630, 500);
-    
-        // Font for the countdown
-        Font add = new Font("Tahoma", Font.BOLD, 20);
-        g.setFont(add);
-        countdown = true;
-        paintCountDown(g);
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                 @Override
-                public void run() {
-                    countdown = false;
-                    paintCountDown(g);
-                    Click_next_wave = true;
-                }
-            }, 5000);
+        if(Wave == 5){
+                    g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+                    g.setColor(Color.YELLOW); 
+                    g.drawString("you  "+Wave, 600, 400); 
+                    g.drawString("win", 630, 500);
+                    Font add = new Font("Tahoma",Font.BOLD,20);
+                    g.setFont(add);
+                    g.drawString("you are team work", 700, 570);
+         
+         }else{
+             g.setColor(new Color(0, 0, 0, 10)); 
+             g.fillRect(0, 0, getWidth(), getHeight());
+             g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+             g.setColor(Color.YELLOW); 
+             g.drawString("WAVE  " + Wave, 600, 400); 
+             g.drawString("CLEAR", 630, 500);
+         
+             // Font for the countdown
+             Font add = new Font("Tahoma", Font.BOLD, 20);
+             g.setFont(add);
+             countdown = true;
+             paintCountDown(g);
+                 Timer timer = new Timer();
+                 timer.schedule(new TimerTask() {
+                      @Override
+                     public void run() {
+                         countdown = false;
+                         paintCountDown(g);
+                         Click_next_wave = true;
+                     }
+                 }, 5000);
+         }
             
     }
     public void paintCountDown(Graphics g){
