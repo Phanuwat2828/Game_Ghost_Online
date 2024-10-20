@@ -422,11 +422,11 @@ public class Client_Jpanel extends JPanel {
         if(Wave == 5){
                     g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
                     g.setColor(Color.YELLOW); 
-                    g.drawString("you  "+Wave, 600, 400); 
+                    g.drawString("you  "+Wave, 630, 400); 
                     g.drawString("win", 630, 500);
                     Font add = new Font("Tahoma",Font.BOLD,20);
                     g.setFont(add);
-                    g.drawString("you are team work", 700, 570);
+                    g.drawString("you are team work", 650, 570);
          
          }else{
              g.setColor(new Color(0, 0, 0, 10)); 
