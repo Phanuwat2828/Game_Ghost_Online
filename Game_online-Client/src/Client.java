@@ -18,18 +18,17 @@ public class Client {
 
     public static void main(String[] args) {
         try (DatagramSocket socket = new DatagramSocket();
-             BufferedReader console = new BufferedReader(new InputStreamReader(System.in))
-        ) {
+                BufferedReader console = new BufferedReader(new InputStreamReader(System.in))) {
             InetAddress address = InetAddress.getByName(SERVER);
             byte[] buffer = new byte[BUFFER_SIZE];
             InetAddress localHost = InetAddress.getLocalHost();
-            String sender = localHost+"";
+            String sender = localHost + "";
             String content;
 
             System.out.println("Connect UDP Server");
 
             while ((content = console.readLine()) != null) {
-                if (content.equals("stop")){
+                if (content.equals("stop")) {
                     break;
                 }
                 // สร้างวัตถุ Message
@@ -51,16 +50,17 @@ public class Client {
                 socket.receive(responsePacket);
 
                 // แปลงไบต์กลับเป็นวัตถุ
-                ByteArrayInputStream bais = new ByteArrayInputStream(responsePacket.getData(), 0, responsePacket.getLength());
+                ByteArrayInputStream bais = new ByteArrayInputStream(responsePacket.getData(), 0,
+                        responsePacket.getLength());
                 ObjectInputStream ois = new ObjectInputStream(bais);
                 Object responseObj = ois.readObject();
 
                 if (responseObj instanceof DB_) {
                     DB_ response = (DB_) responseObj;
-                System.out.println("Send to Server: "+content);
+                    System.out.println("Send to Server: " + content);
                     System.out.println("Call Back From Server: " + response);
                 }
-            
+
             }
         } catch (UnknownHostException ex) {
             System.out.println("Server Not Fond : " + ex.getMessage());

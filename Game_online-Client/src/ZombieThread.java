@@ -2,6 +2,7 @@ class ZombieThread extends Thread {
     private int index;
     private boolean running = true;
     private Client_Jpanel panel;
+
     public ZombieThread(int index, Client_Jpanel panel) {
         this.index = index;
         this.panel = panel;
@@ -10,7 +11,7 @@ class ZombieThread extends Thread {
     @Override
     public void run() {
         while (running) {
-            panel.Zombie_Movement();
+            // panel.Zombie_Movement();
 
             if (!panel.isZombieAlive(index)) {
                 stopZombie();
@@ -25,14 +26,14 @@ class ZombieThread extends Thread {
     }
 
     public void stopZombie() {
-        running = false;  
+        running = false;
         try {
-            this.join(); 
+            this.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-    
+
     public boolean isRunning() {
         return running;
     }
