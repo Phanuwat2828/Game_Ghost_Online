@@ -60,7 +60,7 @@ public class Client_Jpanel extends JPanel {
 
     int Amount_ghost,Amount_boss;
     int[] axisX, axisY, bossX, bossY,speedX,Health,Max_HP,Percent_HP,Damage;
-    boolean[] Status_Zombie,Chance_Drop ,Chance_Drop_rare,Dropped_item ;
+    boolean[] Status_Zombie,Status_Boss,Chance_Drop ,Chance_Drop_rare,Dropped_item ;
     Image[] zombie_action_walk,boss_action_walk;
     ZombieThread[] zombieThreads;
 
@@ -84,7 +84,8 @@ public class Client_Jpanel extends JPanel {
         Chance_Drop_rare = new boolean[Amount_ghost];
         Dropped_item = new boolean[Amount_ghost];
         zombieThreads = new ZombieThread[Amount_ghost];
-        boss_action_walk = new Image[6];
+        boss_action_walk = new Image[Amount_boss];
+        Status_Boss = new boolean[Amount_boss];
 
         setSize(1920, 1080);
         Defualt_Zombie();
@@ -143,13 +144,22 @@ public class Client_Jpanel extends JPanel {
             Health[i] = Max_HP[i]; 
             Percent_HP[i] = 100;
             Chance_Drop[i] = Chance_To_Drop(i);
+            
         }
+        
+        Arrays.sort(axisY);
+    }
+    
+    public void Boss_Zombie(){
         for (int k = 0; k < Amount_boss; k++){
             bossX[k] = rand.nextInt(20, 419);
             bossY[k] =rand.nextInt(250, 650); 
-            speedX[k] = rand.nextInt(1, 5);
+            speedX[k] = rand.nextInt(1);
+            Status_Boss[k] = true;
+            Max_HP[k] = 3000;
+            Health[k] = Max_HP[k];
+            Percent_HP[k] = 3000;
         }
-        Arrays.sort(axisY);
     }
 
     public void startZombieThreads() {
@@ -194,8 +204,8 @@ public class Client_Jpanel extends JPanel {
             }else if(GameOver){
             }
             else if(Status_Zombie[i]){
-                axisX[i] += speedX[i];
-            }
+                axisX[i] += speedX[i];   
+            }else if
 
         }
     }
