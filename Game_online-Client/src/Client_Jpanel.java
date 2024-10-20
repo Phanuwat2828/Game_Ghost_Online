@@ -47,7 +47,7 @@ public class Client_Jpanel extends JPanel {
     boolean GameOver = false;
     boolean GameWin = false;
     boolean AddBullet = false;
-    int bullets = 500;
+    int bullets = 20;
     int amountBullet;
     int CountDead = 0;
     int Wave;
@@ -382,42 +382,7 @@ public class Client_Jpanel extends JPanel {
         repaint();
     }
 
-    // public void Game_Win(Graphics g){
-    //     g.setColor(new Color(0, 0, 0, 10)); 
-    //     g.fillRect(0, 0, getWidth(), getHeight());
-    //     if(Wave == 5){
-    //         g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
-    //         g.setColor(Color.YELLOW); 
-    //         g.drawString("you  "+Wave, 600, 400); 
-    //         g.drawString("win", 630, 500);
-    //         Font add = new Font("Tahoma",Font.BOLD,20);
-    //         g.setFont(add);
-    //         g.drawString("you are team work", 700, 570);
- 
-    //     }else{
-    //         if (countnext > 0) { 
-    //             Timer timer = new Timer();
-    //             timer.schedule(new TimerTask() {
-    //                 @Override
-    //                 public void run() {
-    //                     if (countnext <= 0) {
-    //                         timer.cancel();
-    //                     } else {
-    //                         countnext--; 
-    //                     }
-    //                 }
-    //             },  1000); 
-    //         }
-    //             g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
-    //             g.setColor(Color.YELLOW); 
-    //             g.drawString("WAVE  "+Wave, 600, 400); 
-    //             g.drawString("CLEAR", 630, 500);
-    //             Font add = new Font("Tahoma",Font.BOLD,20);
-    //             g.setFont(add);
-    //             g.drawString("next wave in "+countnext, 700, 570);
 
-    //     }
-    // }
     public void Game_Win(Graphics g) {
         if(Wave == 5){
                     g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
