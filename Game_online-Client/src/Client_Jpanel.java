@@ -58,16 +58,19 @@ public class Client_Jpanel extends JPanel {
 
     MediaTracker tracker = new MediaTracker(this);
 
-    int Amount_ghost;
-    int[] axisX, axisY, speedX,Health,Max_HP,Percent_HP,Damage;
+    int Amount_ghost,Amount_boss;
+    int[] axisX, axisY, bossX, bossY,speedX,Health,Max_HP,Percent_HP,Damage;
     boolean[] Status_Zombie,Chance_Drop ,Chance_Drop_rare,Dropped_item ;
-    Image[] zombie_action_walk;
+    Image[] zombie_action_walk,boss_action_walk;
     ZombieThread[] zombieThreads;
 
-    public Client_Jpanel(int Wave,int Amount_ghost, int BigBoss){
+    public Client_Jpanel(int Wave,int Amount_ghost, int Amount_boss){
         
         this.Amount_ghost = Amount_ghost;
         this.Wave = Wave;
+        this.Amount_boss = Amount_boss;
+        bossX = new int[Amount_boss];
+        bossY = new int[Amount_boss];
         axisX = new int[Amount_ghost];
         axisY = new int[Amount_ghost];
         speedX = new int[Amount_ghost];
@@ -81,6 +84,7 @@ public class Client_Jpanel extends JPanel {
         Chance_Drop_rare = new boolean[Amount_ghost];
         Dropped_item = new boolean[Amount_ghost];
         zombieThreads = new ZombieThread[Amount_ghost];
+        boss_action_walk = new Image[6];
 
         setSize(1920, 1080);
         Defualt_Zombie();
@@ -118,6 +122,10 @@ public class Client_Jpanel extends JPanel {
             zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Zombie_walk" + (k + 1) + ".png");
             tracker.addImage(zombie_action_walk[k], k); 
         }
+        for (int i = 0; i < 6; i++) {
+            boss_action_walk[i] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "boss" + (i + 1) + ".png");
+            tracker.addImage(boss_action_walk[i], i); 
+        }
         try {
             tracker.waitForAll();
         } catch (InterruptedException e) {
@@ -135,6 +143,11 @@ public class Client_Jpanel extends JPanel {
             Health[i] = Max_HP[i]; 
             Percent_HP[i] = 100;
             Chance_Drop[i] = Chance_To_Drop(i);
+        }
+        for (int k = 0; k < Amount_boss; k++){
+            bossX[k] = rand.nextInt(20, 419);
+            bossY[k] =rand.nextInt(250, 650); 
+            speedX[k] = rand.nextInt(1, 5);
         }
         Arrays.sort(axisY);
     }
@@ -228,6 +241,7 @@ public class Client_Jpanel extends JPanel {
         super.paintComponent(g);
         g.drawImage(image_bg, 0, 0, 1555, 855, this);
         BulletBar(g);
+        
         for(int i = 0; i < Amount_ghost; i++){
             if(GameOver){
                 Game_Over(g);
@@ -256,12 +270,27 @@ public class Client_Jpanel extends JPanel {
         
             g.setFont(new Font("Tahoma", Font.BOLD, 25));
             g.setColor(Color.WHITE);
-            g.drawString("Zombie Dead : " + Check_Amount_Dead()+" / "+Amount_ghost, 50, 30);
+            g.drawString("Zombie Dead : " + Check_Amount_Dead(Amount_ghost)+" / "+Amount_ghost, 50, 30);
 
         }
-            if (Check_Amount_Dead() == Amount_ghost) {
-                GameWin = true;
+            if (Check_Amount_Dead(Amount_ghost) == Amount_ghost) {
+                if(Amount_boss > 0){
+                    for(int j = 0; j < Amount_boss; j++){
+                        PaintBoss(g, j);
+                    }
+                    if((Check_Amount_Dead(Amount_ghost) == Amount_ghost)){
+                        //GameWin = true;
+                    }
+                }else{
+                    GameWin = true;
+                }
             }
+    }
+
+    public void PaintBoss(Graphics g, int i){
+        int frameDelay = 500;
+        int frame = (int) ((System.currentTimeMillis() / frameDelay) % 6);
+        g.drawImage(boss_action_walk[frame], bossY[i], bossY[i], 250, 250, this);
     }
 
     public void PaintZombie(Graphics g, int i){
@@ -411,7 +440,6 @@ public class Client_Jpanel extends JPanel {
                       @Override
                      public void run() {
                          countdown = false;
-                         paintCountDown(g);
                          Click_next_wave = true;
                      }
                  }, 5000);
@@ -426,9 +454,9 @@ public class Client_Jpanel extends JPanel {
         }
     }
 
-    public int Check_Amount_Dead(){
+    public int Check_Amount_Dead(int amount){
         int count=0;
-        for(int i = 0; i <Amount_ghost;i++){
+        for(int i = 0; i <amount;i++){
             if(Status_Zombie[i] == false){
                 count++;
             }
@@ -480,9 +508,5 @@ public class Client_Jpanel extends JPanel {
 
     public void setWin(){
         GameWin = false;
-    }
-    
-    public void setRetry(){
-
     }
 }   
