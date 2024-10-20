@@ -63,6 +63,7 @@ public class Client_Jpanel extends JPanel {
     ZombieThread[] zombieThreads;
 
     public Client_Jpanel(int Wave,int Amount_ghost, int BigBoss){
+        
         this.Amount_ghost = Amount_ghost;
         this.Wave = Wave;
         axisX = new int[Amount_ghost];
@@ -379,41 +380,71 @@ public class Client_Jpanel extends JPanel {
         repaint();
     }
 
-    public void Game_Win(Graphics g){
+    // public void Game_Win(Graphics g){
+    //     g.setColor(new Color(0, 0, 0, 10)); 
+    //     g.fillRect(0, 0, getWidth(), getHeight());
+    //     if(Wave == 5){
+    //         g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+    //         g.setColor(Color.YELLOW); 
+    //         g.drawString("you  "+Wave, 600, 400); 
+    //         g.drawString("win", 630, 500);
+    //         Font add = new Font("Tahoma",Font.BOLD,20);
+    //         g.setFont(add);
+    //         g.drawString("you are team work", 700, 570);
+ 
+    //     }else{
+    //         if (countnext > 0) { 
+    //             Timer timer = new Timer();
+    //             timer.schedule(new TimerTask() {
+    //                 @Override
+    //                 public void run() {
+    //                     if (countnext <= 0) {
+    //                         timer.cancel();
+    //                     } else {
+    //                         countnext--; 
+    //                     }
+    //                 }
+    //             },  1000); 
+    //         }
+    //             g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+    //             g.setColor(Color.YELLOW); 
+    //             g.drawString("WAVE  "+Wave, 600, 400); 
+    //             g.drawString("CLEAR", 630, 500);
+    //             Font add = new Font("Tahoma",Font.BOLD,20);
+    //             g.setFont(add);
+    //             g.drawString("next wave in "+countnext, 700, 570);
+
+    //     }
+    // }
+    public void Game_Win(Graphics g) {
         g.setColor(new Color(0, 0, 0, 10)); 
         g.fillRect(0, 0, getWidth(), getHeight());
-        if(Wave == 5){
-            g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
-            g.setColor(Color.YELLOW); 
-            g.drawString("you  "+Wave, 600, 400); 
-            g.drawString("win", 630, 500);
-            Font add = new Font("Tahoma",Font.BOLD,20);
-            g.setFont(add);
-            g.drawString("you are team work", 700, 570);
- 
-        }else{
-            if (countnext > 0) { 
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (countnext <= 0) {
-                            timer.cancel();
-                        } else {
-                            countnext--; 
-                        }
-                    }
-                }, 1000, 1000); 
-            }
-                g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
-                g.setColor(Color.YELLOW); 
-                g.drawString("WAVE  "+Wave, 600, 400); 
-                g.drawString("CLEAR", 630, 500);
-                Font add = new Font("Tahoma",Font.BOLD,20);
-                g.setFont(add);
-                g.drawString("next wave in "+countnext, 700, 570);
-
+        g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+        g.setColor(Color.YELLOW); 
+        g.drawString("WAVE  " + Wave, 600, 400); 
+        g.drawString("CLEAR", 630, 500);
+    
+        // Font for the countdown
+        Font add = new Font("Tahoma", Font.BOLD, 20);
+        g.setFont(add);
+    
+        if (countnext > 0) {
+            g.drawString("next wave in " + countnext, 700, 570);
         }
+    
+        // Start the countdown timer
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (countnext > 0) {
+                    countnext--; 
+                    repaint(); // Call repaint to update the countdown display
+                } else {
+                    timer.cancel(); // Stop the timer when countnext reaches 0
+                }
+            }
+        }, 1000, 1000); // Schedule to run every second
     }
 
     public int Check_Amount_Dead(){
