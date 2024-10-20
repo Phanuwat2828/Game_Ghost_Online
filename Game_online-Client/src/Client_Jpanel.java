@@ -392,23 +392,26 @@ public class Client_Jpanel extends JPanel {
             g.drawString("you are team work", 700, 570);
  
         }else{
+            if (countnext > 0) { 
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
-                     @Override
+                    @Override
                     public void run() {
                         if (countnext <= 0) {
                             timer.cancel();
+                        } else {
+                            countnext--; 
                         }
-                        countnext --;
                     }
-                }, 1000,1000);
+                }, 1000, 1000); 
+            }
                 g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
                 g.setColor(Color.YELLOW); 
                 g.drawString("WAVE  "+Wave, 600, 400); 
                 g.drawString("CLEAR", 630, 500);
                 Font add = new Font("Tahoma",Font.BOLD,20);
                 g.setFont(add);
-                g.drawString("next wave in " +countnext, 700, 570);
+                g.drawString("next wave in "+countnext, 700, 570);
 
         }
     }
