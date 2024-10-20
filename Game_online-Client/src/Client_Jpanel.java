@@ -30,6 +30,7 @@ public class Client_Jpanel extends JPanel {
     Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
     Image bullet =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Ammo_2.png");
     Image TextGameOver =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "GameOver.gif");
+    Image CountDown =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "1-5.gif");
     Image wink =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Wink2.gif");
     Image Border2 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border2.PNG");
     Image Border3 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border3.PNG");
@@ -53,6 +54,7 @@ public class Client_Jpanel extends JPanel {
     boolean retry_Game=false;
     boolean Click_next_wave = false;
     int countnext = 10;
+    boolean countdown = false;
 
     MediaTracker tracker = new MediaTracker(this);
 
@@ -88,7 +90,7 @@ public class Client_Jpanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e){
                 if( GameWin){
-                    Check_Click_NextWave(e.getX(),e.getY());
+                    // Check_Click_NextWave(e.getX(),e.getY());
                 }else if(GameOver){
                 }else{
                     //เพิ่มเสียงตอนยิงเฉยๆ
@@ -427,24 +429,25 @@ public class Client_Jpanel extends JPanel {
         // Font for the countdown
         Font add = new Font("Tahoma", Font.BOLD, 20);
         g.setFont(add);
-    
-        if (countnext > 0) {
-            g.drawString("next wave in " + countnext, 700, 570);
-        }
-    
-        // Start the countdown timer
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (countnext > 0) {
-                    countnext--; 
-                    repaint(); // Call repaint to update the countdown display
-                } else {
-                    timer.cancel(); // Stop the timer when countnext reaches 0
+        countdown = true;
+        paintCountDown(g);
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                 @Override
+                public void run() {
+                    countdown = false;
+                    paintCountDown(g);
+                    Click_next_wave = true;
                 }
-            }
-        }, 1000, 1000); // Schedule to run every second
+            }, 5000);
+            
+    }
+    public void paintCountDown(Graphics g){
+        if(countdown){
+            g.drawImage(CountDown, 670, 540, 150, 100, this);
+        }else{
+
+        }
     }
 
     public int Check_Amount_Dead(){
@@ -481,13 +484,13 @@ public class Client_Jpanel extends JPanel {
         return Status_Zombie[i];
     }
 
-    public void Check_Click_NextWave(int MouseAxisX, int MouseAxisY){
-        if(MouseAxisX >= 590 && MouseAxisX <= 590 + 890 && 
-                MouseAxisY >= 450 && MouseAxisY <= 450 + 670&&Wave !=5){
-            Click_next_wave = true;
-            System.out.println("next");
-        }
-    }
+    // public void Check_Click_NextWave(int MouseAxisX, int MouseAxisY){
+    //     if(MouseAxisX >= 590 && MouseAxisX <= 590 + 890 && 
+    //             MouseAxisY >= 450 && MouseAxisY <= 450 + 670&&Wave !=5){
+    //         Click_next_wave = true;
+    //         System.out.println("next");
+    //     }
+    // }
 
     public void setAmount_Zombie(int amount) {
         this.Amount_ghost = amount;
