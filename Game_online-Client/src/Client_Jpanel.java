@@ -30,7 +30,7 @@ public class Client_Jpanel extends JPanel {
     Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
     Image bullet =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Ammo_2.png");
     Image TextGameOver =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "GameOver.gif");
-    Image CountDown =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "1-5.gif");
+    Image CountDown =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "countdown.gif");
     Image wink =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Wink2.gif");
     Image Border2 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border2.PNG");
     Image Border3 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border3.PNG");
@@ -47,7 +47,7 @@ public class Client_Jpanel extends JPanel {
     boolean GameOver = false;
     boolean GameWin = false;
     boolean AddBullet = false;
-    int bullets = 20;
+    int bullets = 500;
     int amountBullet;
     int CountDead = 0;
     int Wave;
@@ -384,6 +384,8 @@ public class Client_Jpanel extends JPanel {
 
 
     public void Game_Win(Graphics g) {
+        g.setColor(new Color(0, 0, 0, 10)); 
+             g.fillRect(0, 0, getWidth(), getHeight());
         if(Wave == 5){
                     g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
                     g.setColor(Color.YELLOW); 
@@ -394,8 +396,6 @@ public class Client_Jpanel extends JPanel {
                     g.drawString("you are team work", 650, 570);
          
          }else{
-             g.setColor(new Color(0, 0, 0, 10)); 
-             g.fillRect(0, 0, getWidth(), getHeight());
              g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
              g.setColor(Color.YELLOW); 
              g.drawString("WAVE  " + Wave, 600, 400); 
