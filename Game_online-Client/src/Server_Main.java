@@ -1,0 +1,91 @@
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.*;
+import java.util.Map;
+import java.util.LinkedHashMap;
+
+public class Server_Main {
+    // รายการของ clients ทั้งหมด
+    private static List<PrintWriter> clientWriters = new ArrayList<>();
+
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(3000);
+        System.out.println("Server is listening on port 12345...");
+        Data_ip data = new Data_ip();
+        while (true) {
+            // รับการเชื่อมต่อใหม่จาก client
+            Socket clientSocket = serverSocket.accept();
+            // เพิ่ม PrintWriter ของ client ที่เชื่อมต่อเพื่อส่งข้อมูลกลับ
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            clientWriters.add(out);
+
+            // เริ่ม thread ใหม่เพื่อรับข้อมูลจาก client แต่ละคน
+            broadcastToClients(data, clientSocket);
+            new Thread(() -> handleClient(clientSocket, data, clientSocket)).start();
+        }
+    }
+
+    // ฟังก์ชันจัดการข้อมูลที่ได้รับจาก client
+    private static void handleClient(Socket clientSocket, Data_ip data, Socket socket) {
+
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String inputData;
+
+            // รับข้อมูลจาก client
+            while ((inputData = in.readLine()) != null) {
+                String[] name_ip = new String[3];
+                name_ip = inputData.split(",");
+                if (name_ip[0].equals("remove")) {
+                    data.remove(name_ip[1]);
+                } else {
+                    data.setSend(name_ip);
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ฟังก์ชันส่งข้อมูลให้ทุก client
+    private static void broadcastToClients(Data_ip data, Socket socket) {
+        for (PrintWriter writer : clientWriters) {
+
+            try {
+                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+                ObjectOutputStream out = new ObjectOutputStream(bos);
+                out.writeObject(data.getIp());
+                out.flush();
+
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
+}
+
+class Data_ip {
+    private Map<String, String> ip = new LinkedHashMap<>();
+
+    public void setSend(String[] msg) {
+
+        setMap(msg);
+        System.out.println(msg[0] + ":" + msg[1] + ":" + msg[2]);
+    }
+
+    public void setMap(String[] value) {
+        this.ip.put(value[1], value[2]);
+    }
+
+    public void remove(String value) {
+        this.ip.remove(value);
+    }
+
+    public Map<String, String> getIp() {
+        return ip;
+    }
+}
