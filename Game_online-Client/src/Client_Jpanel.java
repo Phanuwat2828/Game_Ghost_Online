@@ -35,7 +35,7 @@ public class Client_Jpanel extends JPanel {
     Image Border2 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border2.PNG");
     Image Border3 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border3.PNG");
     Image frame1 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame1.PNG");
-    Image Boss_Zombie = Toolkit.getDefaultToolkit().createImage()+ File.file(path_gif + File.separator + "Boss_Zombie.gif");
+    Image Boss_Zombie = Toolkit.getDefaultToolkit().createImage( File.separator +path_gif + File.separator + "Boss_Zombie.gif");
 
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "sound";
     File audioFile_shoot = new File(pathSound + File.separator + "pistol-shot-233473.wav");
