@@ -374,7 +374,7 @@ public class Client_Jpanel extends JPanel {
         g.drawImage(image_gif, 900, 300, 150, 200, this);
         g.drawImage(frame1, 590, 450, 300, 220, this);
         g.setColor(Color.WHITE);
-        g.drawString("try agin", 700, 570);
+        g.drawString("exit", 710, 570);
 
 
 
