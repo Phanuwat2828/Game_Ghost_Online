@@ -8,8 +8,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.io.*;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Server02 {
     private static final int MONSTER_COUNT = 30; // จำนวนมอนสเตอร์
@@ -83,8 +81,6 @@ class ClientHandler implements Runnable {
 // ส่วนของ Create_Data และ Data จะยังคงเหมือนเดิม
 class Create_Data {
     private Data data;
-    private int click_X = 0;
-    private int click_Y = 0;
 
     Create_Data(Data data) {
         this.data = data;
@@ -149,23 +145,6 @@ class Data {
             monsterData.put("monster" + (i + 1), data_monster);
         }
     }
-
-    // public void Zombie_Mange(int MouseAxisX, int MouseAxisY) {
-    // for (int i = 0; i < 30; i++) {
-    // if (Status_Zombie[i]) {
-    // if (MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 &&
-    // MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100) {
-    // if (bullets > 0) {
-    // Dropped_item[i] = true;
-    // Damage[i] = 20;
-    // Health[i] -= Damage[i];
-    // Percent_HP[i] = (Health[i] * 100) / Max_HP[i];
-    // repaint();
-    // }
-    // }
-    // }
-    // }
-    // }
 
     public void Zombie_Mange(int Mousex, int Mousey) {
         for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {

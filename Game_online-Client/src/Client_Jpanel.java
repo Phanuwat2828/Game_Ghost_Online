@@ -54,6 +54,7 @@ public class Client_Jpanel extends JPanel {
     ZombieThread[] zombieThreads = new ZombieThread[30];
     Random rand = new Random();
     int Count_Wave = 30;
+    boolean ready = false;
 
     // Var
     int[] axisX = new int[Count_Wave];
@@ -97,8 +98,10 @@ public class Client_Jpanel extends JPanel {
     public Client_Jpanel() {
         setSize(1920, 1080);
         img_zombie_walk();
-        recive_data th = new recive_data(this);
-        th.start();
+        if (ready) {
+            recive_data th = new recive_data(this);
+            th.start();
+        }
         try {
             socket = new Socket(SERVER_IP, SERVER_PORT1);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -312,12 +315,12 @@ public class Client_Jpanel extends JPanel {
                 int id = entry.getKey();
                 Point p = entry.getValue();
                 if (id == clientId) {
-                    g.setColor(Color.BLUE); // สีสำหรับเมาส์ของตัวเอง
+                    g.setColor(Color.WHITE); // สีสำหรับเมาส์ของตัวเอง
                 } else {
-                    g.setColor(Color.RED); // สีสำหรับเมาส์ของ Client อื่น
+                    g.setColor(Color.GREEN); // สีสำหรับเมาส์ของ Client อื่น
                 }
                 g.fillOval(p.x - 5, p.y - 5, 10, 10);
-                g.drawString("Client #" + id, p.x + 5, p.y - 5);
+                g.drawString("Player : " + id, p.x + 5, p.y - 5);
             }
         }
         for (int i = 0; i < 30; i++) {
@@ -327,7 +330,7 @@ public class Client_Jpanel extends JPanel {
                 if (Status_Zombie[i]) {
                     Font font = new Font("Arial", Font.BOLD, 16);
                     // g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
-                    g.setColor(Color.GREEN);
+                    g.setColor(Color.RED);
                     g.setFont(font);
                     g.drawString("Drop item : " + Chance_Drop[i], axisX[i], axisY[i] - 10);
                     g.drawRect(axisX[i], axisY[i], 100, 100);
