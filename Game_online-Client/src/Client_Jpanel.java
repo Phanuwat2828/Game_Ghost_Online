@@ -40,30 +40,45 @@ public class Client_Jpanel extends JPanel {
     File audioFile_shoot = new File(pathSound + File.separator + "pistol-shot-233473.wav");
     File audioFile_Items = new File(pathSound + File.separator + "item-pick-up-38258.wav");
     
-    ZombieThread[] zombieThreads = new ZombieThread[30];
+    
     Random rand = new Random();
-    int[] axisX = new int[30];
-    int[] axisY = new int[30];
-    int[] speedX = new int[30];
-    boolean[] Status_Zombie = new boolean[30];
-    Image[] zombie_action_walk = new Image[10];
-    int[] Health = new int[30];
-    int[] Max_HP = new int[30];
-    int[] Percent_HP = new int[30];
-    int[] Damage = new int[30];
     Timer timer;
-    boolean[] Chance_Drop = new boolean[30];
-    boolean[] Chance_Drop_rare = new boolean[30];
-    boolean[] Dropped_item = new boolean[30];
     boolean GameOver = false;
     boolean GameWin = false;
     boolean AddBullet = false;
     int bullets = 500;
     int amountBullet;
     int CountDead = 0;
+    int Wave;
     boolean retry_Game=false;
+    boolean Click_next_wave = false;
+    int countnext = 10;
+
     MediaTracker tracker = new MediaTracker(this);
-    public Client_Jpanel(){
+
+    int Amount_ghost;
+    int[] axisX, axisY, speedX,Health,Max_HP,Percent_HP,Damage;
+    boolean[] Status_Zombie,Chance_Drop ,Chance_Drop_rare,Dropped_item ;
+    Image[] zombie_action_walk;
+    ZombieThread[] zombieThreads;
+
+    public Client_Jpanel(int Wave,int Amount_ghost, int BigBoss){
+        this.Amount_ghost = Amount_ghost;
+        this.Wave = Wave;
+        axisX = new int[Amount_ghost];
+        axisY = new int[Amount_ghost];
+        speedX = new int[Amount_ghost];
+        zombie_action_walk = new Image[Amount_ghost];
+        Status_Zombie = new boolean[Amount_ghost];
+        Health = new int[Amount_ghost];
+        Max_HP = new int[Amount_ghost];
+        Percent_HP = new int[Amount_ghost];
+        Damage = new int[Amount_ghost];
+        Chance_Drop = new boolean[Amount_ghost];
+        Chance_Drop_rare = new boolean[Amount_ghost];
+        Dropped_item = new boolean[Amount_ghost];
+        zombieThreads = new ZombieThread[Amount_ghost];
+
         setSize(1920, 1080);
         Defualt_Zombie();
         img_zombie_walk();
@@ -71,8 +86,9 @@ public class Client_Jpanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
-                if(GameOver || GameWin){
-                    Check_Click_Retry(e.getX(),e.getY());
+                if( GameWin){
+                    Check_Click_NextWave(e.getX(),e.getY());
+                }else if(GameOver){
                 }else{
                     //เพิ่มเสียงตอนยิงเฉยๆ
                     if(bullets > 0){
@@ -93,6 +109,7 @@ public class Client_Jpanel extends JPanel {
         
     }
 
+
     public void img_zombie_walk() {
         for (int k = 0; k < 10; k++) {
             zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Zombie_walk" + (k + 1) + ".png");
@@ -106,7 +123,7 @@ public class Client_Jpanel extends JPanel {
     }
 
     public void Defualt_Zombie(){
-        for(int i = 0; i < 30; i++){
+        for(int i = 0; i < Amount_ghost; i++){
             axisX[i] = rand.nextInt(20, 419);
             axisY[i] = rand.nextInt(250, 650); 
             speedX[i] = rand.nextInt(1, 5);
@@ -120,7 +137,7 @@ public class Client_Jpanel extends JPanel {
     }
 
     public void startZombieThreads() {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < Amount_ghost; i++) {
             zombieThreads[i] = new ZombieThread(i, this);
             zombieThreads[i].start();
         }
@@ -128,7 +145,7 @@ public class Client_Jpanel extends JPanel {
     
 
     public void stopAllZombies() {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < Amount_ghost; i++) {
             if (zombieThreads[i] != null) {
                 zombieThreads[i].stopZombie(); 
                 try {
@@ -154,8 +171,8 @@ public class Client_Jpanel extends JPanel {
     }
     
     public void moveZombies() {
-        for (int i = 0; i < 30; i++) {
-            if(axisX[i]> getWidth()-230){
+        for (int i = 0; i <Amount_ghost; i++) {
+            if(axisX[i]> 1920-600){
                 GameOver = true;
                 repaint();
             }else if(GameOver){
@@ -168,7 +185,7 @@ public class Client_Jpanel extends JPanel {
     }
     
     public void Zombie_Mange(int MouseAxisX, int MouseAxisY){
-        for(int i = 0; i < 30; i++){
+        for(int i = 0; i < Amount_ghost; i++){
             if(Status_Zombie[i]){
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100){
@@ -184,7 +201,7 @@ public class Client_Jpanel extends JPanel {
         }
     }
     public void getItem(int MouseAxisX, int MouseAxisY){
-        for(int i=0; i<30; i++){
+        for(int i=0; i<Amount_ghost; i++){
             if(!Status_Zombie[i] && Dropped_item[i]){
                 if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 70 && 
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 70){
@@ -208,7 +225,7 @@ public class Client_Jpanel extends JPanel {
         super.paintComponent(g);
         g.drawImage(image_bg, 0, 0, 1555, 855, this);
         BulletBar(g);
-        for(int i = 0; i < 30; i++){
+        for(int i = 0; i < Amount_ghost; i++){
             if(GameOver){
                 Game_Over(g);
             }else if(GameWin){
@@ -236,10 +253,10 @@ public class Client_Jpanel extends JPanel {
         
             g.setFont(new Font("Tahoma", Font.BOLD, 25));
             g.setColor(Color.WHITE);
-            g.drawString("Zombie Dead : " + Check_Amount_Dead()+" / 30", 50, 30);
+            g.drawString("Zombie Dead : " + Check_Amount_Dead()+" / "+Amount_ghost, 50, 30);
 
         }
-            if (Check_Amount_Dead() == 30) {
+            if (Check_Amount_Dead() == Amount_ghost) {
                 GameWin = true;
             }
     }
@@ -357,7 +374,6 @@ public class Client_Jpanel extends JPanel {
         g.drawString("try agin", 700, 570);
 
 
-        //g.add(retry);
 
         stopAllZombies();
         repaint();
@@ -366,16 +382,40 @@ public class Client_Jpanel extends JPanel {
     public void Game_Win(Graphics g){
         g.setColor(new Color(0, 0, 0, 10)); 
         g.fillRect(0, 0, getWidth(), getHeight());
-        g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
-        g.setColor(Color.YELLOW); 
-        g.drawString("WAVE  1  ", 600, 400); 
-        g.drawString("CLEAR", 630, 500); 
-        repaint();
+        if(Wave == 5){
+            g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+            g.setColor(Color.YELLOW); 
+            g.drawString("you  "+Wave, 600, 400); 
+            g.drawString("win", 630, 500);
+            Font add = new Font("Tahoma",Font.BOLD,20);
+            g.setFont(add);
+            g.drawString("you are team work", 700, 570);
+ 
+        }else{
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                     @Override
+                    public void run() {
+                        if (countnext <= 0) {
+                            timer.cancel();
+                        }
+                        countnext --;
+                    }
+                }, 1000,1000);
+                g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
+                g.setColor(Color.YELLOW); 
+                g.drawString("WAVE  "+Wave, 600, 400); 
+                g.drawString("CLEAR", 630, 500);
+                Font add = new Font("Tahoma",Font.BOLD,20);
+                g.setFont(add);
+                g.drawString("next wave in " +countnext, 700, 570);
+
+        }
     }
 
     public int Check_Amount_Dead(){
         int count=0;
-        for(int i = 0; i <30;i++){
+        for(int i = 0; i <Amount_ghost;i++){
             if(Status_Zombie[i] == false){
                 count++;
             }
@@ -407,13 +447,29 @@ public class Client_Jpanel extends JPanel {
         return Status_Zombie[i];
     }
 
-    public void Check_Click_Retry(int MouseAxisX, int MouseAxisY){
+    public void Check_Click_NextWave(int MouseAxisX, int MouseAxisY){
         if(MouseAxisX >= 590 && MouseAxisX <= 590 + 890 && 
-                MouseAxisY >= 450 && MouseAxisY <= 450 + 670){
-            retry_Game = true;
+                MouseAxisY >= 450 && MouseAxisY <= 450 + 670&&Wave !=5){
+            Click_next_wave = true;
+            System.out.println("next");
         }
     }
-    public boolean check_retry() {
-        return retry_Game;
+
+    public void setAmount_Zombie(int amount) {
+        this.Amount_ghost = amount;
+    }
+    public int check_wave(){
+        return this.Wave;
+    }
+    public boolean check_win(){
+        return Click_next_wave;
+    }
+
+    public void setWin(){
+        GameWin = false;
+    }
+    
+    public void setRetry(){
+
     }
 }   
