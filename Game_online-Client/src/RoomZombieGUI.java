@@ -176,7 +176,7 @@ public class RoomZombieGUI extends JPanel {
                 CardLayout cl = (CardLayout) (cardLayout.getLayout());
                 cl.show(cardLayout, "in_game"); // สลับไปยัง Room
 
-                socket = new Socket("localhost", 3000);
+                socket = new Socket("26.245.160.254", 3000);
                 out = new PrintWriter(socket.getOutputStream(), true);
                 out.println("set," + roomName + "," + localIP);
                 System.out.println(roomName + localIP);
