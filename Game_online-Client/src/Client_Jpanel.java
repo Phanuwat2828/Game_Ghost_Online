@@ -59,8 +59,8 @@ public class Client_Jpanel extends JPanel {
     MediaTracker tracker = new MediaTracker(this);
 
     int Amount_ghost,Amount_boss;
-    int[] axisX, axisY, bossX, bossY,speedX,Health,Max_HP,Percent_HP,Damage;
-    boolean[] Status_Zombie,Status_Boss,Chance_Drop ,Chance_Drop_rare,Dropped_item ;
+    int[] axisX, axisY, bossX, bossY,speedX,Health,Max_HP,Percent_HP,Damage,SpeedBoss,Max_HP_boss,Health_boss,Percent_HP_boss;
+    boolean[] Status_Zombie,Status_Boss,Chance_Drop ,Chance_Drop_rare,Dropped_item;
     Image[] zombie_action_walk,boss_action_walk;
     ZombieThread[] zombieThreads;
 
@@ -86,6 +86,10 @@ public class Client_Jpanel extends JPanel {
         zombieThreads = new ZombieThread[Amount_ghost];
         boss_action_walk = new Image[Amount_boss];
         Status_Boss = new boolean[Amount_boss];
+        SpeedBoss = new int[Amount_boss];
+        Max_HP_boss = new int[Amount_boss];
+        Health_boss = new int[Amount_boss];
+        Percent_HP_boss = new int[Amount_boss];
 
         setSize(1920, 1080);
         Defualt_Zombie();
@@ -123,10 +127,7 @@ public class Client_Jpanel extends JPanel {
             zombie_action_walk[k] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Zombie_walk" + (k + 1) + ".png");
             tracker.addImage(zombie_action_walk[k], k); 
         }
-        for (int i = 0; i < 6; i++) {
-            boss_action_walk[i] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "boss" + (i + 1) + ".png");
-            tracker.addImage(boss_action_walk[i], i); 
-        }
+        
         try {
             tracker.waitForAll();
         } catch (InterruptedException e) {
@@ -153,12 +154,13 @@ public class Client_Jpanel extends JPanel {
     public void Boss_Zombie(){
         for (int k = 0; k < Amount_boss; k++){
             bossX[k] = rand.nextInt(20, 419);
-            bossY[k] =rand.nextInt(250, 650); 
-            speedX[k] = rand.nextInt(1);
+            bossY[k] = rand.nextInt(250, 650); 
+            SpeedBoss[k] = rand.nextInt(1);
             Status_Boss[k] = true;
-            Max_HP[k] = 3000;
-            Health[k] = Max_HP[k];
-            Percent_HP[k] = 3000;
+            Max_HP_boss[k] = 3000;
+            Health_boss[k] = Max_HP_boss[k];
+            Percent_HP_boss[k] = 3000;
+
         }
     }
 
@@ -179,11 +181,23 @@ public class Client_Jpanel extends JPanel {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                
+            
             }
         }
     }
-    
+    public void moveBoss() {
+    for (int i = 0; i < Amount_boss; i++) {
+        if (Status_Boss[i]) { 
+            if (bossX[i] > 1920 - 600) { 
+                GameOver = true;
+                repaint();
+            } else {
+                bossX[i] += SpeedBoss[i]; 
+            }
+        }
+    }
+}
+
 
     public void Zombie_Movement() {
         timer = new Timer();
@@ -191,6 +205,7 @@ public class Client_Jpanel extends JPanel {
             @Override
             public void run() {
                 moveZombies();
+                moveBoss();
                 repaint();
             }
         }, 0, 50); 
@@ -205,7 +220,7 @@ public class Client_Jpanel extends JPanel {
             }
             else if(Status_Zombie[i]){
                 axisX[i] += speedX[i];   
-            }else if
+            }
 
         }
     }
