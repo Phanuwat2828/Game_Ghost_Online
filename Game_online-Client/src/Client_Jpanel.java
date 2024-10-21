@@ -63,6 +63,7 @@ public class Client_Jpanel extends JPanel {
     boolean[] Status_Zombie,Status_Boss,Chance_Drop ,Chance_Drop_rare,Dropped_item;
     Image[] zombie_action_walk,boss_action_walk;
     ZombieThread[] zombieThreads;
+    boolean BossDead = true;
 
     public Client_Jpanel(int Wave,int Amount_ghost, int Amount_boss){
         
@@ -337,25 +338,27 @@ protected void paintComponent(Graphics g) {
     }
 
     int deadZombies = Check_Amount_Dead(Amount_ghost, Status_Zombie);
+    int deadBoss = Check_Amount_Dead(Amount_boss, Status_Boss);
     g.setFont(new Font("Tahoma", Font.BOLD, 25));
     g.setColor(Color.WHITE);
     g.drawString("Zombie Dead: " + deadZombies + " / " + Amount_ghost, 50, 30);
 
     if (deadZombies == Amount_ghost) {
-        boolean BossDead = true;
         if (Amount_boss > 0) {
             for (int j = 0; j < Amount_boss; j++) {
                 PaintBoss(g, j);
                 if(Status_Boss[j]){
                     BossDead = false;
                 }
-                if(BossDead){
+                if(deadBoss == Amount_boss){
                     GameWin = true;
                 }
             }
         } else {
             GameWin = true;
         }
+        g.setColor(Color.WHITE);
+        g.drawString("Boss Dead: " + deadBoss + " / " + Amount_boss, 350,30);
     }
     
 }
