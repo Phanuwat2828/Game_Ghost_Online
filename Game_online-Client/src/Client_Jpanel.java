@@ -170,8 +170,6 @@ public class Client_Jpanel extends JPanel {
         for (int k = 0; k < Amount_boss; k++){
             bossX[k] = rand.nextInt(0,250);
             bossY[k] = rand.nextInt(160, 560);
-            bossX[k] = 100;
-            bossY[k] = 100 ;
             SpeedBoss[k] = 2;
             Status_Boss[k] = true;
             Max_HP_boss[k] = 3000;
@@ -344,23 +342,18 @@ protected void paintComponent(Graphics g) {
     g.drawString("Zombie Dead: " + deadZombies + " / " + Amount_ghost, 50, 30);
 
     if (deadZombies == Amount_ghost) {
-        boolean allBossesDead = true; 
-    
-        // ตรวจสอบว่า มีบอสในเกมหรือไม่
+        boolean BossDead = true;
         if (Amount_boss > 0) {
             for (int j = 0; j < Amount_boss; j++) {
                 PaintBoss(g, j);
-                if (Status_Boss[j]) {
-                    allBossesDead = false; 
+                if(Status_Boss[j]){
+                    BossDead = false;
+                }
+                if(BossDead){
+                    GameWin = true;
                 }
             }
-    
-            // ถ้าบอสทุกตัวตาย
-            if (allBossesDead) {
-                GameWin = true;
-            }
         } else {
-            // ถ้าไม่มีบอสในเกม
             GameWin = true;
         }
     }
