@@ -45,11 +45,11 @@ public class Client_Bg extends JFrame{
             WaveNow ++;
         }
         if(WaveNow ==1){
-            wave[WaveNow] = new Client_Jpanel(1, 15, 1);
+            wave[WaveNow] = new Client_Jpanel(1, 15, 2);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==2){
-            wave[WaveNow] = new Client_Jpanel(2, 20, 0);
+            wave[WaveNow] = new Client_Jpanel(2, 20, 3);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==3){

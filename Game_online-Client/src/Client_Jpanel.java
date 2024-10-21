@@ -168,9 +168,11 @@ public class Client_Jpanel extends JPanel {
     
     public void Defualt_Boss_Zombie(){
         for (int k = 0; k < Amount_boss; k++){
-            bossX[k] = rand.nextInt(20, 415);
-            bossY[k] = rand.nextInt(260, 660); 
-            SpeedBoss[k] = 1;
+            bossX[k] = rand.nextInt(0,250);
+            bossY[k] = rand.nextInt(160, 560);
+            bossX[k] = 100;
+            bossY[k] = 100 ;
+            SpeedBoss[k] = 2;
             Status_Boss[k] = true;
             Max_HP_boss[k] = 3000;
             Health_boss[k] = Max_HP_boss[k];
@@ -203,10 +205,19 @@ public class Client_Jpanel extends JPanel {
     public void moveBoss() {
         for (int i = 0; i < Amount_boss; i++) {
             if (Status_Boss[i]) {
-                bossX[i] += SpeedBoss[i]; // อัพเดทตำแหน่ง X ของบอส
-            }
+                if (bossX[i] > 1920 - 800) {
+                    GameOver = true; 
+                    repaint(); 
+                    return;
+                }else if(GameOver){
+
+                }else if(Status_Boss[i]){
+                    bossX[i] += SpeedBoss[i];
+                }
+            }   
         }
     }
+    
     public void Boss_Movement() {
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -232,7 +243,6 @@ public class Client_Jpanel extends JPanel {
                         repaint();
                         if (Health_boss[i] <= 0) {
                             Status_Boss[i] = false;
-                            GameWin = true;
                         }
                     }
                 }
@@ -520,8 +530,8 @@ protected void paintComponent(Graphics g) {
 
 
     public void Game_Win(Graphics g) {
-        g.setColor(new Color(0, 0, 0, 10)); 
-             g.fillRect(0, 0, getWidth(), getHeight());
+        g.setColor(new Color(0, 0, 0, 15)); 
+        g.fillRect(0, 0, getWidth(), getHeight());
         if(Wave == 5){
                     g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
                     g.setColor(Color.YELLOW); 
