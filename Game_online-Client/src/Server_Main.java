@@ -38,7 +38,7 @@ public class Server_Main {
             while ((inputData = in.readLine()) != null) {
                 String[] name_ip = new String[3];
                 name_ip = inputData.split(",");
-                if (name_ip[0].equals("remove")) {
+                if (name_ip[0].equals("Remove")) {
                     data.remove(name_ip[1]);
                 } else {
                     data.setSend(name_ip);

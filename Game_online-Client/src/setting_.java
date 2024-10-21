@@ -1,6 +1,7 @@
 public class setting_ {
     private boolean creator = false;
     private String ip;
+    private String name;
 
     public String getIp() {
         return ip;
@@ -16,5 +17,13 @@ public class setting_ {
 
     public boolean getCreator() {
         return creator;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }

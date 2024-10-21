@@ -1,15 +1,45 @@
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.CardLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class App extends JFrame {
+    private Socket socket;
+    private PrintWriter out;
+
     App() {
+        setting_ setting = new setting_();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int result = JOptionPane.showConfirmDialog(null,
+                        "Are you sure you want to Exit Game ?", "Close Confirmation",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (result == JOptionPane.YES_OPTION) {
+                    if (setting.getCreator()) {
+
+                        try {
+                            socket = new Socket("localhost", 3000);
+                            out = new PrintWriter(socket.getOutputStream(), true);
+                            out.println("Remove," + setting.getName() + "," + setting.getIp());
+                        } catch (Exception ex) {
+                            // TODO: handle exception
+                        }
+                    }
+                    dispose();
+                }
+            }
+        });
         setTitle("My Window");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(1920, 1080);
         setLocationRelativeTo(null);
-        setting_ setting = new setting_();
 
         JPanel cardPanel = new JPanel(new CardLayout());
         first_page firstPage = new first_page(cardPanel);

@@ -3,14 +3,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.io.ObjectInputStream;
 
 public class RoomZombieGUI extends JPanel {
@@ -172,6 +169,7 @@ public class RoomZombieGUI extends JPanel {
                 Server_01 server_01 = new Server_01();
                 server_01.start();
                 setting.setIp(localIP);
+                setting.setName(roomName);
                 setting.setCreator(true);
                 Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
                 cardLayout.add(in_game, "in_game");
@@ -217,6 +215,7 @@ public class RoomZombieGUI extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     setting.setIp(ip);
+                    setting.setName(name);
                     Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
                     cardLayout.add(in_game, "in_game");
                     CardLayout cl = (CardLayout) (cardLayout.getLayout());
