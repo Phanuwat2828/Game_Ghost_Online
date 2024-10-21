@@ -84,7 +84,7 @@ public class Client_Jpanel extends JPanel {
         Chance_Drop_rare = new boolean[Amount_ghost];
         Dropped_item = new boolean[Amount_ghost];
         zombieThreads = new ZombieThread[Amount_ghost];
-        boss_action_walk = new Image[Amount_boss];
+        boss_action_walk = new Image[6];
         Status_Boss = new boolean[Amount_boss];
         SpeedBoss = new int[Amount_boss];
         Max_HP_boss = new int[Amount_boss];
@@ -93,11 +93,14 @@ public class Client_Jpanel extends JPanel {
 
         setSize(1920, 1080);
         Defualt_Zombie();
+        Defualt_Boss_Zombie();
         img_zombie_walk();
+        img_boss_walk();
         Zombie_Movement();
+        Boss_Movement();
         addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e){
+            public void mouseClicked(MouseEvent e){ 
                 if( GameWin){
                     // Check_Click_NextWave(e.getX(),e.getY());
                 }else if(GameOver){
@@ -111,7 +114,7 @@ public class Client_Jpanel extends JPanel {
     
                     //จัดการเรื่องคลิก zombie
                     Zombie_Mange(e.getX(),e.getY());
-                    
+                    Boss_Mange(e.getX(), e.getY());
                     //จัดการเรื่องการดรอป ไอเท็มและ คลิกเก็บไอเท็ม
                     getItem(e.getX(),e.getY());
                 }
@@ -135,6 +138,18 @@ public class Client_Jpanel extends JPanel {
         }
     }
 
+    public void img_boss_walk() {
+        for (int i = 0; i < 6; i++) {
+            boss_action_walk[i] = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "boss" + (i + 1) + ".png");
+            tracker.addImage(boss_action_walk[i], i); 
+        }
+        try {
+            tracker.waitForAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();   
+        }
+    }
+
     public void Defualt_Zombie(){
         for(int i = 0; i < Amount_ghost; i++){
             axisX[i] = rand.nextInt(20, 419);
@@ -151,15 +166,15 @@ public class Client_Jpanel extends JPanel {
         Arrays.sort(axisY);
     }
     
-    public void Boss_Zombie(){
+    public void Defualt_Boss_Zombie(){
         for (int k = 0; k < Amount_boss; k++){
             bossX[k] = rand.nextInt(20, 419);
             bossY[k] = rand.nextInt(250, 650); 
-            SpeedBoss[k] = rand.nextInt(1);
+            SpeedBoss[k] = 1;
             Status_Boss[k] = true;
             Max_HP_boss[k] = 3000;
             Health_boss[k] = Max_HP_boss[k];
-            Percent_HP_boss[k] = 3000;
+            Percent_HP_boss[k] = 100;
 
         }
     }
@@ -186,18 +201,38 @@ public class Client_Jpanel extends JPanel {
         }
     }
     public void moveBoss() {
-    for (int i = 0; i < Amount_boss; i++) {
-        if (Status_Boss[i]) { 
-            if (bossX[i] > 1920 - 600) { 
-                GameOver = true;
-                repaint();
-            } else {
-                bossX[i] += SpeedBoss[i]; 
+        for (int i = 0; i < Amount_boss; i++) {
+            if (Status_Boss[i]) {
+                bossX[i] += SpeedBoss[i]; // อัพเดทตำแหน่ง X ของบอส
             }
         }
     }
-}
-
+    public void Boss_Movement() {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                moveBoss();
+                
+                repaint();
+            }
+        }, 0, 50); 
+    }
+    public void Boss_Mange(int MouseAxisX, int MouseAxisY){
+        for(int i = 0; i < Amount_ghost; i++){
+            if(Status_Boss[i]){
+                if(MouseAxisX >= axisX[i] && MouseAxisX <= axisX[i] + 100 && 
+                MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100){
+                    if(bullets>0){
+                        Damage[i] = 1000;
+                        Health[i] -= Damage[i];
+                        Percent_HP[i] = (Health_boss[i] * 100) / Max_HP_boss[i];
+                        repaint();
+                    }
+                }
+            }
+        }
+    }
 
     public void Zombie_Movement() {
         timer = new Timer();
@@ -205,7 +240,7 @@ public class Client_Jpanel extends JPanel {
             @Override
             public void run() {
                 moveZombies();
-                moveBoss();
+                
                 repaint();
             }
         }, 0, 50); 
@@ -232,7 +267,7 @@ public class Client_Jpanel extends JPanel {
                 MouseAxisY >= axisY[i] && MouseAxisY <= axisY[i] + 100){
                     if(bullets>0){
                         Dropped_item[i] = true;
-                        Damage[i] = 20;
+                        Damage[i] = 100;
                         Health[i] -= Damage[i];
                         Percent_HP[i] = (Health[i] * 100) / Max_HP[i];
                         repaint();
@@ -299,12 +334,13 @@ public class Client_Jpanel extends JPanel {
 
         }
             if (Check_Amount_Dead(Amount_ghost) == Amount_ghost) {
-                if(Amount_boss > 0){
+                if(Wave == 1 && Amount_boss > 0){
+                    //Defualt_Boss_Zombie();
                     for(int j = 0; j < Amount_boss; j++){
                         PaintBoss(g, j);
                     }
-                    if((Check_Amount_Dead(Amount_ghost) == Amount_ghost)){
-                        //GameWin = true;
+                    if((Check_Amount_Dead(Amount_ghost) == Amount_boss)){
+                        GameWin = true;
                     }
                 }else{
                     GameWin = true;
@@ -315,7 +351,19 @@ public class Client_Jpanel extends JPanel {
     public void PaintBoss(Graphics g, int i){
         int frameDelay = 500;
         int frame = (int) ((System.currentTimeMillis() / frameDelay) % 6);
-        g.drawImage(boss_action_walk[frame], bossY[i], bossY[i], 250, 250, this);
+        if(Status_Boss[i]){
+            if(Percent_HP_boss[i] >= 80){
+                g.setColor(Color.GREEN);
+            }else if(Percent_HP_boss[i] >= 60){
+                g.setColor(Color.YELLOW);
+            }else if(Percent_HP_boss[i] >= 40){
+                g.setColor(Color.ORANGE);
+            }else{
+                g.setColor(Color.RED);
+            }
+            g.fillRect(bossX[i], bossY[i] + 120, Percent_HP_boss[i], 5);
+            g.drawImage(boss_action_walk[frame], bossX[i], bossY[i], 250, 250, this);
+        }
     }
 
     public void PaintZombie(Graphics g, int i){
