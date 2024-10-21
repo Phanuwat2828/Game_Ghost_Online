@@ -18,7 +18,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.MediaTracker;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -80,9 +79,9 @@ public class Client_Jpanel extends JPanel {
     int mouseY = 0;
 
     // =========================== to_server
-    private static final String SERVER_IP = "26.245.160.254"; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
-    private static final int SERVER_PORT1 = 3000;
-    private static final int SERVER_PORT2 = 9090;
+    private String SERVER_IP; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
+    private int SERVER_PORT1 = 8000;
+    private int SERVER_PORT2 = 9090;
 
     private Socket socket;
     private BufferedReader in;
@@ -95,9 +94,10 @@ public class Client_Jpanel extends JPanel {
 
     MediaTracker tracker = new MediaTracker(this);
 
-    public Client_Jpanel() {
+    public Client_Jpanel(JPanel cardLayout, setting_ setting) {
         setSize(1920, 1080);
         img_zombie_walk();
+        this.SERVER_IP = setting.getIp();
         if (ready) {
             recive_data th = new recive_data(this);
             th.start();
@@ -106,27 +106,27 @@ public class Client_Jpanel extends JPanel {
             socket = new Socket(SERVER_IP, SERVER_PORT1);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            socket2 = new Socket(SERVER_IP, SERVER_PORT2);
-            out2 = new PrintWriter(socket2.getOutputStream(), true);
+            // socket2 = new Socket(SERVER_IP, SERVER_PORT2);
+            // out2 = new PrintWriter(socket2.getOutputStream(), true);
 
             // เริ่ม Thread สำหรับรับข้อมูลจาก Server
             new Thread(new IncomingReader()).start();
 
             // เพิ่ม Mouse Motion Listener เพื่อจับการเคลื่อนไหวของเมาส์
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (bullets > 0 && getItem(e.getX(), e.getY())) {
-                        Sound(audioFile_shoot);
-                        out2.println(e.getX() + "," + e.getY());
-                    }
+            // addMouseListener(new MouseAdapter() {
+            // @Override
+            // public void mouseClicked(MouseEvent e) {
+            // if (bullets > 0 && getItem(e.getX(), e.getY())) {
+            // Sound(audioFile_shoot);
+            // out2.println(e.getX() + "," + e.getY());
+            // }
 
-                    Bullets_Manage(-1, null);
+            // Bullets_Manage(-1, null);
 
-                    // Zombie_Mange(e.getX(), e.getY());
+            // // Zombie_Mange(e.getX(), e.getY());
 
-                }
-            });
+            // }
+            // });
             addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
@@ -308,7 +308,7 @@ public class Client_Jpanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(image_bg, 0, 0, 1555, 855, this);
+        g.drawImage(image_bg, 0, 0, 1920, 1080, this);
         BulletBar(g);
         synchronized (remoteMousePositions) {
             for (Map.Entry<Integer, Point> entry : remoteMousePositions.entrySet()) {
@@ -516,7 +516,6 @@ class recive_data extends Thread {
 
                 // แสดงข้อมูลมอนสเตอร์แต่ละตัว
                 for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
-                    String name = entry.getKey();
                     Map<String, Object> data = entry.getValue();
                     Boolean chanceDrop = false;
                     Boolean chanceDropRare = false;

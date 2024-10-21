@@ -3,13 +3,15 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.lang.Thread;
 
-public class Server_01 {
-    private static final int PORT = 3000;
+public class Server_01 extends Thread {
+    private static final int PORT = 8000;
     private static Set<ClientHandler> clientHandlers = Collections.synchronizedSet(new HashSet<>());
     private static AtomicInteger clientIdCounter = new AtomicInteger(0);
 
-    public static void main(String[] args) {
+    public void run() {
+
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server เริ่มต้นแล้ว รอการเชื่อมต่อ...");
             while (true) {
@@ -19,7 +21,14 @@ public class Server_01 {
                 ClientHandler handler = new ClientHandler(socket, clientId);
                 clientHandlers.add(handler);
                 new Thread(handler).start();
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -22,10 +22,14 @@ public class RoomZombieGUI extends JPanel {
     private PrintWriter out;
     private Map<String, String> ip_all;
     private Socket socket;
+    private setting_ setting;
+    private JPanel cardLayout;
 
-    public RoomZombieGUI() {
+    public RoomZombieGUI(JPanel cardLayout, setting_ setting) {
         setSize(1920, 1080);
         setLayout(new BorderLayout());
+        this.setting = setting;
+        this.cardLayout = cardLayout;
 
         // rooms = new ArrayList<>();
         localIP = getLocalIP();
@@ -56,12 +60,12 @@ public class RoomZombieGUI extends JPanel {
 
         // เพิ่มชื่อเกมที่ด้านบน
         JLabel titleLabel = new JLabel("Room Zombie");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 75));
         titleLabel.setForeground(Color.WHITE);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        gbc.insets = new Insets(0, 0, 30, 0);
+        gbc.insets = new Insets(0, 0, 50, 0);
         contentPanel.add(titleLabel, gbc);
 
         // สร้างพาเนลสำหรับแสดงรายการห้อง
@@ -89,7 +93,7 @@ public class RoomZombieGUI extends JPanel {
         nameRoomLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(0, 0, 10, 0);
+        gbc.insets = new Insets(0, 0, 10, 170);
         rightPanel.add(nameRoomLabel, gbc);
 
         nameRoomField = new JTextField(20);
@@ -101,24 +105,45 @@ public class RoomZombieGUI extends JPanel {
         // เพิ่มปุ่มสร้างห้อง
         JButton createButton = createStyledButton("Create");
         createButton.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JButton Back_first = createStyledButton("Back Menu");
+        Back_first.setBackground(Color.RED);
+        Back_first.setSize(50, 25);
+        Back_first.setFont(new Font("Arial", Font.BOLD, 16));
+        Back_first.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) (cardLayout.getLayout());
+                cl.show(cardLayout, "First"); // สลับไปยัง Room
+            }
+
+        });
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 sendtoserver();
                 nameRoomField.setText(null);
+
             }
 
         });
         gbc.gridy = 2;
-        gbc.insets = new Insets(0, 0, 20, 0);
+        gbc.insets = new Insets(20, 170, 20, 0);
         rightPanel.add(createButton, gbc);
 
-        // แสดง IP ของผู้ใช้
         yourIPLabel = new JLabel("Your IP : " + localIP);
         yourIPLabel.setForeground(Color.WHITE);
         yourIPLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         gbc.gridy = 3;
+        gbc.insets = new Insets(0, 0, 20, 100);
         rightPanel.add(yourIPLabel, gbc);
+
+        gbc.gridy = 4;
+        gbc.insets = new Insets(0, 0, 20, 0);
+        rightPanel.add(Back_first, gbc);
+
+        // แสดง IP ของผู้ใช้
 
         // เพิ่มพาเนลด้านขวาเข้าไปในพาเนลเนื้อหา
         gbc.gridx = 1;
@@ -138,17 +163,20 @@ public class RoomZombieGUI extends JPanel {
     public void setIp_all(Map<String, String> ip_all) {
         this.ip_all = ip_all;
         updateRoomsList();
-        for (Map.Entry<String, String> value : ip_all.entrySet()) {
-
-            String name = value.getKey();
-            System.err.println(name);
-        }
     }
 
     private void sendtoserver() {
         String roomName = nameRoomField.getText();
         if (!roomName.isEmpty()) {
             try {
+                Server_01 server_01 = new Server_01();
+                server_01.start();
+                setting.setIp(localIP);
+                setting.setCreator(true);
+                Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
+                cardLayout.add(in_game, "in_game");
+                CardLayout cl = (CardLayout) (cardLayout.getLayout());
+                cl.show(cardLayout, "in_game"); // สลับไปยัง Room
 
                 socket = new Socket("localhost", 3000);
                 out = new PrintWriter(socket.getOutputStream(), true);
@@ -184,6 +212,18 @@ public class RoomZombieGUI extends JPanel {
             roomPanel.add(ipLabel, BorderLayout.CENTER);
 
             JButton joinButton = createStyledButton("Join");
+            joinButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setting.setIp(ip);
+                    Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
+                    cardLayout.add(in_game, "in_game");
+                    CardLayout cl = (CardLayout) (cardLayout.getLayout());
+                    cl.show(cardLayout, "in_game"); // สลับไปยัง Room
+                }
+
+            });
             joinButton.setPreferredSize(new Dimension(100, 40));
             joinButton.setFont(new Font("Arial", Font.BOLD, 16));
             roomPanel.add(joinButton, BorderLayout.EAST);
@@ -214,42 +254,6 @@ public class RoomZombieGUI extends JPanel {
         }
     }
 
-    // คลาสภายในสำหรับเก็บข้อมูลของแต่ละห้อง
-    private static class Room {
-        private String name;
-        private String ip;
-
-        public Room(String name, String ip) {
-            this.name = name;
-            this.ip = ip;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getIp() {
-            return ip;
-        }
-    }
-
-    // เมธอดหลักสำหรับเริ่มต้นโปรแกรม
-    public static void main(String[] args) {
-        Frame fr = new Frame();
-        fr.setVisible(true);
-    }
-}
-
-class Frame extends JFrame {
-    Frame() {
-        setTitle("Room Zombie");
-        setSize(1920, 1080);
-        RoomZombieGUI room = new RoomZombieGUI();
-        setLayout(null);
-        add(room);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-    }
 }
 
 class ReceiveIP extends Thread {

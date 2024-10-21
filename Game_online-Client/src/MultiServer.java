@@ -10,12 +10,12 @@ public class MultiServer {
         server01Thread.start();
 
         // สร้างและเริ่มการทำงานของ Server02 ใน thread ใหม่
-        Thread server02Thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Server02.main(null);
-            }
-        });
-        server02Thread.start();
+        // Thread server02Thread = new Thread(new Runnable() {
+        // @Override
+        // public void run() {
+        // Server02.main(null);
+        // }
+        // });
+        // server02Thread.start();
     }
 }

@@ -10,9 +10,9 @@ import javax.swing.JPanel;
 public class Client_Bg extends JFrame {
     public static void main(String[] args) {
         Client_Bg bg = new Client_Bg();
-        Client_Jpanel panel = new Client_Jpanel();
+        // Client_Jpanel panel = new Client_Jpanel();
 
-        bg.add(panel);
+        // bg.add(panel);
         bg.setVisible(true);
     }
 
