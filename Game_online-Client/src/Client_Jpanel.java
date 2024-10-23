@@ -11,13 +11,19 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.MediaTracker;
+import java.awt.Panel;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -25,6 +31,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.event.MouseMotionAdapter;
 
@@ -96,6 +103,56 @@ public class Client_Jpanel extends JPanel {
 
     public Client_Jpanel(JPanel cardLayout, setting_ setting) {
         setSize(1920, 1080);
+        setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 25, 25));
+        panel.setPreferredSize(new Dimension(1920, 100));
+        panel.setOpaque(false);
+        // panel.setBackground(Color.BLUE);
+        JButton bt_s = new JButton("Start");
+
+        JButton bt_e = new JButton("Exit");
+        bt_s.setPreferredSize(new Dimension(100, 50));
+        bt_e.setPreferredSize(new Dimension(100, 50));
+        bt_e.setForeground(Color.WHITE);
+        bt_s.setForeground(Color.WHITE);
+        bt_s.setBackground(Color.green);
+        bt_e.setBackground(Color.RED);
+
+        bt_e.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (setting.getCreator()) {
+                    try {
+                        socket = new Socket("localhost", 3000);
+                        out = new PrintWriter(socket.getOutputStream(), true);
+                        out.println("Remove," + setting.getName() + "," + setting.getIp());
+                    } catch (Exception ex) {
+                        // TODO: handle exception
+                    }
+                }
+                CardLayout cl = (CardLayout) (cardLayout.getLayout());
+                cl.show(cardLayout, "Room"); // สลับไปยัง Room
+
+            }
+
+        });
+        bt_s.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+
+        });
+
+        if (setting.getCreator()) {
+            panel.add(bt_s);
+        }
+        panel.add(bt_e);
+
+        add(panel);
+
         img_zombie_walk();
         this.SERVER_IP = setting.getIp();
         if (ready) {
