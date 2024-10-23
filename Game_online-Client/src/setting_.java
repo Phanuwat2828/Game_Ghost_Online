@@ -2,6 +2,7 @@ public class setting_ {
     private boolean creator = false;
     private String ip;
     private String name;
+    private boolean ready = false;
 
     public String getIp() {
         return ip;
@@ -25,5 +26,13 @@ public class setting_ {
 
     public String getName() {
         return name;
+    }
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
+    public boolean getReady() {
+        return this.ready;
     }
 }

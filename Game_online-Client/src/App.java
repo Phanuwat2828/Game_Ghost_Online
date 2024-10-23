@@ -17,27 +17,21 @@ public class App extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                int result = JOptionPane.showConfirmDialog(null,
-                        "Are you sure you want to Exit Game ?", "Close Confirmation",
-                        JOptionPane.YES_NO_OPTION);
+                if (setting.getCreator()) {
 
-                if (result == JOptionPane.YES_OPTION) {
-                    if (setting.getCreator()) {
-
-                        try {
-                            socket = new Socket("localhost", 3000);
-                            out = new PrintWriter(socket.getOutputStream(), true);
-                            out.println("Remove," + setting.getName() + "," + setting.getIp());
-                        } catch (Exception ex) {
-                            // TODO: handle exception
-                        }
+                    try {
+                        socket = new Socket("localhost", 3000);
+                        out = new PrintWriter(socket.getOutputStream(), true);
+                        out.println("Remove," + setting.getName() + "," + setting.getIp());
+                    } catch (Exception ex) {
+                        // TODO: handle exception
                     }
-                    dispose();
                 }
+                System.exit(0);
             }
         });
         setTitle("My Window");
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
         setSize(1920, 1080);
         setLocationRelativeTo(null);
 

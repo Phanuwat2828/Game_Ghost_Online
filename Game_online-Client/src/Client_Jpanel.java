@@ -20,11 +20,12 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.MediaTracker;
-import java.awt.Panel;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -34,6 +35,7 @@ import javax.sound.sampled.LineEvent;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseAdapter;
 
 public class Client_Jpanel extends JPanel {
     String path_Bg = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src"
@@ -95,6 +97,8 @@ public class Client_Jpanel extends JPanel {
     private PrintWriter out;
     private Socket socket2;
     private PrintWriter out2;
+    private Socket socket3;
+    private PrintWriter out3;
     private Map<Integer, Point> remoteMousePositions = Collections.synchronizedMap(new HashMap<>());
     private int clientId = -1; // ใช้ในการระบุว่าเป็น Client ตัวไหน
     // ===========================
@@ -117,31 +121,94 @@ public class Client_Jpanel extends JPanel {
         bt_s.setForeground(Color.WHITE);
         bt_s.setBackground(Color.green);
         bt_e.setBackground(Color.RED);
-
-        bt_e.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (setting.getCreator()) {
+        try {
+            socket = new Socket(SERVER_IP, SERVER_PORT1);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            addMouseMotionListener(new MouseMotionAdapter() {
+                @Override
+                public void mouseMoved(MouseEvent e) {
                     try {
-                        socket = new Socket("localhost", 3000);
-                        out = new PrintWriter(socket.getOutputStream(), true);
-                        out.println("Remove," + setting.getName() + "," + setting.getIp());
+
+                        mouseX = e.getX();
+                        mouseY = e.getY();
+                        if (clientId != -1) { // ตรวจสอบว่ามี clientId แล้ว
+                            String msg = "MOVE," + e.getX() + "," + e.getY();
+                            out.println(msg);
+                            out.flush();
+                            // ไม่ต้องอัพเดตตำแหน่งเมาส์ของตัวเองที่นี่ เพราะจะได้รับจาก Server
+                        }
                     } catch (Exception ex) {
                         // TODO: handle exception
                     }
+
                 }
-                CardLayout cl = (CardLayout) (cardLayout.getLayout());
-                cl.show(cardLayout, "Room"); // สลับไปยัง Room
+            });
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                try {
+
+                    // System.out.println("test");
+                    if (bullets > 0 && getItem(e.getX(), e.getY())) {
+                        Sound(audioFile_shoot);
+                        if (setting.getReady()) {
+                            socket2 = new Socket(SERVER_IP, SERVER_PORT2);
+                            out2 = new PrintWriter(socket2.getOutputStream(), true);
+                            out2.println(e.getX() + "," + e.getY());
+                        }
+                    }
+
+                    Bullets_Manage(-1, null);
+                    repaint();
+                } catch (Exception ex) {
+                    // TODO: handle exception
+                }
 
             }
-
         });
+
+        try {
+            socket3 = new Socket(SERVER_IP, 3000);
+            out3 = new PrintWriter(socket3.getOutputStream(), true);
+            bt_e.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (setting.getCreator()) {
+                        try {
+                            System.out.println("hello");
+                            out3.println("Remove," + setting.getName() + "," + setting.getIp());
+                            setting.setReady(false);
+                            setting.setCreator(false);
+                        } catch (Exception ex) {
+                            // TODO: handle exception
+                        }
+                    }
+                    CardLayout cl = (CardLayout) (cardLayout.getLayout());
+                    cl.show(cardLayout, "Room"); // สลับไปยัง Room
+
+                }
+
+            });
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
         bt_s.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    setting.setReady(true);
+                    Server02 server02 = new Server02(setting);
+                    server02.start();
 
+                } catch (Exception ex) {
+                    // TODO: handle exception
+                }
             }
 
         });
@@ -155,52 +222,11 @@ public class Client_Jpanel extends JPanel {
 
         img_zombie_walk();
         this.SERVER_IP = setting.getIp();
-        if (ready) {
-            recive_data th = new recive_data(this);
-            th.start();
-        }
-        try {
-            socket = new Socket(SERVER_IP, SERVER_PORT1);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
-            // socket2 = new Socket(SERVER_IP, SERVER_PORT2);
-            // out2 = new PrintWriter(socket2.getOutputStream(), true);
 
-            // เริ่ม Thread สำหรับรับข้อมูลจาก Server
-            new Thread(new IncomingReader()).start();
+        recive_data th = new recive_data(this, setting);
+        th.start();
 
-            // เพิ่ม Mouse Motion Listener เพื่อจับการเคลื่อนไหวของเมาส์
-            // addMouseListener(new MouseAdapter() {
-            // @Override
-            // public void mouseClicked(MouseEvent e) {
-            // if (bullets > 0 && getItem(e.getX(), e.getY())) {
-            // Sound(audioFile_shoot);
-            // out2.println(e.getX() + "," + e.getY());
-            // }
-
-            // Bullets_Manage(-1, null);
-
-            // // Zombie_Mange(e.getX(), e.getY());
-
-            // }
-            // });
-            addMouseMotionListener(new MouseMotionAdapter() {
-                @Override
-                public void mouseMoved(MouseEvent e) {
-                    mouseX = e.getX();
-                    mouseY = e.getY();
-                    if (clientId != -1) { // ตรวจสอบว่ามี clientId แล้ว
-                        String msg = "MOVE," + e.getX() + "," + e.getY();
-                        out.println(msg);
-                        // ไม่ต้องอัพเดตตำแหน่งเมาส์ของตัวเองที่นี่ เพราะจะได้รับจาก Server
-                    }
-                }
-            });
-            System.out.println("เชื่อมต่อกับ Server สำเร็จ");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("ไม่สามารถเชื่อมต่อกับ Server ได้");
-        }
+        new Thread(new IncomingReader()).start();
 
     }
 
@@ -557,63 +583,73 @@ public class Client_Jpanel extends JPanel {
 
 class recive_data extends Thread {
     private Client_Jpanel panel;
+    private setting_ setting;
 
-    recive_data(Client_Jpanel panel) {
+    recive_data(Client_Jpanel panel, setting_ setting) {
         this.panel = panel;
+        this.setting = setting;
     }
 
     public void run() {
         boolean first = true;
         while (true) {
-            try (Socket socket = new Socket("26.245.160.254", 9090);
-                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
-                // รับข้อมูล Map ผ่าน ObjectInputStream
-                Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
-                int index = 0;
+            if (setting.getReady()) {
+                try (Socket socket = new Socket("26.245.160.254", 9090);
+                        ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+                    // รับข้อมูล Map ผ่าน ObjectInputStream
+                    Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
+                    int index = 0;
 
-                // แสดงข้อมูลมอนสเตอร์แต่ละตัว
-                for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
-                    Map<String, Object> data = entry.getValue();
-                    Boolean chanceDrop = false;
-                    Boolean chanceDropRare = false;
-                    Boolean dropped = false;
-                    int[] position = (int[]) data.get("position");
-                    boolean status = (boolean) data.get("status");
-                    int speed = (int) data.get("Speed");
-                    int hp_ = (int) data.get("Hp_");
-                    int hp_percent = (int) data.get("Hp_percent");
-                    int hp_max = (int) data.get("Hp_max");
+                    // แสดงข้อมูลมอนสเตอร์แต่ละตัว
+                    for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
+                        Map<String, Object> data = entry.getValue();
+                        Boolean chanceDrop = false;
+                        Boolean chanceDropRare = false;
+                        Boolean dropped = false;
+                        int[] position = (int[]) data.get("position");
+                        boolean status = (boolean) data.get("status");
+                        int speed = (int) data.get("Speed");
+                        int hp_ = (int) data.get("Hp_");
+                        int hp_percent = (int) data.get("Hp_percent");
+                        int hp_max = (int) data.get("Hp_max");
 
-                    if (first) {
-                        chanceDrop = (Boolean) data.get("Chance_Drop");
-                        chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
-                        dropped = (Boolean) data.get("dropped");
-                        this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max, hp_percent,
-                                chanceDrop, chanceDropRare, dropped);
-                    } else {
-                        this.panel.setAll_data02(index, position[0], position[1], speed, status, hp_, hp_max,
-                                hp_percent);
+                        if (first) {
+                            chanceDrop = (Boolean) data.get("Chance_Drop");
+                            chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
+                            dropped = (Boolean) data.get("dropped");
+                            this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max,
+                                    hp_percent,
+                                    chanceDrop, chanceDropRare, dropped);
+                        } else {
+                            this.panel.setAll_data02(index, position[0], position[1], speed, status, hp_, hp_max,
+                                    hp_percent);
+                        }
+
+                        this.panel.repaint();
+                        index++;
+                        // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
+                        // System.out.println("Status: " + status);
+                        // System.out.println("Speed: " + speed);
+                        // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
+                        // System.out.println("Chance to Drop: " + chanceDrop);
+                        // System.out.println("Chance to Drop Rare: " + chanceDropRare);
+                        // System.out.println("=========================================================");
                     }
+                    first = false;
+                    in.close();
+                    socket.close();
 
-                    this.panel.repaint();
-                    index++;
-                    // System.out.println("=================== " + name +
-                    // "=======================");
-                    // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
-                    // System.out.println("Status: " + status);
-                    // System.out.println("Speed: " + speed);
-                    // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
-                    // System.out.println("Chance to Drop: " + chanceDrop);
-                    // System.out.println("Chance to Drop Rare: " + chanceDropRare);
-                    // System.out.println("=========================================================");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                first = false;
-                in.close();
-                socket.close();
-                Thread.sleep(50); // รอการอัพเดตครั้งต่อไป
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } // รอการอัพเดตครั้งต่อไป
+
         }
     }
 }

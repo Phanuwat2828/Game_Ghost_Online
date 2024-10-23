@@ -166,11 +166,12 @@ public class RoomZombieGUI extends JPanel {
         String roomName = nameRoomField.getText();
         if (!roomName.isEmpty()) {
             try {
-                Server_01 server_01 = new Server_01();
-                server_01.start();
+
                 setting.setIp(localIP);
                 setting.setName(roomName);
                 setting.setCreator(true);
+                Server_01 server_01 = new Server_01(setting);
+                server_01.start();
                 Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
                 cardLayout.add(in_game, "in_game");
                 CardLayout cl = (CardLayout) (cardLayout.getLayout());

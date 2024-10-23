@@ -9,24 +9,34 @@ public class Server_01 extends Thread {
     private static final int PORT = 8000;
     private static Set<ClientHandler> clientHandlers = Collections.synchronizedSet(new HashSet<>());
     private static AtomicInteger clientIdCounter = new AtomicInteger(0);
+    private setting_ setting;
+
+    Server_01(setting_ setting) {
+        this.setting = setting;
+    }
 
     public void run() {
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Server เริ่มต้นแล้ว รอการเชื่อมต่อ...");
             while (true) {
-                Socket socket = serverSocket.accept();
-                int clientId = clientIdCounter.incrementAndGet();
-                System.out.println("Client #" + clientId + " เชื่อมต่อ: " + socket.getInetAddress());
-                ClientHandler handler = new ClientHandler(socket, clientId);
-                clientHandlers.add(handler);
-                new Thread(handler).start();
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (setting.getCreator()) {
+                    Socket socket = serverSocket.accept();
+                    int clientId = clientIdCounter.incrementAndGet();
+                    System.out.println("Client #" + clientId + " เชื่อมต่อ: " + socket.getInetAddress());
+                    ClientHandler handler = new ClientHandler(socket, clientId);
+                    clientHandlers.add(handler);
+                    new Thread(handler).start();
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                } else {
+                    break;
                 }
+
             }
 
         } catch (IOException e) {

@@ -9,28 +9,34 @@ import java.util.TimerTask;
 import java.io.*;
 import java.util.Arrays;
 
-public class Server02 {
+public class Server02 extends Thread {
     private static final int MONSTER_COUNT = 30; // จำนวนมอนสเตอร์
+    private setting_ setting;
 
-    public static void main(String[] args) {
+    Server02(setting_ setting) {
+        this.setting = setting;
+    }
+
+    @Override
+    public void run() {
         try (ServerSocket serverSocket = new ServerSocket(9090)) { // เปิด port 9090 สำหรับ server
             System.out.println("Server is running...");
             Data data = new Data(MONSTER_COUNT);
             Create_Data cr = new Create_Data(data);
             cr.Zombie_Movement();
 
-            while (true) {
+            while (setting.getCreator()) {
                 try {
                     // รอการเชื่อมต่อจาก client
                     Socket socket = serverSocket.accept();
-
-                    // สร้าง Thread ใหม่สำหรับการจัดการ client
                     ClientHandler clientHandler = new ClientHandler(socket, data);
                     new Thread(clientHandler).start(); // เริ่ม Thread ใหม่
+
                 } catch (Exception e) {
                     System.err.println("Error while handling client connection: " + e.getMessage());
                 }
             }
+            cr.zombie_stop(setting);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,19 +87,27 @@ class ClientHandler implements Runnable {
 // ส่วนของ Create_Data และ Data จะยังคงเหมือนเดิม
 class Create_Data {
     private Data data;
+    private Timer timer = new Timer();
 
     Create_Data(Data data) {
         this.data = data;
     }
 
     public void Zombie_Movement() {
-        Timer timer = new Timer();
+
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 moveZombies();
             }
         }, 0, 50);
+
+    }
+
+    public void zombie_stop(setting_ setting) {
+        if (!setting.getCreator()) {
+            timer.cancel();
+        }
     }
 
     public void moveZombies() {
