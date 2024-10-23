@@ -15,7 +15,6 @@ public class Client_Bg extends JFrame{
         bg.setVisible(true);
     } 
     
-    
     Client_Bg(){
         setSize(1920, 1080 );
         setDefaultCloseOperation(EXIT_ON_CLOSE);
