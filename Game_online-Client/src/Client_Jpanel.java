@@ -107,6 +107,7 @@ public class Client_Jpanel extends JPanel {
     MediaTracker tracker = new MediaTracker(this);
 
     public Client_Jpanel(JPanel cardLayout, setting_ setting) {
+        this.SERVER_IP = setting.getIp();
         setSize(1920, 1080);
         setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 25, 25));
@@ -156,14 +157,16 @@ public class Client_Jpanel extends JPanel {
                     // System.out.println("test");
                     if (bullets > 0 && getItem(e.getX(), e.getY())) {
                         Sound(audioFile_shoot);
-                        if (setting.getReady()) {
+                        if (ready_) {
                             socket2 = new Socket(SERVER_IP, SERVER_PORT2);
                             out2 = new PrintWriter(socket2.getOutputStream(), true);
                             out2.println(e.getX() + "," + e.getY());
                         }
                     }
+                    if(ready_){
+                        Bullets_Manage(-1, null);
+                    }
 
-                    Bullets_Manage(-1, null);
                     repaint();
                 } catch (Exception ex) {
                     // TODO: handle exception
@@ -220,7 +223,8 @@ public class Client_Jpanel extends JPanel {
         add(panel);
 
         img_zombie_walk();
-        this.SERVER_IP = setting.getIp();
+      
+        System.out.println(setting.getIp());
 
         recive_data th = new recive_data(this, setting);
         th.start();

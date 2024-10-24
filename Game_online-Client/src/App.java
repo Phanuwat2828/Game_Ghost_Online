@@ -39,7 +39,6 @@ public class App extends JFrame {
         RoomZombieGUI cardRoom = new RoomZombieGUI(cardPanel, setting);
         cardPanel.add(firstPage, "First");
         cardPanel.add(cardRoom, "Room");
-
         add(cardPanel);
 
     }
