@@ -594,7 +594,7 @@ class recive_data extends Thread {
     public void run() {
         boolean first = true;
         while (true) {
-                try (Socket socket = new Socket("localhost", 9090);
+                try (Socket socket = new Socket(setting.getIp(), 9090);
                         ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
                     // รับข้อมูล Map ผ่าน ObjectInputStream
                     Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
