@@ -35,6 +35,8 @@ public class Client_Jpanel extends JPanel {
     Image Border2 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border2.PNG");
     Image Border3 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border3.PNG");
     Image frame1 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame1.PNG");
+    Image frame_blue =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame_blue.PNG");
+    Image frame_red =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame_red.PNG");
     Image Boss_Zombie = Toolkit.getDefaultToolkit().createImage( File.separator +path_gif + File.separator + "Boss_Zombie.gif");
 
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "sound";
@@ -317,6 +319,7 @@ protected void paintComponent(Graphics g) {
     super.paintComponent(g);
     g.drawImage(image_bg, 0, 0, 1555, 855, this);
     BulletBar(g);
+    menu_bar(g);
 
     for (int i = 0; i < Amount_ghost; i++) {
         if (GameOver) {
@@ -509,14 +512,14 @@ protected void paintComponent(Graphics g) {
     }
 
     public void Game_Over(Graphics g){
-        g.setColor(new Color(0, 0, 0, 10)); 
+        g.setColor(new Color(0, 0, 0, 150)); 
         g.fillRect(0, 0, getWidth(), getHeight()); 
         g.drawImage(TextGameOver, 500, 150, 500, 500, this);
         g.drawImage(image_gif, 450, 300, 150, 200, this);
         g.drawImage(image_gif, 900, 300, 150, 200, this);
         g.drawImage(frame1, 590, 450, 300, 220, this);
         g.setColor(Color.WHITE);
-        g.drawString("exit", 710, 570);
+        g.drawString("exit", 725, 570);
 
 
 
@@ -526,26 +529,26 @@ protected void paintComponent(Graphics g) {
 
 
     public void Game_Win(Graphics g) {
-        g.setColor(new Color(0, 0, 0, 15)); 
+        g.setColor(new Color(0, 0, 0,150)); 
         g.fillRect(0, 0, getWidth(), getHeight());
         if(Wave == 5){
-                    g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
-                    g.setColor(Color.YELLOW); 
-                    g.drawString("you  "+Wave, 630, 400); 
-                    g.drawString("win", 630, 500);
-                    Font add = new Font("Tahoma",Font.BOLD,20);
-                    g.setFont(add);
-                    g.drawString("you are team work", 650, 570);
-         
-         }else{
+            g.setFont(new Font("Tahoma", Font.BOLD, 75)); 
+            g.setColor(Color.YELLOW); 
+            g.drawString("YOU WIN !!" , 550, 400); 
+            Font add = new Font("Tahoma",Font.BOLD,20);
+            g.setFont(add);
+            g.drawString("you are team work", 650, 500);
+            
+        }else{
              g.setFont(new Font("Tahoma", Font.BOLD, 70)); 
              g.setColor(Color.YELLOW); 
-             g.drawString("WAVE  " + Wave, 600, 400); 
-             g.drawString("CLEAR", 630, 500);
-         
+             g.drawString("WAVE  " + Wave, 600, 360); 
+             g.drawString("CLEAR", 630, 460);
+             
              // Font for the countdown
              Font add = new Font("Tahoma", Font.BOLD, 20);
              g.setFont(add);
+             g.drawString("next wave in ...  " , 670, 600); 
              countdown = true;
              paintCountDown(g);
                  Timer timer = new Timer();
@@ -561,7 +564,7 @@ protected void paintComponent(Graphics g) {
     }
     public void paintCountDown(Graphics g){
         if(countdown){
-            g.drawImage(CountDown, 670, 540, 150, 100, this);
+            g.drawImage(CountDown, 660, 650, 150, 100, this);
         }else{
 
         }
@@ -601,14 +604,6 @@ protected void paintComponent(Graphics g) {
         return Status_Zombie[i];
     }
 
-    // public void Check_Click_NextWave(int MouseAxisX, int MouseAxisY){
-    //     if(MouseAxisX >= 590 && MouseAxisX <= 590 + 890 && 
-    //             MouseAxisY >= 450 && MouseAxisY <= 450 + 670&&Wave !=5){
-    //         Click_next_wave = true;
-    //         System.out.println("next");
-    //     }
-    // }
-
     public void setAmount_Zombie(int amount) {
         this.Amount_ghost = amount;
     }
@@ -622,4 +617,16 @@ protected void paintComponent(Graphics g) {
     public void setWin(){
         GameWin = false;
     }
+    public void menu_bar(Graphics g){
+        g.drawImage(frame_red, getWidth()-250, -50, 200, 200, this);
+        g.drawImage(frame_blue, getWidth()-270, 10, 233, 233, this);
+
+    }
+    // public void Check_Click_NextWave(int MouseAxisX, int MouseAxisY){
+    //     if(MouseAxisX >= 590 && MouseAxisX <= 590 + 890 && 
+    //             MouseAxisY >= 450 && MouseAxisY <= 450 + 670&&Wave !=5){
+    //         Click_next_wave = true;
+    //         System.out.println("next");
+    //     }
+    // }
 }   

@@ -43,10 +43,11 @@ public class Client_Bg extends JFrame{
             WaveNow ++;
         }
         if(WaveNow ==1){ 
+            wave[WaveNow] = new Client_Jpanel(1, 20, 0);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==2){
-            wave[WaveNow] = new Client_Jpanel(2, 20, 3);
+            wave[WaveNow] = new Client_Jpanel(2, 20, 0);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==3){
@@ -58,7 +59,7 @@ public class Client_Bg extends JFrame{
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==5){
-            wave[WaveNow] = new Client_Jpanel(5, 35, 2);
+            wave[WaveNow] = new Client_Jpanel(5, 35, 3);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }
