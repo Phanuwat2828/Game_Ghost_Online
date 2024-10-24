@@ -81,6 +81,7 @@ public class Client_Jpanel extends JPanel {
     boolean GameOver = false;
     boolean GameWin = false;
     boolean AddBullet = false;
+    boolean ready_ = false;
     int bullets = 20;
     int amountBullet;
     int CountDead = 0;
@@ -121,6 +122,7 @@ public class Client_Jpanel extends JPanel {
         bt_s.setForeground(Color.WHITE);
         bt_s.setBackground(Color.green);
         bt_e.setBackground(Color.RED);
+        
         try {
             socket = new Socket(SERVER_IP, SERVER_PORT1);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -166,7 +168,6 @@ public class Client_Jpanel extends JPanel {
                 } catch (Exception ex) {
                     // TODO: handle exception
                 }
-
             }
         });
 
@@ -203,11 +204,9 @@ public class Client_Jpanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     setting.setReady(true);
-                    Server02 server02 = new Server02(setting);
-                    server02.start();
-
+                   
                 } catch (Exception ex) {
-                    // TODO: handle exception
+                    
                 }
             }
 
@@ -239,7 +238,7 @@ public class Client_Jpanel extends JPanel {
     }
 
     public void setAll_data(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
-            boolean Chance_Drop_, boolean Chance_Drop_rare_, boolean dropped) {
+            boolean Chance_Drop_, boolean Chance_Drop_rare_, boolean dropped,boolean ready) {
         axisX[index] = x;
         axisY[index] = y;
         speedX[index] = speed;
@@ -250,6 +249,7 @@ public class Client_Jpanel extends JPanel {
         Chance_Drop[index] = Chance_Drop_;
         Chance_Drop_rare[index] = Chance_Drop_rare_;
         Dropped_item[index] = dropped;
+        ready_ = ready;
         // System.out.println("=================== " + index +
         // "=======================");
         // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
@@ -261,7 +261,7 @@ public class Client_Jpanel extends JPanel {
         // System.out.println("=========================================================");
     }
 
-    public void setAll_data02(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp) {
+    public void setAll_data02(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,boolean ready) {
         axisX[index] = x;
         axisY[index] = y;
         speedX[index] = speed;
@@ -269,6 +269,7 @@ public class Client_Jpanel extends JPanel {
         Health[index] = hp;
         Max_HP[index] = max_hp;
         Percent_HP[index] = percent_hp;
+        ready_ = ready;
         // System.out.println("=================== " + index +
         // "=======================");
         // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
@@ -410,7 +411,7 @@ public class Client_Jpanel extends JPanel {
             if (!GameOver) {
                 int frameDelay = (speedX[i] > 0) ? 500 / speedX[i] : 500;
                 int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
-                if (Status_Zombie[i]) {
+                if (Status_Zombie[i] && ready_) {
                     Font font = new Font("Arial", Font.BOLD, 16);
                     // g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
                     g.setColor(Color.RED);
@@ -427,7 +428,7 @@ public class Client_Jpanel extends JPanel {
                     Status_Zombie[i] = false;
                     continue;
                 }
-                if (Status_Zombie[i]) {
+                if (Status_Zombie[i] && ready_) {
                     if (Percent_HP[i] >= 80) {
                         g.setColor(Color.GREEN);
                     } else if (Percent_HP[i] >= 60) {
@@ -453,7 +454,7 @@ public class Client_Jpanel extends JPanel {
     }
 
     public void Drop_item(Graphics g, int i) {
-        if (Dropped_item[i]) {
+        if (Dropped_item[i] && ready_) {
             if (Chance_Drop[i]) {
                 g.drawImage(item_Ammo, axisX[i] + 20, axisY[i] + 20, 50, 50, this);
             } else if (Chance_Drop_rare[i] == true) {
@@ -593,8 +594,7 @@ class recive_data extends Thread {
     public void run() {
         boolean first = true;
         while (true) {
-            if (setting.getReady()) {
-                try (Socket socket = new Socket("26.245.160.254", 9090);
+                try (Socket socket = new Socket("localhost", 9090);
                         ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
                     // รับข้อมูล Map ผ่าน ObjectInputStream
                     Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
@@ -612,6 +612,7 @@ class recive_data extends Thread {
                         int hp_ = (int) data.get("Hp_");
                         int hp_percent = (int) data.get("Hp_percent");
                         int hp_max = (int) data.get("Hp_max");
+                        Boolean ready = (Boolean) data.get("Ready");
 
                         if (first) {
                             chanceDrop = (Boolean) data.get("Chance_Drop");
@@ -619,13 +620,14 @@ class recive_data extends Thread {
                             dropped = (Boolean) data.get("dropped");
                             this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max,
                                     hp_percent,
-                                    chanceDrop, chanceDropRare, dropped);
+                                    chanceDrop, chanceDropRare, dropped,ready);
                         } else {
                             this.panel.setAll_data02(index, position[0], position[1], speed, status, hp_, hp_max,
-                                    hp_percent);
+                                    hp_percent,ready);
                         }
 
                         this.panel.repaint();
+
                         index++;
                         // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
                         // System.out.println("Status: " + status);
@@ -642,7 +644,6 @@ class recive_data extends Thread {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
