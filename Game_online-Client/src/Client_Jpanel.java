@@ -392,14 +392,12 @@ protected void paintComponent(Graphics g) {
             Percent_HP_boss[i] = Math.max(0, Math.min(100, Percent_HP_boss[i]));
             final int filledWidth = (Percent_HP_boss[i] * healthBarWidth) / 100;
             final int maxFilledWidth = Math.min(filledWidth, healthBarWidth);
-            g.setColor(Percent_HP_boss[i] >= 90 ? Color.GREEN :
-                    Percent_HP_boss[i] >= 80 ? new Color(0, 200, 0) :
-                    Percent_HP_boss[i] >= 70 ? Color.YELLOW :
-                    Percent_HP_boss[i] >= 60 ? Color.ORANGE :
+            g.setColor(Percent_HP_boss[i] >= 80 ? Color.GREEN :
+                    Percent_HP_boss[i] >= 60 ? Color.YELLOW :
                     Percent_HP_boss[i] >= 40 ? new Color(255, 165, 0) :
                     Percent_HP_boss[i] >= 30 ? new Color(255, 69, 0) :
                     Percent_HP_boss[i] >= 20 ? Color.RED :
-                    new Color(139, 0, 0));
+                    new Color(139, 0, 0)); 
             g.fillRect(healthBarX, healthBarY, maxFilledWidth, healthBarHeight); 
             g.drawImage(boss_action_walk[frame], bossX[i], bossY[i], bossWidth, bossWidth, this);
         }
