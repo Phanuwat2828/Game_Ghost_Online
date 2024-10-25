@@ -174,7 +174,7 @@ public class Client_Jpanel extends JPanel {
         });
 
         try {
-            socket3 = new Socket("26.12.207.51", 3000);
+            socket3 = new Socket(setting.getIp_setting(), 3000);
             out3 = new PrintWriter(socket3.getOutputStream(), true);
             bt_e.addActionListener(new ActionListener() {
 

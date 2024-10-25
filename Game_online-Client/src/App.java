@@ -19,7 +19,7 @@ public class App extends JFrame {
                 if (setting.getCreator()) {
 
                     try {
-                        socket = new Socket("26.12.207.51", 3000);
+                        socket = new Socket(setting.getIp_setting(), 3000);
                         out = new PrintWriter(socket.getOutputStream(), true);
                         out.println("Remove," + setting.getName() + "," + setting.getIp());
                     } catch (Exception ex) {

@@ -47,7 +47,7 @@ public class Server_Main {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
     }
 
@@ -62,7 +62,7 @@ public class Server_Main {
                 out.flush();
 
             } catch (Exception e) {
-                System.out.println(e);
+
             }
         }
     }

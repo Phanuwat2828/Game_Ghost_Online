@@ -3,6 +3,7 @@ public class setting_ {
     private String ip;
     private String name;
     private boolean ready = false;
+    private String ip_setting = "192.168.56.1";
 
     public String getIp() {
         return ip;
@@ -34,5 +35,9 @@ public class setting_ {
 
     public boolean getReady() {
         return this.ready;
+    }
+
+    public String getIp_setting() {
+        return ip_setting;
     }
 }

@@ -30,7 +30,7 @@ public class RoomZombieGUI extends JPanel {
 
         // rooms = new ArrayList<>();
         localIP = getLocalIP();
-        ReceiveIP rp_ip = new ReceiveIP(this);
+        ReceiveIP rp_ip = new ReceiveIP(this, setting);
         rp_ip.start();
 
         // สร้างพาเนลหลักพร้อมพื้นหลังสีเขียวเข้ม
@@ -180,7 +180,7 @@ public class RoomZombieGUI extends JPanel {
                 CardLayout cl = (CardLayout) (cardLayout.getLayout());
                 cl.show(cardLayout, "in_game"); // สลับไปยัง Room
 
-                socket = new Socket("26.12.207.51", 3000);
+                socket = new Socket(setting.getIp_setting(), 3000);
                 out = new PrintWriter(socket.getOutputStream(), true);
                 out.println("set," + roomName + "," + localIP);
                 System.out.println(roomName + localIP);
@@ -262,14 +262,16 @@ public class RoomZombieGUI extends JPanel {
 class ReceiveIP extends Thread {
     private RoomZombieGUI panel;
     private boolean running = true;
+    private setting_ setting;
 
-    ReceiveIP(RoomZombieGUI panel) {
+    ReceiveIP(RoomZombieGUI panel, setting_ setting) {
         this.panel = panel;
+        this.setting = setting;
     }
 
     public void run() {
         while (running) {
-            try (Socket socket = new Socket("26.12.207.51", 3000);
+            try (Socket socket = new Socket(setting.getIp_setting(), 3000);
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
 
                 // รับข้อมูล Map<String, String> จากเซิร์ฟเวอร์
