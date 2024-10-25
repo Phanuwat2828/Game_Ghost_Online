@@ -27,14 +27,15 @@ public class Server_01 extends Thread {
                     ClientHandler handler = new ClientHandler(socket, clientId);
                     clientHandlers.add(handler);
                     new Thread(handler).start();
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+
                 } else {
                     break;
+                }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
 
             }

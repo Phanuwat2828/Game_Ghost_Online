@@ -19,7 +19,7 @@ public class App extends JFrame {
                 if (setting.getCreator()) {
 
                     try {
-                        socket = new Socket("localhost", 3000);
+                        socket = new Socket("26.12.207.51", 3000);
                         out = new PrintWriter(socket.getOutputStream(), true);
                         out.println("Remove," + setting.getName() + "," + setting.getIp());
                     } catch (Exception ex) {
@@ -30,7 +30,6 @@ public class App extends JFrame {
             }
         });
         setTitle("My Window");
-
         setSize(1920, 1080);
         setLocationRelativeTo(null);
 
@@ -48,4 +47,3 @@ public class App extends JFrame {
         app.setVisible(true);
     }
 }
-  

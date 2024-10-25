@@ -121,7 +121,7 @@ public class Client_Jpanel extends JPanel {
         bt_s.setForeground(Color.WHITE);
         bt_s.setBackground(Color.green);
         bt_e.setBackground(Color.RED);
-        
+
         try {
             socket = new Socket(SERVER_IP, SERVER_PORT1);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -153,7 +153,7 @@ public class Client_Jpanel extends JPanel {
                 try {
 
                     // System.out.println("test");
-                    if (bullets > 0 && getItem(e.getX(), e.getY())) {
+                    if (bullets > 0) {
                         Sound(audioFile_shoot);
                         if (ready_) {
                             socket2 = new Socket(SERVER_IP, SERVER_PORT2);
@@ -161,7 +161,8 @@ public class Client_Jpanel extends JPanel {
                             out2.println(e.getX() + "," + e.getY());
                         }
                     }
-                    if(ready_){
+                    if (ready_) {
+                        getItem(e.getX(), e.getY());
                         Bullets_Manage(-1, null);
                     }
 
@@ -173,7 +174,7 @@ public class Client_Jpanel extends JPanel {
         });
 
         try {
-            socket3 = new Socket(SERVER_IP, 3000);
+            socket3 = new Socket("26.12.207.51", 3000);
             out3 = new PrintWriter(socket3.getOutputStream(), true);
             bt_e.addActionListener(new ActionListener() {
 
@@ -181,7 +182,6 @@ public class Client_Jpanel extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     if (setting.getCreator()) {
                         try {
-                            System.out.println("hello");
                             out3.println("Remove," + setting.getName() + "," + setting.getIp());
                             setting.setReady(false);
                             setting.setCreator(false);
@@ -205,9 +205,9 @@ public class Client_Jpanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     setting.setReady(true);
-                   
+
                 } catch (Exception ex) {
-                    
+
                 }
             }
 
@@ -221,10 +221,10 @@ public class Client_Jpanel extends JPanel {
         add(panel);
 
         img_zombie_walk();
-      
+
         System.out.println(setting.getIp());
 
-        recive_data th = new recive_data(this, setting,cardLayout);
+        recive_data th = new recive_data(this, setting, cardLayout);
         th.start();
 
         new Thread(new IncomingReader(cardLayout)).start();
@@ -240,7 +240,7 @@ public class Client_Jpanel extends JPanel {
     }
 
     public void setAll_data(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
-            boolean Chance_Drop_, boolean Chance_Drop_rare_, boolean dropped,boolean ready) {
+            boolean Chance_Drop_, boolean Chance_Drop_rare_, boolean dropped, boolean ready) {
         axisX[index] = x;
         axisY[index] = y;
         speedX[index] = speed;
@@ -263,7 +263,8 @@ public class Client_Jpanel extends JPanel {
         // System.out.println("=========================================================");
     }
 
-    public void setAll_data02(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,boolean ready) {
+    public void setAll_data02(int index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
+            boolean ready) {
         axisX[index] = x;
         axisY[index] = y;
         speedX[index] = speed;
@@ -285,10 +286,10 @@ public class Client_Jpanel extends JPanel {
 
     class IncomingReader implements Runnable {
         private JPanel cardlayout;
-        IncomingReader(JPanel card){
+
+        IncomingReader(JPanel card) {
             this.cardlayout = card;
         }
-
 
         @Override
         public void run() {
@@ -426,6 +427,7 @@ public class Client_Jpanel extends JPanel {
                     g.setColor(Color.RED);
                     g.setFont(font);
                     g.drawString("Drop item : " + Chance_Drop[i], axisX[i], axisY[i] - 10);
+                    g.drawString("Drop item : " + Chance_Drop_rare[i], axisX[i], axisY[i] - 20);
                     g.drawRect(axisX[i], axisY[i], 100, 100);
                     g.drawImage(zombie_action_walk[frame], axisX[i], axisY[i], 100, 100, this);
 
@@ -596,7 +598,7 @@ class recive_data extends Thread {
     private setting_ setting;
     private JPanel cardlayout;
 
-    recive_data(Client_Jpanel panel, setting_ setting,JPanel card) {
+    recive_data(Client_Jpanel panel, setting_ setting, JPanel card) {
         this.panel = panel;
         this.setting = setting;
         this.cardlayout = card;
@@ -605,61 +607,61 @@ class recive_data extends Thread {
     public void run() {
         boolean first = true;
         while (true) {
-                try (Socket socket = new Socket(setting.getIp(), 9090);
-                        ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
-                    // รับข้อมูล Map ผ่าน ObjectInputStream
-                    Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
-                    int index = 0;
+            try (Socket socket = new Socket(setting.getIp(), 9090);
+                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+                // รับข้อมูล Map ผ่าน ObjectInputStream
+                Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
+                int index = 0;
 
-                    // แสดงข้อมูลมอนสเตอร์แต่ละตัว
-                    for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
-                        Map<String, Object> data = entry.getValue();
-                        Boolean chanceDrop = false;
-                        Boolean chanceDropRare = false;
-                        Boolean dropped = false;
-                        int[] position = (int[]) data.get("position");
-                        boolean status = (boolean) data.get("status");
-                        int speed = (int) data.get("Speed");
-                        int hp_ = (int) data.get("Hp_");
-                        int hp_percent = (int) data.get("Hp_percent");
-                        int hp_max = (int) data.get("Hp_max");
-                        Boolean ready = (Boolean) data.get("Ready");
+                // แสดงข้อมูลมอนสเตอร์แต่ละตัว
+                for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
+                    Map<String, Object> data = entry.getValue();
+                    Boolean chanceDrop = false;
+                    Boolean chanceDropRare = false;
+                    Boolean dropped = false;
+                    int[] position = (int[]) data.get("position");
+                    boolean status = (boolean) data.get("status");
+                    int speed = (int) data.get("Speed");
+                    int hp_ = (int) data.get("Hp_");
+                    int hp_percent = (int) data.get("Hp_percent");
+                    int hp_max = (int) data.get("Hp_max");
+                    Boolean ready = (Boolean) data.get("Ready");
 
-                        if (first) {
-                            chanceDrop = (Boolean) data.get("Chance_Drop");
-                            chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
-                            dropped = (Boolean) data.get("dropped");
-                            this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max,
-                                    hp_percent,
-                                    chanceDrop, chanceDropRare, dropped,ready);
-                        } else {
-                            this.panel.setAll_data02(index, position[0], position[1], speed, status, hp_, hp_max,
-                                    hp_percent,ready);
-                        }
-
-                        this.panel.repaint();
-
-                        index++;
-                        // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
-                        // System.out.println("Status: " + status);
-                        // System.out.println("Speed: " + speed);
-                        // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
-                        // System.out.println("Chance to Drop: " + chanceDrop);
-                        // System.out.println("Chance to Drop Rare: " + chanceDropRare);
-                        // System.out.println("=========================================================");
+                    if (first) {
+                        chanceDrop = (Boolean) data.get("Chance_Drop");
+                        chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
+                        dropped = (Boolean) data.get("dropped");
+                        this.panel.setAll_data(index, position[0], position[1], speed, status, hp_, hp_max,
+                                hp_percent,
+                                chanceDrop, chanceDropRare, dropped, ready);
+                    } else {
+                        this.panel.setAll_data02(index, position[0], position[1], speed, status, hp_, hp_max,
+                                hp_percent, ready);
                     }
-                    first = false;
-                    in.close();
-                    socket.close();
 
-                } catch (Exception e) {
-                    CardLayout cl = (CardLayout) (cardlayout.getLayout());
-                    // แสดงหน้า "Room"
-                    cl.show(cardlayout, "Room");
-                    break;
+                    this.panel.repaint();
+
+                    index++;
+                    // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
+                    // System.out.println("Status: " + status);
+                    // System.out.println("Speed: " + speed);
+                    // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
+                    // System.out.println("Chance to Drop: " + chanceDrop);
+                    // System.out.println("Chance to Drop Rare: " + chanceDropRare);
+                    // System.out.println("=========================================================");
                 }
+                first = false;
+                in.close();
+                socket.close();
+
+            } catch (Exception e) {
+                CardLayout cl = (CardLayout) (cardlayout.getLayout());
+                // แสดงหน้า "Room"
+                cl.show(cardlayout, "Room");
+                break;
+            }
             try {
-                
+
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block

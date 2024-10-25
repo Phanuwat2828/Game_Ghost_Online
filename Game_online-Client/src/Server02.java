@@ -15,7 +15,6 @@ public class Server02 extends Thread {
     private Data data;
     private Create_Data cr;
 
-
     Server02(setting_ setting) {
         this.setting = setting;
     }
@@ -25,22 +24,20 @@ public class Server02 extends Thread {
         try (ServerSocket serverSocket = new ServerSocket(9090)) { // เปิด port 9090 สำหรับ server
             System.out.println("Server is running...");
             data = new Data(MONSTER_COUNT);
-            cr = new Create_Data(data,setting);
+            cr = new Create_Data(data, setting);
             cr.Zombie_Movement();
-            
+
             while (true) {
                 try {
                     // รอการเชื่อมต่อจาก client
                     Socket socket = serverSocket.accept();
-                    if(setting.getReady()){
-                        System.out.println("Hello");
-                    }
                     ClientHandler clientHandler = new ClientHandler(socket, data);
                     new Thread(clientHandler).start(); // เริ่ม Thread ใหม่
 
                 } catch (Exception e) {
                     System.err.println("Error while handling client connection: " + e.getMessage());
                 }
+                Thread.sleep(10);
             }
 
         } catch (Exception e) {
@@ -96,7 +93,7 @@ class Create_Data {
     private Timer timer = new Timer();
     private setting_ setting;
 
-    Create_Data(Data data,setting_ setting) {
+    Create_Data(Data data, setting_ setting) {
         this.data = data;
         this.setting = setting;
     }
@@ -118,7 +115,7 @@ class Create_Data {
     }
 
     public void moveZombies() {
-        if(setting.getReady()){
+        if (setting.getReady()) {
             Map<String, Map<String, Object>> monsterMap = this.data.getMonsterData();
             for (Map.Entry<String, Map<String, Object>> entry : monsterMap.entrySet()) {
                 String name = entry.getKey();
@@ -135,7 +132,7 @@ class Create_Data {
                 this.data.setReady(name);
             }
         }
-        
+
     }
 }
 
@@ -218,9 +215,11 @@ class Data {
     public void setPosition(int[] value, String name_monster) {
         this.monsterData.get(name_monster).put("position", value);
     }
+
     public void setReady(String name_monster) {
         this.monsterData.get(name_monster).put("Ready", true);
     }
+
     public void setStatus(String name_monster) {
         this.monsterData.get(name_monster).put("status", true);
     }

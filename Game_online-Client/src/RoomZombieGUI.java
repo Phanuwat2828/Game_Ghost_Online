@@ -174,13 +174,13 @@ public class RoomZombieGUI extends JPanel {
                 server_01.start();
                 Server02 server02 = new Server02(setting);
                 server02.start();
-                
+
                 Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
                 cardLayout.add(in_game, "in_game");
                 CardLayout cl = (CardLayout) (cardLayout.getLayout());
                 cl.show(cardLayout, "in_game"); // สลับไปยัง Room
-                
-                socket = new Socket("26.48.110.172", 3000);
+
+                socket = new Socket("26.12.207.51", 3000);
                 out = new PrintWriter(socket.getOutputStream(), true);
                 out.println("set," + roomName + "," + localIP);
                 System.out.println(roomName + localIP);
@@ -269,7 +269,7 @@ class ReceiveIP extends Thread {
 
     public void run() {
         while (running) {
-            try (Socket socket = new Socket("26.48.110.172", 3000);
+            try (Socket socket = new Socket("26.12.207.51", 3000);
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
 
                 // รับข้อมูล Map<String, String> จากเซิร์ฟเวอร์
@@ -278,6 +278,7 @@ class ReceiveIP extends Thread {
 
                 // รอ 50 มิลลิวินาทีเพื่อรับข้อมูลใหม่
                 Thread.sleep(50);
+                socket.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
