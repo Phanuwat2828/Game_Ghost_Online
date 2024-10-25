@@ -3,7 +3,7 @@ public class setting_ {
     private String ip;
     private String name;
     private boolean ready = false;
-    private String ip_setting = "192.168.56.1";
+    private String ip_setting = "192.168.1.102";
 
     public String getIp() {
         return ip;

@@ -61,6 +61,7 @@ public class Client_Jpanel extends JPanel {
     Random rand = new Random();
     int Count_Wave = 30;
     boolean ready = false;
+    boolean exit_game = false;
 
     // Var
     int[] axisX = new int[Count_Wave];
@@ -98,6 +99,8 @@ public class Client_Jpanel extends JPanel {
     private PrintWriter out2;
     private Socket socket3;
     private PrintWriter out3;
+    private Server_01 server_01;
+    private Server02 server02;
     private Map<Integer, Point> remoteMousePositions = Collections.synchronizedMap(new HashMap<>());
     private int clientId = -1; // ใช้ในการระบุว่าเป็น Client ตัวไหน
     // ===========================
@@ -105,6 +108,13 @@ public class Client_Jpanel extends JPanel {
     MediaTracker tracker = new MediaTracker(this);
 
     public Client_Jpanel(JPanel cardLayout, setting_ setting) {
+        if (setting.getCreator()) {
+            server_01 = new Server_01(setting);
+            server_01.start();
+            server02 = new Server02(setting);
+            server02.start();
+        }
+
         this.SERVER_IP = setting.getIp();
         setSize(1920, 1080);
         setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -185,6 +195,8 @@ public class Client_Jpanel extends JPanel {
                             out3.println("Remove," + setting.getName() + "," + setting.getIp());
                             setting.setReady(false);
                             setting.setCreator(false);
+                            server02.stopServer();
+                            server_01.stopServer();
                         } catch (Exception ex) {
                             // TODO: handle exception
                         }
@@ -329,6 +341,8 @@ public class Client_Jpanel extends JPanel {
                     }
                 }
             } catch (IOException e) {
+                CardLayout cl = (CardLayout) (cardlayout.getLayout());
+                cl.show(cardlayout, "Room"); // สลับไปยัง Room
             }
         }
     }

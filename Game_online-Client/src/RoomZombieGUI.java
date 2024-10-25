@@ -170,10 +170,6 @@ public class RoomZombieGUI extends JPanel {
                 setting.setIp(localIP);
                 setting.setName(roomName);
                 setting.setCreator(true);
-                Server_01 server_01 = new Server_01(setting);
-                server_01.start();
-                Server02 server02 = new Server02(setting);
-                server02.start();
 
                 Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
                 cardLayout.add(in_game, "in_game");

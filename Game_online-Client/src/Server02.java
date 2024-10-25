@@ -14,6 +14,7 @@ public class Server02 extends Thread {
     private setting_ setting;
     private Data data;
     private Create_Data cr;
+    private boolean running = true;
 
     Server02(setting_ setting) {
         this.setting = setting;
@@ -27,7 +28,7 @@ public class Server02 extends Thread {
             cr = new Create_Data(data, setting);
             cr.Zombie_Movement();
 
-            while (true) {
+            while (running) {
                 try {
                     // รอการเชื่อมต่อจาก client
                     Socket socket = serverSocket.accept();
@@ -40,6 +41,16 @@ public class Server02 extends Thread {
                 Thread.sleep(10);
             }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stopServer() {
+        running = false;
+        try {
+            // close resources if necessary
+            this.interrupt(); // interrupt the thread if it's waiting
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,6 +96,7 @@ class ClientHandler implements Runnable {
             System.err.println("Error in client handler: " + e.getMessage());
         }
     }
+
 }
 
 // ส่วนของ Create_Data และ Data จะยังคงเหมือนเดิม

@@ -10,6 +10,11 @@ public class Server_01 extends Thread {
     private static Set<ClientHandler> clientHandlers = Collections.synchronizedSet(new HashSet<>());
     private static AtomicInteger clientIdCounter = new AtomicInteger(0);
     private setting_ setting;
+    private boolean running = true;
+    private Map<String, Integer> ip_all = new LinkedHashMap<>();
+    private data_Mouse data = new data_Mouse();
+    private ServerSocket serverSocket;
+    private Socket socket;
 
     Server_01(setting_ setting) {
         this.setting = setting;
@@ -17,20 +22,25 @@ public class Server_01 extends Thread {
 
     public void run() {
 
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+        try {
+            serverSocket = new ServerSocket(PORT);
             System.out.println("Server เริ่มต้นแล้ว รอการเชื่อมต่อ...");
-            while (true) {
-                if (setting.getCreator()) {
-                    Socket socket = serverSocket.accept();
-                    int clientId = clientIdCounter.incrementAndGet();
-                    System.out.println("Client #" + clientId + " เชื่อมต่อ: " + socket.getInetAddress());
-                    ClientHandler handler = new ClientHandler(socket, clientId);
-                    clientHandlers.add(handler);
-                    new Thread(handler).start();
+            while (running) {
+                socket = serverSocket.accept();
+                int clientId;
+                String clientIp = socket.getInetAddress().getHostAddress();
+                if (ip_all.containsKey(clientIp)) {
+                    clientId = ip_all.get(clientIp);
 
                 } else {
-                    break;
+                    clientId = clientIdCounter.incrementAndGet();
+                    ip_all.put(clientIp, clientId);
                 }
+                System.out.println("Client #" + clientId + " เชื่อมต่อ: " + socket.getInetAddress());
+                ClientHandler handler = new ClientHandler(socket, clientId, data);
+                clientHandlers.add(handler);
+                new Thread(handler).start();
+
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -43,6 +53,19 @@ public class Server_01 extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void stopServer() {
+        running = false;
+        try {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close(); // ปิด serverSocket เพื่อหยุด accept()
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.interrupt();
     }
 
     // ส่งข้อมูลไปยังทุก Client รวมถึงผู้ส่ง
@@ -58,8 +81,8 @@ public class Server_01 extends Thread {
     public static void sendExistingMousePositions(ClientHandler newClient) {
         synchronized (clientHandlers) {
             for (ClientHandler aClient : clientHandlers) {
-                if (aClient != newClient && aClient.lastMousePosition.isPresent()) {
-                    Point pos = aClient.lastMousePosition.get();
+                if (aClient != newClient && aClient.data.getLastMousePosition().isPresent()) {
+                    Point pos = aClient.data.getLastMousePosition().get();
                     newClient.sendMessage("MOVE," + aClient.clientId + "," + pos.x + "," + pos.y);
                 }
             }
@@ -79,11 +102,12 @@ public class Server_01 extends Thread {
         private BufferedReader in;
         private PrintWriter out;
         private int clientId;
-        public Optional<Point> lastMousePosition = Optional.empty();
+        private data_Mouse data;
 
-        public ClientHandler(Socket socket, int clientId) {
+        public ClientHandler(Socket socket, int clientId, data_Mouse data) {
             this.socket = socket;
             this.clientId = clientId;
+            this.data = data;
             try {
                 in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
                 out = new PrintWriter(this.socket.getOutputStream(), true);
@@ -111,7 +135,7 @@ public class Server_01 extends Thread {
                     if (parts.length == 3 && parts[0].equals("MOVE")) {
                         int x = Integer.parseInt(parts[1]);
                         int y = Integer.parseInt(parts[2]);
-                        lastMousePosition = Optional.of(new Point(x, y));
+                        data.setLastMousePosition(Optional.of(new Point(x, y)));
                         // ส่งต่อข้อมูลให้ทุก Client พร้อมระบุว่าเป็น Client ไหน
                         broadcast("MOVE," + clientId + "," + x + "," + y);
                     }
@@ -127,5 +151,17 @@ public class Server_01 extends Thread {
                 }
             }
         }
+    }
+}
+
+class data_Mouse {
+    private Optional<Point> lastMousePosition = Optional.empty();
+
+    public Optional<Point> getLastMousePosition() {
+        return lastMousePosition;
+    }
+
+    public void setLastMousePosition(Optional<Point> lastMousePosition) {
+        this.lastMousePosition = lastMousePosition;
     }
 }
