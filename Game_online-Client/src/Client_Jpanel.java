@@ -24,8 +24,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -226,10 +224,10 @@ public class Client_Jpanel extends JPanel {
       
         System.out.println(setting.getIp());
 
-        recive_data th = new recive_data(this, setting);
+        recive_data th = new recive_data(this, setting,cardLayout);
         th.start();
 
-        new Thread(new IncomingReader()).start();
+        new Thread(new IncomingReader(cardLayout)).start();
 
     }
 
@@ -286,6 +284,12 @@ public class Client_Jpanel extends JPanel {
     }
 
     class IncomingReader implements Runnable {
+        private JPanel cardlayout;
+        IncomingReader(JPanel card){
+            this.cardlayout = card;
+        }
+
+
         @Override
         public void run() {
             String message;
@@ -314,6 +318,8 @@ public class Client_Jpanel extends JPanel {
                                 if (parts.length == 2) {
                                     int id = Integer.parseInt(parts[1]);
                                     removeRemoteMouse(id);
+                                    CardLayout cl = (CardLayout) cardlayout.getLayout();
+                                    cl.show(cardlayout, "Room"); // เปลี่ยนไปยังหน้า "Room"
                                 }
                                 break;
                             default:
@@ -322,7 +328,6 @@ public class Client_Jpanel extends JPanel {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -589,10 +594,12 @@ public class Client_Jpanel extends JPanel {
 class recive_data extends Thread {
     private Client_Jpanel panel;
     private setting_ setting;
+    private JPanel cardlayout;
 
-    recive_data(Client_Jpanel panel, setting_ setting) {
+    recive_data(Client_Jpanel panel, setting_ setting,JPanel card) {
         this.panel = panel;
         this.setting = setting;
+        this.cardlayout = card;
     }
 
     public void run() {
@@ -646,9 +653,13 @@ class recive_data extends Thread {
                     socket.close();
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    CardLayout cl = (CardLayout) (cardlayout.getLayout());
+                    // แสดงหน้า "Room"
+                    cl.show(cardlayout, "Room");
+                    break;
                 }
             try {
+                
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block

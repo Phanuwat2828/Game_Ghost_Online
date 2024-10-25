@@ -169,6 +169,7 @@ class Data {
             data_monster.put("Chance_Drop", Chance_Drop);
             data_monster.put("Ready", false);
             monsterData.put("monster" + (i + 1), data_monster);
+
         }
     }
 
