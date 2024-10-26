@@ -95,6 +95,7 @@ public class Client_Game extends JPanel {
     private PrintWriter out3;
     private B_Mouse_Server server_01;
     private A_Zombie_Server server02;
+    private int count_monster = 0;
     private Map<Integer, Point> remoteMousePositions = Collections.synchronizedMap(new HashMap<>());
     private int clientId = -1; // ใช้ในการระบุว่าเป็น Client ตัวไหน
     // ===========================
@@ -108,7 +109,7 @@ public class Client_Game extends JPanel {
             server02 = new A_Zombie_Server(setting);
             server02.start();
         }
-        recive_data th = new recive_data(this, setting, cardLayout);
+        recive_data th = new recive_data(this, setting, cardLayout, this);
         th.start();
 
         this.SERVER_IP = setting.getIp();
@@ -239,6 +240,10 @@ public class Client_Game extends JPanel {
 
     public int getMouseX() {
         return this.mouseX;
+    }
+
+    public void setCount_monster(int count_monster) {
+        this.count_monster = count_monster;
     }
 
     public void img_boss_walk() {
@@ -509,15 +514,16 @@ public class Client_Game extends JPanel {
                     continue;
                 }
 
-            } else if (GameOver) {
-                Game_Over(g);
-            } else if (checkdead() == 30) {
-                GameWin = true;
-                Game_Win(g);
             }
+            // } else if (GameOver) {
+            // Game_Over(g);
+            // } else if (checkdead() == 30) {
+            // GameWin = true;
+            // Game_Win(g);
+            // }
             g.setFont(new Font("Tahoma", Font.BOLD, 30));
             g.setColor(Color.WHITE);
-            g.drawString("Zombie Dead : " + checkdead() + " / 30", 50, 50);
+            g.drawString("Zombie Dead : " + checkdead() + " / " + count_monster, 50, 50);
 
         }
     }
@@ -644,8 +650,9 @@ public class Client_Game extends JPanel {
 
         for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
             Map<String, Object> data_now = entry.getValue();
+            int hp = (int) data_now.get("Hp_");
             Boolean status_ = (Boolean) data_now.get("status");
-            if (!status_) {
+            if (!status_ && hp <= 0) {
                 count++;
             }
 
@@ -683,22 +690,26 @@ class recive_data extends Thread {
     private Client_Game panel;
     private Client_setting_ setting;
     private JPanel cardlayout;
+    private Client_Game data;
 
-    recive_data(Client_Game panel, Client_setting_ setting, JPanel card) {
+    recive_data(Client_Game panel, Client_setting_ setting, JPanel card, Client_Game data) {
         this.panel = panel;
         this.setting = setting;
         this.cardlayout = card;
+        this.data = data;
     }
 
     public void run() {
         boolean first = true;
         int waved = 1;
+        boolean win = false;
         while (true) {
             try (Socket socket = new Socket(setting.getIp(), 9090);
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
                 // รับข้อมูล Map ผ่าน ObjectInputStream
                 Map<String, Map<String, Object>> monsterData = (Map<String, Map<String, Object>>) in.readObject();
                 int index = 0;
+                int count_monstaer = 0;
 
                 // แสดงข้อมูลมอนสเตอร์แต่ละตัว
                 for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
@@ -716,6 +727,10 @@ class recive_data extends Thread {
                     Boolean ready = (Boolean) data.get("Ready");
                     String type = (String) data.get("level");
                     int wave = (Integer) data.get("position_level");
+                    if (count_monstaer == 0) {
+                        win = (Boolean) data.get("win");
+                    }
+                    count_monstaer++;
                     if (waved != wave) {
                         first = true;
                         waved = wave;
@@ -742,8 +757,11 @@ class recive_data extends Thread {
                     System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
                     System.out.println("Chance to Drop: " + chanceDrop);
                     System.out.println("Chance to Drop Rare: " + chanceDropRare);
+                    System.out.println("Level" + wave);
+                    System.out.println("win" + win);
                     System.out.println("=========================================================");
                 }
+                data.setCount_monster(count_monstaer);
                 first = false;
                 in.close();
                 socket.close();

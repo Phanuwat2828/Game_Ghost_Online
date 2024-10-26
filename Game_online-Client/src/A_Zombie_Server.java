@@ -199,6 +199,7 @@ class Data {
                 data_monster.put("Chance_Drop_rare", rare);
                 data_monster.put("Chance_Drop", Chance_Drop);
                 data_monster.put("Ready", false);
+                data_monster.put("lose", false);
 
                 if (i == 0) {
                     data_monster.put("position_level", 1);
@@ -227,7 +228,7 @@ class Data {
                     monsterData4.put("monster" + (j + 1), data_monster);
                 } else if (i == 4) {
                     data_monster.put("position_level", 5);
-                    if (j == 48 && j == 49) {
+                    if (j == 48 || j == 49) {
                         data_monster.put("level", "Boss");
                         data_monster.put("status", false);
                         data_monster.put("Speed", random.nextInt(1, 3));
@@ -238,6 +239,8 @@ class Data {
                         data_monster.put("level", "common");
                     }
                     monsterData5.put("monster" + (j + 1), data_monster);
+                    monsterData5.get("monster1").put("win", false);
+                    monsterData5.get("monster1").put("lose", false);
                 }
             }
 
@@ -258,7 +261,7 @@ class Data {
             int y = position[1];
 
             if (status) {
-                int damage = 50;
+                int damage = 200;
                 if (Mousex >= x && Mousex <= x + 100 &&
                         Mousey >= y && Mousey <= y + 100) {
                     // Dropped_item[i] = true;
@@ -355,20 +358,23 @@ class Data {
                 if (!status && boss.equals("common")) {
                     count++;
                 } else if (boss.equals("Boss")) {
-                    if (count == 44 && level == 4 && hp > 0) {
-                        getMonsterData().get(name).put("status", true);
-                    } else {
-                        getMonsterData().get(name).put("status", false);
-                        count++;
-                    }
-                    if (count == 48 && level == 5 && hp > 0) {
-                        getMonsterData().get(name).put("status", true);
+                    if (level == 4) {
+                        if (count == 44 && hp > 0) {
+                            getMonsterData().get(name).put("status", true);
+                        } else {
+                            getMonsterData().get(name).put("status", false);
+                            count++;
+                        }
+                    } else if (level == 5) {
+                        if ((count == 48 || count == 49) && hp > 0) {
+                            getMonsterData().get(name).put("status", true);
 
-                    } else {
-                        getMonsterData().get(name).put("status", false);
-
-                        count++;
+                        } else {
+                            getMonsterData().get(name).put("status", false);
+                            count++;
+                        }
                     }
+
                 }
             }
             if (count == 25 && level == 1) {
@@ -379,6 +385,8 @@ class Data {
                 level = 4;
             } else if (count == 45 && level == 4) {
                 level = 5;
+            } else if (count == 50 && level == 5) {
+                getMonsterData().get("monster1").put("win", true);
             }
         }
 
