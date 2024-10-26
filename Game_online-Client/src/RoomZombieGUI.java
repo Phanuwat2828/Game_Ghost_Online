@@ -280,7 +280,7 @@ class ReceiveIP extends Thread {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                // อาจเพิ่ม break หยุดการทำงานของ thread ในกรณีที่เกิดข้อผิดพลาด
+
             }
         }
     }

@@ -20,52 +20,17 @@ public class Server_Main {
             // เพิ่ม PrintWriter ของ client ที่เชื่อมต่อเพื่อส่งข้อมูลกลับ
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             clientWriters.add(out);
-
-            // เริ่ม thread ใหม่เพื่อรับข้อมูลจาก client แต่ละคน
-            broadcastToClients(data, clientSocket);
-            new Thread(() -> handleClient(clientSocket, data, clientSocket)).start();
+            // send_ send = new send_(clientSocket, data);
+            // new Thread(send).start();
+            handleClient_ send = new handleClient_(clientSocket, data);
+            new Thread(send).start();
         }
     }
 
     // ฟังก์ชันจัดการข้อมูลที่ได้รับจาก client
-    private static void handleClient(Socket clientSocket, Data_ip data, Socket socket) {
-
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputData;
-
-            // รับข้อมูลจาก client
-            while ((inputData = in.readLine()) != null) {
-                String[] name_ip = new String[3];
-                name_ip = inputData.split(",");
-                if (name_ip[0].equals("Remove")) {
-                    data.remove(name_ip[1]);
-                } else {
-                    data.setSend(name_ip);
-                }
-
-            }
-
-        } catch (IOException e) {
-
-        }
-    }
 
     // ฟังก์ชันส่งข้อมูลให้ทุก client
-    private static void broadcastToClients(Data_ip data, Socket socket) {
-        for (PrintWriter writer : clientWriters) {
 
-            try {
-                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-                ObjectOutputStream out = new ObjectOutputStream(bos);
-                out.writeObject(data.getIp());
-                out.flush();
-
-            } catch (Exception e) {
-
-            }
-        }
-    }
 }
 
 class Data_ip {
@@ -88,4 +53,49 @@ class Data_ip {
     public Map<String, String> getIp() {
         return ip;
     }
+}
+
+class handleClient_ implements Runnable {
+    private Socket socket;
+    private Data_ip data;
+
+    handleClient_(Socket clientSocket, Data_ip data) {
+        this.socket = clientSocket;
+        this.data = data;
+    }
+
+    @Override
+    public void run() {
+        try {
+
+            BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+            out.writeObject(data.getIp());
+            out.flush();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String inputData;
+
+            // รับข้อมูลจาก client
+            while ((inputData = in.readLine()) != null) {
+                String[] name_ip = new String[3];
+                name_ip = inputData.split(",");
+                if (name_ip[0].equals("Remove")) {
+                    data.remove(name_ip[1]);
+                } else {
+                    data.setSend(name_ip);
+                }
+
+            }
+
+            in.close();
+            out.flush(); // ควรเรียก flush เพื่อให้มั่นใจว่าข้อมูลถูกส่งออกไป
+            out.close();
+            socket.close();
+
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
 }
