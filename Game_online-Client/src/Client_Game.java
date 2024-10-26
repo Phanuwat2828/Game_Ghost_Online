@@ -65,26 +65,11 @@ public class Client_Game extends JPanel {
     boolean exit_game = false;
 
     // Var
-    // ArrayList<Integer> axisX = new ArrayList<>();
-    // ArrayList<Integer> axisY = new ArrayList<>();
-    // ArrayList<Integer> speedX = new ArrayList<>();
-    // ArrayList<Boolean> Status_Zombie = new ArrayList<>();
-   
-    // ArrayList<Integer> Health = new ArrayList<>();
-    // ArrayList<Integer> Max_HP = new ArrayList<>();
-    // ArrayList<Integer> Percent_HP = new ArrayList<>();
-    // ArrayList<Integer> Damage = new ArrayList<>();
-  
-    // ArrayList<Boolean> Chance_Drop = new ArrayList<>();
-    // ArrayList<Boolean> Chance_Drop_rare = new ArrayList<>();
-    // ArrayList<Boolean> Dropped_item = new ArrayList<>();
     private Map<String, Map<String, Object>> monsterData = new LinkedHashMap<>();
-
-
 
     Timer timer;
     Image zombie_action_walk[] = new Image[10];
-
+    Image boss_action_walk[] = new Image[6];
 
     boolean GameOver = false;
     boolean GameWin = false;
@@ -244,10 +229,9 @@ public class Client_Game extends JPanel {
         add(panel);
 
         img_zombie_walk();
+        img_boss_walk();
 
         System.out.println(setting.getIp());
-
-
 
         new Thread(new IncomingReader(cardLayout)).start();
 
@@ -257,24 +241,40 @@ public class Client_Game extends JPanel {
         return this.mouseX;
     }
 
+    public void img_boss_walk() {
+        for (int i = 0; i < 6; i++) {
+            boss_action_walk[i] = Toolkit.getDefaultToolkit()
+                    .createImage(path_png + File.separator + "boss" + (i + 1) + ".png");
+            tracker.addImage(boss_action_walk[i], i);
+        }
+        try {
+            tracker.waitForAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getMouseY() {
         return this.mouseY;
     }
 
     public void setAll_data(String index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
-            boolean Chance_Drop_, boolean Chance_Drop_rare_, boolean dropped, boolean ready) {
-                Map<String, Object> data_monster = new HashMap<>();
-                data_monster.put("position", new int[] { x, y });
-                data_monster.put("status", status);
-                data_monster.put("Speed", speed);
-                data_monster.put("dropped", dropped);
-                data_monster.put("Hp_", hp);
-                data_monster.put("Hp_max", max_hp);
-                data_monster.put("Hp_percent", percent_hp);
-                data_monster.put("Chance_Drop_rare", Chance_Drop_rare_);
-                data_monster.put("Chance_Drop", Chance_Drop_);
-                monsterData.put(index, data_monster);
-                ready_ = ready;
+            boolean Chance_Drop_, boolean Chance_Drop_rare_, boolean dropped, boolean ready, String type, int wave) {
+        Map<String, Object> data_monster = new HashMap<>();
+        data_monster.put("position", new int[] { x, y });
+        data_monster.put("status", status);
+        data_monster.put("Speed", speed);
+        data_monster.put("dropped", dropped);
+        data_monster.put("Hp_", hp);
+        data_monster.put("Hp_max", max_hp);
+        data_monster.put("Hp_percent", percent_hp);
+        data_monster.put("Chance_Drop_rare", Chance_Drop_rare_);
+        data_monster.put("Chance_Drop", Chance_Drop_);
+        data_monster.put("position_level", wave);
+        data_monster.put("level", type);
+
+        monsterData.put(index, data_monster);
+        ready_ = ready;
         // System.out.println("=================== " + index +
         // "=======================");
         // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
@@ -288,14 +288,12 @@ public class Client_Game extends JPanel {
 
     public void setAll_data02(String index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
             boolean ready) {
-                monsterData.get(index).put("position", new int[] { x, y });
-                monsterData.get(index).put("status", status);
-                monsterData.get(index).put("Speed", speed);
-                monsterData.get(index).put("Hp_", hp);
-                monsterData.get(index).put("Hp_max", max_hp);
-                monsterData.get(index).put("Hp_percent", percent_hp);
-
-
+        monsterData.get(index).put("position", new int[] { x, y });
+        monsterData.get(index).put("status", status);
+        monsterData.get(index).put("Speed", speed);
+        monsterData.get(index).put("Hp_", hp);
+        monsterData.get(index).put("Hp_max", max_hp);
+        monsterData.get(index).put("Hp_percent", percent_hp);
 
         ready_ = ready;
         // System.out.println("=================== " + index +
@@ -385,10 +383,10 @@ public class Client_Game extends JPanel {
     }
 
     // public void startZombieThreads() {
-    //     for (int i = 0; i < 30; i++) {
-    //         zombieThreads[i] = new ZombieThread(i, this);
-    //         zombieThreads[i].start();
-    //     }
+    // for (int i = 0; i < 30; i++) {
+    // zombieThreads[i] = new ZombieThread(i, this);
+    // zombieThreads[i].start();
+    // }
     // }
 
     public boolean getItem(int MouseAxisX, int MouseAxisY) {
@@ -416,7 +414,6 @@ public class Client_Game extends JPanel {
                 }
             }
 
-            
         }
         return status;
     }
@@ -440,20 +437,18 @@ public class Client_Game extends JPanel {
             }
         }
         // for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
-        //     String name = entry.getKey();
-        //     Map<String, Object> data_now = entry.getValue();
-        //     int[] position = (int[]) data_now.get("position");
-        //     Boolean status_ = (Boolean) data_now.get("status");
-        //     int speed = (int) data_now.get("Speed");
-        //     Boolean drop = (Boolean) data_now.get("dropped");
-        //     int hp = (int) data_now.get("Hp_");
-        //     int hp_max = (int) data_now.get("Hp_max");
-        //     int hp_percent = (int) data_now.get("Hp_percent");
-        //     Boolean chance_drop = (Boolean) data_now.get("Chance_Drop");
-        //     Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
+        // String name = entry.getKey();
+        // Map<String, Object> data_now = entry.getValue();
+        // int[] position = (int[]) data_now.get("position");
+        // Boolean status_ = (Boolean) data_now.get("status");
+        // int speed = (int) data_now.get("Speed");
+        // Boolean drop = (Boolean) data_now.get("dropped");
+        // int hp = (int) data_now.get("Hp_");
+        // int hp_max = (int) data_now.get("Hp_max");
+        // int hp_percent = (int) data_now.get("Hp_percent");
+        // Boolean chance_drop = (Boolean) data_now.get("Chance_Drop");
+        // Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
 
-            
-            
         // }
 
         for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
@@ -468,39 +463,50 @@ public class Client_Game extends JPanel {
             int hp_percent = (int) data_now.get("Hp_percent");
             Boolean chance_drop = (Boolean) data_now.get("Chance_Drop");
             Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
+            String type = (String) data_now.get("level");
+            int wave = (Integer) data_now.get("position_level");
+
             if (!GameOver) {
                 int frameDelay = (speed > 0) ? 500 / speed : 500;
                 int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
 
                 if (status_ && ready_) {
-                    Font font = new Font("Arial", Font.BOLD, 16);
-                    g.setColor(Color.RED);
-                    g.setFont(font);
-                    g.drawString("Drop item: " + chance_drop, position[0], position[1] - 10);
-                    g.drawString("Drop item: " + chance_drop_rare, position[0], position[1]  - 25);
-                    g.drawRect(position[0], position[1], 100, 100);
-                    g.drawImage(zombie_action_walk[frame], position[0], position[1], 100, 100, this);
+
+                    if (type.equals("common")) {
+                        Font font = new Font("Arial", Font.BOLD, 16);
+                        g.setColor(Color.RED);
+                        g.setFont(font);
+                        g.drawString("Drop item: " + chance_drop, position[0], position[1] - 10);
+                        g.drawString("Drop item: " + chance_drop_rare, position[0], position[1] - 25);
+                        g.drawRect(position[0], position[1], 100, 100);
+                        g.drawImage(zombie_action_walk[frame], position[0], position[1], 100, 100, this);
+                        if (status_ && ready_) {
+                            if (hp_percent >= 80) {
+                                g.setColor(Color.GREEN);
+                            } else if (hp_percent >= 60) {
+                                g.setColor(Color.YELLOW);
+                            } else if (hp_percent >= 40) {
+                                g.setColor(Color.ORANGE);
+                            } else {
+                                g.setColor(Color.RED);
+                            }
+                            g.fillRect(position[0], position[1] + 120, hp_percent, 5);
+                        }
+                    } else if (type.equals("Boss")) {
+                        g.setColor(Color.RED);
+                        g.drawString("Drop item: " + chance_drop, position[0], position[1] - 10);
+                        g.drawString("Drop item: " + chance_drop_rare, position[0], position[1] - 25);
+                        g.drawRect(position[0], position[1], 100, 100);
+                        PaintBoss(g, status_, hp_percent, position[0], position[1]);
+                    }
 
                 } else {
-                    Drop_item(g, name,position[0],position[1],chance_drop,chance_drop_rare);
+                    Drop_item(g, name, position[0], position[1], chance_drop, chance_drop_rare);
                 }
 
                 if (hp <= 0) {
                     monsterData.get(name).put("status", false);
                     continue;
-                }
-
-                if (status_ && ready_) {
-                    if (hp_percent >= 80) {
-                        g.setColor(Color.GREEN);
-                    } else if (hp_percent >= 60) {
-                        g.setColor(Color.YELLOW);
-                    } else if (hp_percent >= 40) {
-                        g.setColor(Color.ORANGE);
-                    } else {
-                        g.setColor(Color.RED);
-                    }
-                    g.fillRect(position[0], position[1] + 120, hp_percent, 5);
                 }
 
             } else if (GameOver) {
@@ -512,12 +518,34 @@ public class Client_Game extends JPanel {
             g.setFont(new Font("Tahoma", Font.BOLD, 30));
             g.setColor(Color.WHITE);
             g.drawString("Zombie Dead : " + checkdead() + " / 30", 50, 50);
-            
-            
+
         }
     }
 
-    public void Drop_item(Graphics g, String index,int x,int y,boolean chance_drop,boolean chance_drop_rare) {
+    public void PaintBoss(Graphics g, boolean status, int hp_p, int x, int y) {
+        final int frameDelay = 500;
+        final int frameCount = 6;
+        final int bossWidth = 250;
+        final int healthBarWidth = 150;
+        final int healthBarHeight = 5;
+
+        if (status) {
+            final int frame = (int) ((System.currentTimeMillis() / frameDelay) % frameCount);
+            final int healthBarX = x + (bossWidth / 2) - (healthBarWidth / 2);
+            final int healthBarY = y - healthBarHeight - 5;
+            final int filledWidth = (hp_p * healthBarWidth) / 100;
+            final int maxFilledWidth = Math.min(filledWidth, healthBarWidth);
+            g.setColor(hp_p >= 80 ? Color.GREEN
+                    : hp_p >= 60 ? Color.YELLOW
+                            : hp_p >= 40 ? new Color(255, 165, 0)
+                                    : hp_p >= 30 ? new Color(255, 69, 0)
+                                            : hp_p >= 20 ? Color.RED : new Color(139, 0, 0));
+            g.fillRect(healthBarX, healthBarY, maxFilledWidth, healthBarHeight);
+            g.drawImage(boss_action_walk[frame], x, y, bossWidth, bossWidth, this);
+        }
+    }
+
+    public void Drop_item(Graphics g, String index, int x, int y, boolean chance_drop, boolean chance_drop_rare) {
         Boolean drop = (Boolean) monsterData.get(index).get("dropped");
         if (drop && ready_) {
             if (chance_drop) {
@@ -530,23 +558,23 @@ public class Client_Game extends JPanel {
 
     // ฟังก์ชันเพิ่มตำแหน่ง X ของ Zombie
     // public void addZombieX(int i, int num) {
-    //     axisX.set(i, axisX.get(i) + num);
+    // axisX.set(i, axisX.get(i) + num);
 
     // }
 
     // // Function to increase the Y position of a Zombie
     // public void addZombieY(int i, int num) {
-    //     axisY.set(i, axisY.get(i) + num);
+    // axisY.set(i, axisY.get(i) + num);
     // }
 
     // // Function to get the X position of a Zombie
     // public int getZombieX(int i) {
-    //     return axisX.get(i);
+    // return axisX.get(i);
     // }
 
     // // Function to get the Y position of a Zombie
     // public int getZombieY(int i) {
-    //     return axisY.get(i);
+    // return axisY.get(i);
     // }
 
     public void Bullets_Manage(int amountBullet, Graphics g) {
@@ -614,14 +642,13 @@ public class Client_Game extends JPanel {
     public int checkdead() {
         int count = 0;
 
-          for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
+        for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
             Map<String, Object> data_now = entry.getValue();
             Boolean status_ = (Boolean) data_now.get("status");
             if (!status_) {
                 count++;
             }
-            
-            
+
         }
         return count;
     }
@@ -648,7 +675,7 @@ public class Client_Game extends JPanel {
     }
 
     // public boolean isZombieAlive(int i) {
-    //     return Status_Zombie.get(i);
+    // return Status_Zombie.get(i);
     // }
 }
 
@@ -665,6 +692,7 @@ class recive_data extends Thread {
 
     public void run() {
         boolean first = true;
+        int waved = 1;
         while (true) {
             try (Socket socket = new Socket(setting.getIp(), 9090);
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
@@ -686,14 +714,19 @@ class recive_data extends Thread {
                     int hp_percent = (int) data.get("Hp_percent");
                     int hp_max = (int) data.get("Hp_max");
                     Boolean ready = (Boolean) data.get("Ready");
-
+                    String type = (String) data.get("level");
+                    int wave = (Integer) data.get("position_level");
+                    if (waved != wave) {
+                        first = true;
+                        waved = wave;
+                    }
                     if (first) {
                         chanceDrop = (Boolean) data.get("Chance_Drop");
                         chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
                         dropped = (Boolean) data.get("dropped");
                         this.panel.setAll_data(name, position[0], position[1], speed, status, hp_, hp_max,
                                 hp_percent,
-                                chanceDrop, chanceDropRare, dropped, ready);
+                                chanceDrop, chanceDropRare, dropped, ready, type, wave);
                     } else {
                         this.panel.setAll_data02(name, position[0], position[1], speed, status, hp_, hp_max,
                                 hp_percent, ready);
