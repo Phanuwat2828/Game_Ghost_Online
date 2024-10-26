@@ -1,3 +1,5 @@
+package test;
+
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.Map;

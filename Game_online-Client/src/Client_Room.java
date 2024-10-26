@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.Map;
 import java.io.ObjectInputStream;
 
-public class RoomZombieGUI extends JPanel {
+public class Client_Room extends JPanel {
     private JTextField nameRoomField;
     private JLabel yourIPLabel;
     private JPanel roomsPanel;
@@ -19,10 +19,10 @@ public class RoomZombieGUI extends JPanel {
     private PrintWriter out;
     private Map<String, String> ip_all;
     private Socket socket;
-    private setting_ setting;
+    private Client_setting_ setting;
     private JPanel cardLayout;
 
-    public RoomZombieGUI(JPanel cardLayout, setting_ setting) {
+    public Client_Room(JPanel cardLayout, Client_setting_ setting) {
         setSize(1920, 1080);
         setLayout(new BorderLayout());
         this.setting = setting;
@@ -256,11 +256,11 @@ public class RoomZombieGUI extends JPanel {
 }
 
 class ReceiveIP extends Thread {
-    private RoomZombieGUI panel;
+    private Client_Room panel;
     private boolean running = true;
-    private setting_ setting;
+    private Client_setting_ setting;
 
-    ReceiveIP(RoomZombieGUI panel, setting_ setting) {
+    ReceiveIP(Client_Room panel, Client_setting_ setting) {
         this.panel = panel;
         this.setting = setting;
     }
@@ -279,7 +279,6 @@ class ReceiveIP extends Thread {
                 socket.close();
 
             } catch (Exception e) {
-                e.printStackTrace();
 
             }
         }

@@ -35,7 +35,7 @@ import javax.swing.JPanel;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseAdapter;
 
-public class Client_Jpanel extends JPanel {
+public class Client_Game extends JPanel {
     String path_Bg = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src"
             + File.separator + "Image";
     Image image_bg = Toolkit.getDefaultToolkit().createImage(path_Bg + File.separator + "Background.png");
@@ -99,19 +99,19 @@ public class Client_Jpanel extends JPanel {
     private PrintWriter out2;
     private Socket socket3;
     private PrintWriter out3;
-    private Server_01 server_01;
-    private Server02 server02;
+    private B_Mouse_Server server_01;
+    private A_Zombie_Server server02;
     private Map<Integer, Point> remoteMousePositions = Collections.synchronizedMap(new HashMap<>());
     private int clientId = -1; // ใช้ในการระบุว่าเป็น Client ตัวไหน
     // ===========================
 
     MediaTracker tracker = new MediaTracker(this);
 
-    public Client_Jpanel(JPanel cardLayout, setting_ setting) {
+    public Client_Game(JPanel cardLayout, Client_setting_ setting) {
         if (setting.getCreator()) {
-            server_01 = new Server_01(setting);
+            server_01 = new B_Mouse_Server(setting);
             server_01.start();
-            server02 = new Server02(setting);
+            server02 = new A_Zombie_Server(setting);
             server02.start();
         }
 
@@ -608,11 +608,11 @@ public class Client_Jpanel extends JPanel {
 }
 
 class recive_data extends Thread {
-    private Client_Jpanel panel;
-    private setting_ setting;
+    private Client_Game panel;
+    private Client_setting_ setting;
     private JPanel cardlayout;
 
-    recive_data(Client_Jpanel panel, setting_ setting, JPanel card) {
+    recive_data(Client_Game panel, Client_setting_ setting, JPanel card) {
         this.panel = panel;
         this.setting = setting;
         this.cardlayout = card;

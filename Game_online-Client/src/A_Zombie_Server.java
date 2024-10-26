@@ -9,21 +9,21 @@ import java.util.TimerTask;
 import java.io.*;
 import java.util.Arrays;
 
-public class Server02 extends Thread {
+public class A_Zombie_Server extends Thread {
     private static final int MONSTER_COUNT = 30; // จำนวนมอนสเตอร์
-    private setting_ setting;
+    private Client_setting_ setting;
     private Data data;
     private Create_Data cr;
     private boolean running = true;
 
-    Server02(setting_ setting) {
+    A_Zombie_Server(Client_setting_ setting) {
         this.setting = setting;
     }
 
     @Override
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(9090)) { // เปิด port 9090 สำหรับ server
-            System.out.println("Server is running...");
+            System.out.println("Server Zombie Port 9090");
             data = new Data(MONSTER_COUNT);
             cr = new Create_Data(data, setting);
             cr.Zombie_Movement();
@@ -36,7 +36,7 @@ public class Server02 extends Thread {
                     new Thread(clientHandler).start(); // เริ่ม Thread ใหม่
 
                 } catch (Exception e) {
-                    System.err.println("Error while handling client connection: " + e.getMessage());
+
                 }
                 Thread.sleep(10);
             }
@@ -93,7 +93,7 @@ class ClientHandler implements Runnable {
             socket.close();
 
         } catch (Exception e) {
-            System.err.println("Error in client handler: " + e.getMessage());
+
         }
     }
 
@@ -103,9 +103,9 @@ class ClientHandler implements Runnable {
 class Create_Data {
     private Data data;
     private Timer timer = new Timer();
-    private setting_ setting;
+    private Client_setting_ setting;
 
-    Create_Data(Data data, setting_ setting) {
+    Create_Data(Data data, Client_setting_ setting) {
         this.data = data;
         this.setting = setting;
     }

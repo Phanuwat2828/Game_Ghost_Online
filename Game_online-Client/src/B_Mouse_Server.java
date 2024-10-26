@@ -5,18 +5,18 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.lang.Thread;
 
-public class Server_01 extends Thread {
+public class B_Mouse_Server extends Thread {
     private static final int PORT = 8000;
     private static Set<ClientHandler> clientHandlers = Collections.synchronizedSet(new HashSet<>());
     private static AtomicInteger clientIdCounter = new AtomicInteger(0);
-    private setting_ setting;
+    private Client_setting_ setting;
     private boolean running = true;
     private Map<String, Integer> ip_all = new LinkedHashMap<>();
     private data_Mouse data = new data_Mouse();
     private ServerSocket serverSocket;
     private Socket socket;
 
-    Server_01(setting_ setting) {
+    B_Mouse_Server(Client_setting_ setting) {
         this.setting = setting;
     }
 
@@ -24,7 +24,7 @@ public class Server_01 extends Thread {
 
         try {
             serverSocket = new ServerSocket(PORT);
-            System.out.println("Server เริ่มต้นแล้ว รอการเชื่อมต่อ...");
+            System.out.println("Server Mouse Client Port 8000");
             while (running) {
                 socket = serverSocket.accept();
                 int clientId;
@@ -143,7 +143,7 @@ public class Server_01 extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                Server_01.removeClient(this);
+                B_Mouse_Server.removeClient(this);
                 try {
                     socket.close();
                 } catch (IOException e) {

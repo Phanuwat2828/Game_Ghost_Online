@@ -1,9 +1,9 @@
-public class setting_ {
+public class Client_setting_ {
     private boolean creator = false;
     private String ip;
     private String name;
     private boolean ready = false;
-    private String ip_setting = "192.168.1.102";
+    private String ip_setting = "172.20.10.5";
 
     public String getIp() {
         return ip;

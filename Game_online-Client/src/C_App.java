@@ -7,12 +7,12 @@ import java.awt.event.WindowEvent;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class App extends JFrame {
+public class C_App extends JFrame {
     private Socket socket;
     private PrintWriter out;
 
-    App() {
-        setting_ setting = new setting_();
+    C_App() {
+        Client_setting_ setting = new Client_setting_();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -34,8 +34,8 @@ public class App extends JFrame {
         setLocationRelativeTo(null);
 
         JPanel cardPanel = new JPanel(new CardLayout());
-        first_page firstPage = new first_page(cardPanel);
-        RoomZombieGUI cardRoom = new RoomZombieGUI(cardPanel, setting);
+        Client_Landing firstPage = new Client_Landing(cardPanel);
+        Client_Room cardRoom = new Client_Room(cardPanel, setting);
         cardPanel.add(firstPage, "First");
         cardPanel.add(cardRoom, "Room");
         add(cardPanel);
@@ -43,7 +43,7 @@ public class App extends JFrame {
     }
 
     public static void main(String[] args) {
-        App app = new App();
+        C_App app = new C_App();
         app.setVisible(true);
     }
 }

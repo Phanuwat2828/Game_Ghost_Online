@@ -5,14 +5,16 @@ import java.util.List;
 import java.io.*;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.net.InetAddress;
 
-public class Server_Main {
+public class A_Room_Server {
     // รายการของ clients ทั้งหมด
     private static List<PrintWriter> clientWriters = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
+        InetAddress ip = InetAddress.getLocalHost();
         ServerSocket serverSocket = new ServerSocket(3000);
-        System.out.println("Server is listening on port 12345...");
+        System.out.println("Room Server Port 3000 : ip " + ip.getHostAddress());
         Data_ip data = new Data_ip();
         while (true) {
             // รับการเชื่อมต่อใหม่จาก client
@@ -44,10 +46,12 @@ class Data_ip {
 
     public void setMap(String[] value) {
         this.ip.put(value[1], value[2]);
+
     }
 
     public void remove(String value) {
         this.ip.remove(value);
+        System.out.println("Remove" + ":" + "Room : " + value);
     }
 
     public Map<String, String> getIp() {
@@ -94,7 +98,7 @@ class handleClient_ implements Runnable {
             socket.close();
 
         } catch (IOException e) {
-            System.out.println(e);
+
         }
     }
 

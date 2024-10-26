@@ -13,7 +13,7 @@ import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import java.awt.CardLayout;
 
-public class first_page extends JPanel {
+public class Client_Landing extends JPanel {
     boolean bg_layout = false;
     Font f = new Font("Tahoma", Font.PLAIN, 75);
 
@@ -21,7 +21,7 @@ public class first_page extends JPanel {
             + File.separator + "Image";
     Image bg = Toolkit.getDefaultToolkit().createImage(path_Bg + File.separator + "Background_FirstPage.gif");
 
-    first_page(JPanel cardPanel) {
+    Client_Landing(JPanel cardPanel) {
         JPanel Center = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         JPanel name_game = new JPanel();
         JPanel space = new JPanel();
