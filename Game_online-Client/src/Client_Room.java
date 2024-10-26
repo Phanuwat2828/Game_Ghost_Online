@@ -171,7 +171,7 @@ public class Client_Room extends JPanel {
                 setting.setName(roomName);
                 setting.setCreator(true);
 
-                Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
+                Client_Game in_game = new Client_Game(cardLayout, setting);
                 cardLayout.add(in_game, "in_game");
                 CardLayout cl = (CardLayout) (cardLayout.getLayout());
                 cl.show(cardLayout, "in_game"); // สลับไปยัง Room
@@ -216,7 +216,7 @@ public class Client_Room extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     setting.setIp(ip);
                     setting.setName(name);
-                    Client_Jpanel in_game = new Client_Jpanel(cardLayout, setting);
+                    Client_Game in_game = new Client_Game(cardLayout, setting);
                     cardLayout.add(in_game, "in_game");
                     CardLayout cl = (CardLayout) (cardLayout.getLayout());
                     cl.show(cardLayout, "in_game"); // สลับไปยัง Room

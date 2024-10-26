@@ -371,12 +371,12 @@ public class Client_Game extends JPanel {
         }
     }
 
-    public void startZombieThreads() {
-        for (int i = 0; i < 30; i++) {
-            zombieThreads[i] = new ZombieThread(i, this);
-            zombieThreads[i].start();
-        }
-    }
+    // public void startZombieThreads() {
+    //     for (int i = 0; i < 30; i++) {
+    //         zombieThreads[i] = new ZombieThread(i, this);
+    //         zombieThreads[i].start();
+    //     }
+    // }
 
     public void stopAllZombies() {
         for (int i = 0; i < 30; i++) {
