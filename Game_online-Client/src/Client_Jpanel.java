@@ -27,7 +27,8 @@ public class Client_Jpanel extends JPanel {
     String path_gif = System.getProperty("user.dir")+File.separator +"Game_online-Client"+ File.separator + "src"+ File.separator + "Gif";
     Image image_gif =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Zombie_walk.gif");
     Image item_Ammo =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_gif.gif");
-    Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
+    Image gif_bullet =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "Ammo_1.gif");
+    Image rare_item =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "gold_ammo.gif");
     Image bullet =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Ammo_2.png");
     Image TextGameOver =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "GameOver.gif");
     Image CountDown =Toolkit.getDefaultToolkit().createImage(path_gif+ File.separator + "countdown.gif");
@@ -35,8 +36,7 @@ public class Client_Jpanel extends JPanel {
     Image Border2 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border2.PNG");
     Image Border3 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "Border3.PNG");
     Image frame1 =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame1.PNG");
-    Image frame_blue =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame_blue.PNG");
-    Image frame_red =Toolkit.getDefaultToolkit().createImage(path_png+ File.separator + "frame_red.PNG");
+
     Image Boss_Zombie = Toolkit.getDefaultToolkit().createImage( File.separator +path_gif + File.separator + "Boss_Zombie.gif");
 
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src" + File.separator + "sound";
@@ -49,7 +49,7 @@ public class Client_Jpanel extends JPanel {
     boolean GameOver = false;
     boolean GameWin = false;
     boolean AddBullet = false;
-    int bullets = 500;
+    int bullets = 50;
     int amountBullet;
     int CountDead = 0;
     int Wave;
@@ -322,7 +322,6 @@ protected void paintComponent(Graphics g) {
     super.paintComponent(g);
     g.drawImage(image_bg, 0, 0, 1920, 1080, this);
     BulletBar(g);
-    menu_bar(g);
 
     for (int i = 0; i < Amount_ghost; i++) {
         if (GameOver) {
@@ -503,7 +502,7 @@ protected void paintComponent(Graphics g) {
         g.drawImage(bullet, 75, 77, 100, 100, this);
         if(AddBullet){
             g.setFont(add);
-            g.drawImage(rare_item,75 , 77, 100, 100, this);
+            g.drawImage(gif_bullet,75 , 77, 100, 100, this);
             g.drawImage(wink, 150,75, 50, 50, this);
             g.drawImage(wink, 60,100, 50, 50, this);
         }
@@ -616,16 +615,5 @@ protected void paintComponent(Graphics g) {
     public void setWin(){
         GameWin = false;
     }
-    public void menu_bar(Graphics g){
-        g.drawImage(frame_red, getWidth()-250, -50, 200, 200, this);
-        g.drawImage(frame_blue, getWidth()-270, 10, 233, 233, this);
 
-    }
-    // public void Check_Click_NextWave(int MouseAxisX, int MouseAxisY){
-    //     if(MouseAxisX >= 590 && MouseAxisX <= 590 + 890 && 
-    //             MouseAxisY >= 450 && MouseAxisY <= 450 + 670&&Wave !=5){
-    //         Click_next_wave = true;
-    //         System.out.println("next");
-    //     }
-    // }
 }   
