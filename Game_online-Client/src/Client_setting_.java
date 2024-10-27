@@ -3,6 +3,7 @@ public class Client_setting_ {
     private String ip;
     private String name;
     private boolean ready = false;
+    private boolean readychange = false;
     private String ip_setting = "172.20.10.5";
 
     public String getIp() {
@@ -39,5 +40,13 @@ public class Client_setting_ {
 
     public String getIp_setting() {
         return ip_setting;
+    }
+
+    public void setReadychange(boolean readychange) {
+        this.readychange = readychange;
+    }
+
+    public boolean getReadychange() {
+        return this.readychange;
     }
 }

@@ -416,7 +416,7 @@ class Data {
 
                 }
             }
-            check_change ch = new check_change(data, count);
+            check_change ch = new check_change(data, count, setting);
             ch.start();
             if (count <= 50 && level == 5) {
                 getMonsterData().get("monster1").put("win", true);
@@ -439,10 +439,12 @@ class Data {
 class check_change extends Thread {
     private Data data;
     private int count_die = 0;
+    private Client_setting_ setting;
 
-    check_change(Data data, int count) {
+    check_change(Data data, int count, Client_setting_ setting_) {
         this.data = data;
         this.count_die = count;
+        this.setting = setting_;
     }
 
     @Override
@@ -450,19 +452,19 @@ class check_change extends Thread {
         try {
             int level = data.getLevel_now();
             int level2 = level;
-            if (count_die == 25 && level == 1) {
-                level2 = 2;
-                Thread.sleep(5000);
-            } else if (count_die == 30 && level == 2) {
-                level2 = 3;
-                Thread.sleep(5000);
-            } else if (count_die == 40 && level == 3) {
-                level2 = 4;
-                Thread.sleep(5000);
-            } else if (count_die == 45 && level == 4) {
-                level2 = 5;
-                Thread.sleep(5000);
+            if (setting.getReadychange()) {
+                if (count_die == 25 && level == 1) {
+                    level2 = 2;
+                } else if (count_die == 30 && level == 2) {
+                    level2 = 3;
+                } else if (count_die == 40 && level == 3) {
+                    level2 = 4;
+                } else if (count_die == 45 && level == 4) {
+                    level2 = 5;
+                }
+                setting.setReadychange(false);
             }
+
             data.setLevel(level2);
             Thread.sleep(10);
         } catch (Exception e) {

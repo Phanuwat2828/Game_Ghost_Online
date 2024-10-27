@@ -54,7 +54,7 @@ public class Client_Game extends JPanel {
     Image wink = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Wink2.gif");
     Image Border2 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border2.PNG");
     Image Border3 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border3.PNG");
-
+    Image CountDown = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "countdown.gif");
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src"
             + File.separator + "sound";
     File audioFile_shoot = new File(pathSound + File.separator + "pistol-shot-233473.wav");
@@ -75,6 +75,7 @@ public class Client_Game extends JPanel {
     boolean GameWin = false;
     boolean AddBullet = false;
     boolean ready_ = false;
+    boolean countdown = false;
     int bullets = 20;
     int amountBullet;
     int CountDead = 0;
@@ -95,6 +96,7 @@ public class Client_Game extends JPanel {
     private PrintWriter out3;
     private B_Mouse_Server server_01;
     private A_Zombie_Server server02;
+    private Client_setting_ setting;
     private int count_monster = 0;
     private Map<Integer, Point> remoteMousePositions = Collections.synchronizedMap(new HashMap<>());
     private int clientId = -1; // ใช้ในการระบุว่าเป็น Client ตัวไหน
@@ -103,6 +105,7 @@ public class Client_Game extends JPanel {
     MediaTracker tracker = new MediaTracker(this);
 
     public Client_Game(JPanel cardLayout, Client_setting_ setting) {
+        this.setting = setting;
         if (setting.getCreator()) {
             server_01 = new B_Mouse_Server(setting);
             server_01.start();
@@ -156,6 +159,7 @@ public class Client_Game extends JPanel {
             // TODO: handle exception
         }
         addMouseListener(new MouseAdapter() {
+
             public void mouseClicked(MouseEvent e) {
                 try {
                     boolean getitem = getItem(e.getX(), e.getY());
@@ -387,6 +391,14 @@ public class Client_Game extends JPanel {
         }
     }
 
+    public void setGameWin(boolean gameWin) {
+        GameWin = gameWin;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        GameOver = gameOver;
+    }
+
     // public void startZombieThreads() {
     // for (int i = 0; i < 30; i++) {
     // zombieThreads[i] = new ZombieThread(i, this);
@@ -423,6 +435,50 @@ public class Client_Game extends JPanel {
         return status;
     }
 
+    public void Game_Win(Graphics g, boolean win, int wave) {
+        g.setColor(new Color(0, 0, 0, 150));
+        g.fillRect(0, 0, getWidth(), getHeight());
+        if (win) {
+            g.setFont(new Font("Tahoma", Font.BOLD, 75));
+            g.setColor(Color.YELLOW);
+            g.drawString("YOU WIN !!", 550, 400);
+            Font add = new Font("Tahoma", Font.BOLD, 20);
+            g.setFont(add);
+            g.drawString("you are team work", 650, 500);
+
+        } else {
+            g.setFont(new Font("Tahoma", Font.BOLD, 70));
+            g.setColor(Color.YELLOW);
+            g.drawString("WAVE  " + wave, 600, 360);
+            g.drawString("CLEAR", 630, 460);
+
+            // Font for the countdown
+            Font add = new Font("Tahoma", Font.BOLD, 20);
+            g.setFont(add);
+            g.drawString("next wave in ...  ", 670, 600);
+            countdown = true;
+            paintCountDown(g);
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    countdown = false;
+                    setting.setReadychange(true);
+                }
+            }, 4500);
+
+        }
+
+    }
+
+    public void paintCountDown(Graphics g) {
+        if (countdown) {
+            g.drawImage(CountDown, 660, 650, 150, 100, this);
+        } else {
+
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -457,6 +513,14 @@ public class Client_Game extends JPanel {
         // }
         Font font = new Font("Arial", Font.BOLD, 13);
         int y_text = 100;
+        int die = 0;
+        int Wave_ = 0;
+        die = checkdead();
+        if (die == count_monster) {
+            Wave_ += 1;
+            Game_Win(g, GameWin, Wave_);
+        }
+
         for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
             String name = entry.getKey();
             Map<String, Object> data_now = entry.getValue();
@@ -471,7 +535,7 @@ public class Client_Game extends JPanel {
             Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
             String type = (String) data_now.get("level");
             int wave = (Integer) data_now.get("position_level");
-
+            Wave_ = wave;
             if (!GameOver) {
                 int frameDelay = (speed > 0) ? 500 / speed : 500;
                 int frame = (int) ((System.currentTimeMillis() / frameDelay) % 10);
@@ -536,7 +600,7 @@ public class Client_Game extends JPanel {
 
             g.setFont(new Font("Tahoma", Font.BOLD, 35));
             g.setColor(Color.WHITE);
-            g.drawString("Zombie Dead : " + checkdead() + " / " + count_monster + "  Wave Monster : " + wave, 650, 50);
+            g.drawString("Zombie Dead : " + die + " / " + count_monster + "  Wave Monster : " + wave, 650, 50);
 
         }
     }
@@ -744,6 +808,8 @@ class recive_data extends Thread {
                     if (count_monstaer == 0) {
                         win = (Boolean) data.get("win");
                         lose = (Boolean) data.get("lose");
+                        this.data.setGameWin(win);
+                        this.data.setGameOver(lose);
                     }
                     count_monstaer++;
                     if (waved != wave) {
