@@ -69,7 +69,10 @@ class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            data.setlevel_now();
+            Thread thread = new Thread(() -> {
+                data.setlevel_now(data);
+            });
+            thread.start();
             // ใช้ BufferedOutputStream เพื่อเพิ่มประสิทธิภาพ
             BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
             ObjectOutputStream out = new ObjectOutputStream(bos);
@@ -159,7 +162,7 @@ class Data {
     private static Random random = new Random();
     private int[] X;
     private int[] Y;
-    private int level = 5;
+    private int level = 1;
     private Client_setting_ setting;
 
     Data(Client_setting_ setting) {
@@ -205,14 +208,20 @@ class Data {
                     data_monster.put("position_level", 1);
                     data_monster.put("level", "common");
                     monsterData1.put("monster" + (j + 1), data_monster);
+                    monsterData1.get("monster1").put("win", false);
+                    monsterData1.get("monster1").put("lose", false);
                 } else if (i == 1) {
                     data_monster.put("position_level", 2);
                     data_monster.put("level", "common");
                     monsterData2.put("monster" + (j + 1), data_monster);
+                    monsterData2.get("monster1").put("win", false);
+                    monsterData2.get("monster1").put("lose", false);
                 } else if (i == 2) {
                     data_monster.put("position_level", 3);
                     data_monster.put("level", "common");
                     monsterData3.put("monster" + (j + 1), data_monster);
+                    monsterData3.get("monster1").put("win", false);
+                    monsterData3.get("monster1").put("lose", false);
                 } else if (i == 3) {
                     data_monster.put("position_level", 4);
                     if (j == 44) {
@@ -226,6 +235,8 @@ class Data {
                         data_monster.put("level", "common");
                     }
                     monsterData4.put("monster" + (j + 1), data_monster);
+                    monsterData4.get("monster1").put("win", false);
+                    monsterData4.get("monster1").put("lose", false);
                 } else if (i == 4) {
                     data_monster.put("position_level", 5);
                     if (j == 48 || j == 49) {
@@ -242,6 +253,7 @@ class Data {
                     monsterData5.get("monster1").put("win", false);
                     monsterData5.get("monster1").put("lose", false);
                 }
+
             }
 
         }
@@ -344,7 +356,7 @@ class Data {
 
     }
 
-    public void setlevel_now() {
+    public void setlevel_now(Data data) {
         if (setting.getReady()) {
             int count = 0;
             Map<String, Map<String, Object>> monsterMap = getMonsterData();
@@ -354,6 +366,11 @@ class Data {
                 Boolean status = (Boolean) data_now.get("status");
                 String boss = (String) data_now.get("level");
                 int hp = (int) data_now.get("Hp_");
+                int[] position = (int[]) data_now.get("position");
+
+                if (position[0] >= 1500) {
+                    getMonsterData().get("monster1").put("lose", true);
+                }
 
                 if (!status && boss.equals("common")) {
                     count++;
@@ -377,17 +394,12 @@ class Data {
 
                 }
             }
-            if (count == 25 && level == 1) {
-                level = 2;
-            } else if (count == 30 && level == 2) {
-                level = 3;
-            } else if (count == 40 && level == 3) {
-                level = 4;
-            } else if (count == 45 && level == 4) {
-                level = 5;
-            } else if (count == 50 && level == 5) {
+            check_change ch = new check_change(data, count);
+            ch.start();
+            if (count == 50 && level == 5) {
                 getMonsterData().get("monster1").put("win", true);
             }
+
         }
 
     }
@@ -396,4 +408,43 @@ class Data {
         return level;
     }
 
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+}
+
+class check_change extends Thread {
+    private Data data;
+    private int count_die = 0;
+
+    check_change(Data data, int count) {
+        this.data = data;
+        this.count_die = count;
+    }
+
+    @Override
+    public void run() {
+        try {
+            int level = data.getLevel_now();
+            int level2 = level;
+            if (count_die == 25 && level == 1) {
+                level2 = 2;
+                Thread.sleep(5000);
+            } else if (count_die == 30 && level == 2) {
+                level2 = 3;
+                Thread.sleep(5000);
+            } else if (count_die == 40 && level == 3) {
+                level2 = 4;
+                Thread.sleep(5000);
+            } else if (count_die == 45 && level == 4) {
+                level2 = 5;
+                Thread.sleep(5000);
+            }
+            data.setLevel(level2);
+            Thread.sleep(10);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
 }

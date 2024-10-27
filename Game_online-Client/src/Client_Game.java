@@ -158,9 +158,9 @@ public class Client_Game extends JPanel {
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 try {
-
+                    boolean getitem = getItem(e.getX(), e.getY());
                     // System.out.println("test");
-                    if (bullets > 0) {
+                    if (bullets > 0 && !getitem) {
                         Sound(audioFile_shoot);
                         if (ready_) {
                             socket2 = new Socket(SERVER_IP, SERVER_PORT2);
@@ -168,8 +168,8 @@ public class Client_Game extends JPanel {
                             out2.println(e.getX() + "," + e.getY());
                         }
                     }
-                    if (ready_) {
-                        getItem(e.getX(), e.getY());
+                    if (ready_ && !getitem) {
+
                         Bullets_Manage(-1, null);
                     }
 
@@ -395,7 +395,7 @@ public class Client_Game extends JPanel {
     // }
 
     public boolean getItem(int MouseAxisX, int MouseAxisY) {
-        boolean status = true;
+        boolean status = false;
         for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
             String name = entry.getKey();
             Map<String, Object> data_now = entry.getValue();
@@ -407,7 +407,7 @@ public class Client_Game extends JPanel {
             if (!status_ && drop) {
                 if (MouseAxisX >= position[0] && MouseAxisX <= position[0] + 70 &&
                         MouseAxisY >= position[1] && MouseAxisY <= position[1] + 70) {
-                    status = false;
+                    status = true;
                     Bullets_Manage(1, null);
                     if (chance_drop_rare) {
                         Bullets_Manage(20, null);
@@ -455,7 +455,8 @@ public class Client_Game extends JPanel {
         // Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
 
         // }
-
+        Font font = new Font("Arial", Font.BOLD, 13);
+        int y_text = 100;
         for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
             String name = entry.getKey();
             Map<String, Object> data_now = entry.getValue();
@@ -478,11 +479,9 @@ public class Client_Game extends JPanel {
                 if (status_ && ready_) {
 
                     if (type.equals("common")) {
-                        Font font = new Font("Arial", Font.BOLD, 16);
+
                         g.setColor(Color.RED);
                         g.setFont(font);
-                        g.drawString("Drop item: " + chance_drop, position[0], position[1] - 10);
-                        g.drawString("Drop item: " + chance_drop_rare, position[0], position[1] - 25);
                         g.drawRect(position[0], position[1], 100, 100);
                         g.drawImage(zombie_action_walk[frame], position[0], position[1], 100, 100, this);
                         if (status_ && ready_) {
@@ -499,8 +498,6 @@ public class Client_Game extends JPanel {
                         }
                     } else if (type.equals("Boss")) {
                         g.setColor(Color.RED);
-                        g.drawString("Drop item: " + chance_drop, position[0], position[1] - 10);
-                        g.drawString("Drop item: " + chance_drop_rare, position[0], position[1] - 25);
                         g.drawRect(position[0], position[1], 100, 100);
                         PaintBoss(g, status_, hp_percent, position[0], position[1]);
                     }
@@ -521,9 +518,25 @@ public class Client_Game extends JPanel {
             // GameWin = true;
             // Game_Win(g);
             // }
-            g.setFont(new Font("Tahoma", Font.BOLD, 30));
+
+            g.setFont(font);
+            g.setColor(Color.GREEN);
+
+            if (true) {
+                y_text += 17;
+                g.drawString(
+                        name + " : xy[" + position[0] + "," + position[1] + "] status[" + status_ + "] type[" + type
+                                + "] hp[" + hp + "] hp_%[" + hp_percent + "] item[" + chance_drop + "] item_rare["
+                                + chance_drop_rare + "] Speed[" + speed + "]",
+                        1210,
+                        y_text);
+
+                g.drawRect(1200, 100, 700, 875);
+            }
+
+            g.setFont(new Font("Tahoma", Font.BOLD, 35));
             g.setColor(Color.WHITE);
-            g.drawString("Zombie Dead : " + checkdead() + " / " + count_monster, 50, 50);
+            g.drawString("Zombie Dead : " + checkdead() + " / " + count_monster + "  Wave Monster : " + wave, 650, 50);
 
         }
     }
@@ -703,6 +716,7 @@ class recive_data extends Thread {
         boolean first = true;
         int waved = 1;
         boolean win = false;
+        boolean lose = false;
         while (true) {
             try (Socket socket = new Socket(setting.getIp(), 9090);
                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
@@ -729,6 +743,7 @@ class recive_data extends Thread {
                     int wave = (Integer) data.get("position_level");
                     if (count_monstaer == 0) {
                         win = (Boolean) data.get("win");
+                        lose = (Boolean) data.get("lose");
                     }
                     count_monstaer++;
                     if (waved != wave) {
@@ -757,8 +772,9 @@ class recive_data extends Thread {
                     System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
                     System.out.println("Chance to Drop: " + chanceDrop);
                     System.out.println("Chance to Drop Rare: " + chanceDropRare);
-                    System.out.println("Level" + wave);
-                    System.out.println("win" + win);
+                    System.out.println("Level: " + wave);
+                    System.out.println("win: " + win);
+                    System.out.println("lose: " + lose);
                     System.out.println("=========================================================");
                 }
                 data.setCount_monster(count_monstaer);
