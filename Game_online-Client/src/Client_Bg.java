@@ -43,7 +43,7 @@ public class Client_Bg extends JFrame{
             WaveNow ++;
         }
         if(WaveNow == 1){ 
-            wave[WaveNow] = new Client_Jpanel(1, 10, 0);
+            wave[WaveNow] = new Client_Jpanel(1, 10, 1);
             add(wave[WaveNow]);
             checkTime(wave[WaveNow],WaveNow);
         }else if(WaveNow ==2){

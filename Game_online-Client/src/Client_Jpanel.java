@@ -237,8 +237,8 @@ public class Client_Jpanel extends JPanel {
         for (int i = 0; i < Amount_boss; i++) {
             if (Status_Boss[i]) {
 
-                if (MouseAxisX >= bossX[i] && MouseAxisX <= bossX[i] + 250 && 
-                    MouseAxisY >= bossY[i] && MouseAxisY <= bossY[i] + 250) {
+                if (MouseAxisX >= bossX[i] && MouseAxisX <= bossX[i]+150 && 
+                    MouseAxisY >= bossY[i] && MouseAxisY <= bossY[i]+150) {
                     
                     if (bullets > 0) {
                         Damage[i] = 100; 
@@ -398,6 +398,7 @@ protected void paintComponent(Graphics g) {
                     Percent_HP_boss[i] >= 30 ? new Color(255, 69, 0) :
                     Percent_HP_boss[i] >= 20 ? Color.RED :
                     new Color(139, 0, 0)); 
+            g.drawRect(bossX[i], bossY[i], bossWidth, bossWidth); 
             g.fillRect(healthBarX, healthBarY, maxFilledWidth, healthBarHeight); 
             g.drawImage(boss_action_walk[frame], bossX[i], bossY[i], bossWidth, bossWidth, this);
         }
