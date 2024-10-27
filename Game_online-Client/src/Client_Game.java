@@ -498,7 +498,7 @@ public class Client_Game extends JPanel {
                         }
                     } else if (type.equals("Boss")) {
                         g.setColor(Color.RED);
-                        g.drawRect(position[0], position[1], 100, 100);
+                        g.drawRect(position[0], position[1], 250, 250);
                         PaintBoss(g, status_, hp_percent, position[0], position[1]);
                     }
 

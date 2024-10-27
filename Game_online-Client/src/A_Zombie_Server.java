@@ -187,7 +187,11 @@ class Data {
                 Y[k] = random.nextInt(250, 650);
             }
             Arrays.sort(Y);
+            Random ran = new Random();
+            int random_boss1 = ran.nextInt(0, count_zombie + 1);
+            int random_boss2 = ran.nextInt(0, count_zombie + 1);
             for (int j = 0; j < count_zombie; j++) {
+
                 Map<String, Object> data_monster = new HashMap<>();
                 Boolean Chance_Drop = Chance_To_Drop();
                 Boolean rare = Chance_To_Drop_rare(Chance_Drop);
@@ -223,8 +227,9 @@ class Data {
                     monsterData3.get("monster1").put("win", false);
                     monsterData3.get("monster1").put("lose", false);
                 } else if (i == 3) {
+
                     data_monster.put("position_level", 4);
-                    if (j == 44) {
+                    if (j == random_boss1) {
                         data_monster.put("Speed", random.nextInt(1, 3));
                         data_monster.put("level", "Boss");
                         data_monster.put("Hp_", 3000);
@@ -239,7 +244,7 @@ class Data {
                     monsterData4.get("monster1").put("lose", false);
                 } else if (i == 4) {
                     data_monster.put("position_level", 5);
-                    if (j == 48 || j == 49) {
+                    if (j == random_boss1 || j == random_boss2) {
                         data_monster.put("level", "Boss");
                         data_monster.put("status", false);
                         data_monster.put("Speed", random.nextInt(1, 3));
@@ -268,14 +273,19 @@ class Data {
             int[] position = (int[]) data_now.get("position");
             int Hp = (int) data_now.get("Hp_");
             int max = (int) data_now.get("Hp_max");
+            String type = (String) data_now.get("level");
 
             int x = position[0];
             int y = position[1];
 
             if (status) {
                 int damage = 200;
-                if (Mousex >= x && Mousex <= x + 100 &&
-                        Mousey >= y && Mousey <= y + 100) {
+                int barrea = 100;
+                if (type.equals("Boss")) {
+                    barrea = 250;
+                }
+                if (Mousex >= x && Mousex <= x + barrea &&
+                        Mousey >= y && Mousey <= y + barrea) {
                     // Dropped_item[i] = true;
                     monsterData.get(name).put("Hp_", Hp - damage);
                     monsterData.get(name).put("Hp_percent", (Hp * 100) / max);
@@ -373,22 +383,34 @@ class Data {
                 }
 
                 if (!status && boss.equals("common")) {
-                    count++;
-                } else if (boss.equals("Boss")) {
+                    count += 1;
+                }
+
+            }
+            for (Map.Entry<String, Map<String, Object>> entry : monsterMap.entrySet()) {
+                String name = entry.getKey();
+                Map<String, Object> data_now = entry.getValue();
+                Boolean status = (Boolean) data_now.get("status");
+                String boss = (String) data_now.get("level");
+                int hp = (int) data_now.get("Hp_");
+                int[] position = (int[]) data_now.get("position");
+
+                if (position[0] >= 1500) {
+                    getMonsterData().get("monster1").put("lose", true);
+                }
+                if (boss.equals("Boss")) {
+
+                    if (!status && hp <= 0) {
+                        count += 1;
+
+                    }
                     if (level == 4) {
                         if (count == 44 && hp > 0) {
                             getMonsterData().get(name).put("status", true);
-                        } else {
-                            getMonsterData().get(name).put("status", false);
-                            count++;
                         }
                     } else if (level == 5) {
-                        if ((count == 48 || count == 49) && hp > 0) {
+                        if (count == 48 && hp > 0) {
                             getMonsterData().get(name).put("status", true);
-
-                        } else {
-                            getMonsterData().get(name).put("status", false);
-                            count++;
                         }
                     }
 
@@ -396,7 +418,7 @@ class Data {
             }
             check_change ch = new check_change(data, count);
             ch.start();
-            if (count == 50 && level == 5) {
+            if (count <= 50 && level == 5) {
                 getMonsterData().get("monster1").put("win", true);
             }
 
