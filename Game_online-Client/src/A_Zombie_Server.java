@@ -162,7 +162,7 @@ class Data {
     private static Random random = new Random();
     private int[] X;
     private int[] Y;
-    private int level = 1;
+    private int level = 5;
     private Client_setting_ setting;
 
     Data(Client_setting_ setting) {
@@ -378,8 +378,9 @@ class Data {
                 int hp = (int) data_now.get("Hp_");
                 int[] position = (int[]) data_now.get("position");
 
-                if (position[0] >= 1500) {
+                if (position[0] >= 1650) {
                     getMonsterData().get("monster1").put("lose", true);
+                    
                 }
 
                 if (!status && boss.equals("common")) {

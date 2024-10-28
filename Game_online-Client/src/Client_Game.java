@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -54,7 +55,7 @@ public class Client_Game extends JPanel {
     Image wink = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Wink2.gif");
     Image Border2 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border2.PNG");
     Image Border3 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border3.PNG");
-    Image CountDown = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "countdown.gif");
+    Image loading = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "loading.gif");
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src"
             + File.separator + "sound";
     File audioFile_shoot = new File(pathSound + File.separator + "pistol-shot-233473.wav");
@@ -123,7 +124,7 @@ public class Client_Game extends JPanel {
         panel.setOpaque(false);
         // panel.setBackground(Color.BLUE);
         JButton bt_s = new JButton("Start");
-
+            
         JButton bt_e = new JButton("Exit");
         bt_s.setPreferredSize(new Dimension(100, 50));
         bt_e.setPreferredSize(new Dimension(100, 50));
@@ -218,7 +219,7 @@ public class Client_Game extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     setting.setReady(true);
-
+                    bt_s.setVisible(false);
                 } catch (Exception ex) {
 
                 }
@@ -440,28 +441,53 @@ public class Client_Game extends JPanel {
     }
 
     public void Game_Win(Graphics g, boolean win, int wave) {
+        // Background
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, getWidth(), getHeight());
+    
+        // Set up fonts
+        Font mainFont = new Font("Tahoma", Font.BOLD, 75);
+        Font subFont = new Font("Tahoma", Font.BOLD, 20);
+        g.setFont(mainFont);
+        FontMetrics fmMain = g.getFontMetrics(mainFont);
+        FontMetrics fmSub = g.getFontMetrics(subFont);
+    
         if (win) {
-            g.setFont(new Font("Tahoma", Font.BOLD, 75));
+            // Center "YOU WIN !!"
+            String winText = "YOU WIN !!";
+            int winX = (getWidth() - fmMain.stringWidth(winText)) / 2;
+            int winY = getHeight() / 2 - fmMain.getHeight();
             g.setColor(Color.YELLOW);
-            g.drawString("YOU WIN !!", 550, 400);
-            Font add = new Font("Tahoma", Font.BOLD, 20);
-            g.setFont(add);
-            g.drawString("you are team work", 650, 500);
-
+            g.drawString(winText, winX, winY);
+    
+            // Center "you are team work"
+            g.setFont(subFont);
+            String teamText = "you are team work";
+            int teamX = (getWidth() - fmSub.stringWidth(teamText)) / 2;
+            int teamY = winY + fmMain.getHeight() + fmSub.getHeight();
+            g.drawString(teamText, teamX, teamY);
         } else {
-            g.setFont(new Font("Tahoma", Font.BOLD, 70));
+            // Center "WAVE <wave> CLEAR"
+            String waveText = "WAVE " + wave + " CLEAR";
+            int waveX = (getWidth() - fmMain.stringWidth(waveText)) / 2;
+            int waveY = getHeight() / 2 - fmMain.getHeight();
             g.setColor(Color.YELLOW);
-            g.drawString("WAVE  " + wave, 600, 360);
-            g.drawString("CLEAR", 630, 460);
+            g.drawString(waveText, waveX, waveY);
+    
+            // Center "Next Wave..."
+            g.setFont(subFont);
+            String nextWaveText = "Next Wave...";
+            int nextWaveX = (getWidth() - fmSub.stringWidth(nextWaveText)) / 2;
+            int countdownBottomY = (getHeight() + 100) / 2; // Bottom edge of countdown image
+            int nextWaveY = countdownBottomY + fmSub.getHeight() + 10; // Reduced margin to 10 pixels
+    
+            g.drawString(nextWaveText, nextWaveX, nextWaveY);
 
-            // Font for the countdown
-            Font add = new Font("Tahoma", Font.BOLD, 20);
-            g.setFont(add);
-            g.drawString("next wave in ...  ", 670, 600);
+            // Display centered countdown image
             countdown = true;
             paintCountDown(g);
+    
+            // Start timer for next wave
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
@@ -470,18 +496,17 @@ public class Client_Game extends JPanel {
                     setting.setReadychange(true);
                 }
             }, 4500);
-
         }
-
     }
-
+    
     public void paintCountDown(Graphics g) {
         if (countdown) {
-            g.drawImage(CountDown, 660, 650, 150, 100, this);
-        } else {
-
+            int centerX = (getWidth() - 650) / 2;
+            int centerY = (getHeight() - 650) / 2;
+            g.drawImage(loading, centerX, centerY, 650, 650, this);
         }
     }
+    
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -542,7 +567,7 @@ public class Client_Game extends JPanel {
             Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
             String type = (String) data_now.get("level");
             int wave = (Integer) data_now.get("position_level");
-            Boolean lose = (Boolean) data_now.get("");
+
             Wave_ = wave;
             if (!GameOver) {
                 int frameDelay = (speed > 0) ? 500 / speed : 500;
@@ -582,14 +607,17 @@ public class Client_Game extends JPanel {
                     monsterData.get(name).put("status", false);
                     continue;
                 }
-
+                g.setFont(new Font("Tahoma", Font.BOLD, 35));
+                g.setColor(Color.WHITE);
+                g.drawString("Zombie Dead : " + die + " / " + count_monster + "  Wave Monster : " + wave, 650, 50);
+    
+            }else if (GameOver) {
+                monsterData.get(name).put("dropped", false);
+                Game_Over(g);
+            } else if (checkdead() == 30) {
+                GameWin = true;
+                Game_Win(g);
             }
-            // } else if (GameOver) {
-            // Game_Over(g);
-            // } else if (checkdead() == 30) {
-            // GameWin = true;
-            // Game_Win(g);
-            // }
 
             g.setFont(font);
             g.setColor(Color.GREEN);
@@ -605,11 +633,8 @@ public class Client_Game extends JPanel {
 
                 g.drawRect(1200, 100, 700, 875);
             }
-
-            g.setFont(new Font("Tahoma", Font.BOLD, 35));
-            g.setColor(Color.WHITE);
-            g.drawString("Zombie Dead : " + die + " / " + count_monster + "  Wave Monster : " + wave, 650, 50);
-
+        
+        
         }
     }
 
