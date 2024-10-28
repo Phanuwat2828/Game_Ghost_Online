@@ -55,6 +55,8 @@ public class Client_Game extends JPanel {
     Image wink = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Wink2.gif");
     Image Border2 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border2.PNG");
     Image Border3 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border3.PNG");
+    Image Border4 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border4.PNG");
+    Image png_win = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "win.PNG");
     Image loading = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Loading.gif");
     Image blood = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "blood.gif");
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src"
@@ -458,13 +460,14 @@ public class Client_Game extends JPanel {
             int winX = (getWidth() - fmMain.stringWidth(winText)) / 2;
             int winY = getHeight() / 2 - fmMain.getHeight();
             g.setColor(Color.YELLOW);
-            g.drawString(winText, winX, winY);
+            g.drawImage(png_win, winX, winY, 800,400,this);
+            // g.drawString(winText, winX, winY);
     
             g.setFont(subFont);
             String teamText = "you are team work";
             int teamX = (getWidth() - fmSub.stringWidth(teamText)) / 2;
             int teamY = winY + fmMain.getHeight() + fmSub.getHeight();
-            g.drawString(teamText, teamX, teamY);
+            //g.drawString(teamText, teamX, teamY);
         } else {
             String waveText = "WAVE " + wave + " CLEAR";
             int waveX = (getWidth() - fmMain.stringWidth(waveText)) / 2;
@@ -508,6 +511,7 @@ public class Client_Game extends JPanel {
         super.paintComponent(g);
         g.drawImage(image_bg, 0, 0, 1920, 1080, this);
         BulletBar(g);
+        // display_north_bar(g);
         synchronized (remoteMousePositions) {
             for (Map.Entry<Integer, Point> entry : remoteMousePositions.entrySet()) {
                 int id = entry.getKey();
@@ -602,10 +606,7 @@ public class Client_Game extends JPanel {
                     monsterData.get(name).put("status", false);
                     continue;
                 }
-                g.setFont(new Font("Tahoma", Font.BOLD, 35));
-                g.setColor(Color.WHITE);
-                g.drawString("Zombie Dead : " + die + " / " + count_monster + "  Wave Monster : " + wave, 650, 50);
-    
+                display_north_bar(g,die,count_monster,wave);
             }else if (GameOver) {
                 monsterData.get(name).put("dropped", false);
                 Game_Over(g);
@@ -711,24 +712,44 @@ public class Client_Game extends JPanel {
             }, 5000);
         }
     }
+    public void display_north_bar(Graphics g,int die,int count_monster,int wave){
+        g.drawImage(Border4, 425, -10, 500, 150, this);
+        g.drawImage(Border4, 1000, -10, 500, 150, this);
+
+        g.setFont(new Font("Tahoma", Font.BOLD, 33));
+        g.setColor(Color.DARK_GRAY);
+        if(die<10){
+            g.drawString("Zombie Dead : " + die + " / " + count_monster , 490, 75);
+        }else{
+            g.drawString("Zombie Dead : " + die + " / " + count_monster , 482, 75);
+        }
+        g.drawString("Wave Monster : " + wave,1100,75);
+    }
 
     public void BulletBar(Graphics g) {
-        Font f = new Font("Tahoma", Font.BOLD, 20);
-        Font add = new Font("Tahoma", Font.BOLD, 20);
+        Font f = new Font("Tahoma", Font.BOLD, 23);
         g.setColor(Color.black);
         // g.fillRect(20,20, 150, 150);
-        g.drawImage(Border2, 0, 0, 250, 250, this);
-        g.drawImage(Border3, 27, 127, 200, 100, this);
+        g.drawImage(Border2, 0, 0, 275, 275, this);
+        g.drawImage(Border3, 26, 127, 225, 135, this);
         g.setColor(Color.WHITE);
         g.setFont(f);
-        g.drawString("bullet", 95, 85);
-        g.drawString(bullets + "", 115, 185);
-        g.drawImage(bullet, 75, 77, 100, 100, this);
+        g.drawString("bullet", 106, 90);
+        g.drawImage(bullet, 79, 75, 120, 120, this);
+
+        if(bullets<10){
+            g.drawString(bullets + "", 132, 204);
+        }else if(bullets<100){
+            g.drawString(bullets + "", 124, 204);
+        }else if(bullets<1000){
+            g.drawString(bullets + "", 117, 204);
+        }else if(bullets<10000){
+            g.drawString(bullets + "", 110, 204);
+        }
         if (AddBullet) {
-            g.setFont(add);
-            g.drawImage(rare_item1, 75, 77, 100, 100, this);
-            g.drawImage(wink, 120, 75, 50, 50, this);
-            g.drawImage(wink, 25, 100, 50, 50, this);
+            g.drawImage(rare_item1, 79, 75, 120, 120, this);
+            g.drawImage(wink, 165, 83, 70, 70, this);
+            g.drawImage(wink, 55, 115, 70, 70, this);
         }
 
     }
@@ -736,18 +757,20 @@ public class Client_Game extends JPanel {
     public void Game_Over(Graphics g) {
         g.setColor(new Color(0, 0, 0, 10));
         g.fillRect(0, 0, getWidth(), getHeight());
-        g.drawImage(TextGameOver, 500, 150, 500, 500, this);
-        g.drawImage(image_gif, 450, 300, 150, 200, this);
-        g.drawImage(image_gif, 900, 300, 150, 200, this);
+        g.drawImage(TextGameOver, 590, 150, 750, 750, this);
+        g.drawImage(image_gif, 500, 390, 200, 250, this);
+        g.drawImage(image_gif, 1190, 390, 200, 250, this);
         repaint();
     }
 
     public void Game_Win(Graphics g) {
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, getWidth(), getHeight());
-        g.setFont(new Font("Tahoma", Font.BOLD, 70));
-        g.setColor(Color.YELLOW);
-        g.drawString("YOU WIN!", 600, 300);
+        // g.setFont(new Font("Tahoma", Font.BOLD, 70));
+        // g.setColor(Color.YELLOW);
+        // g.drawString("YOU WIN!", 600, 300);
+        //g.drawImage(png_win, 0, 0, 400, 400, this);
+        g.drawImage(png_win, 100, 100, 100, 100, this);
     }
 
     public int checkdead() {
