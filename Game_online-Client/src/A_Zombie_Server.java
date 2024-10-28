@@ -183,8 +183,8 @@ class Data {
             X = new int[count_zombie];
             Y = new int[count_zombie];
             for (int k = 0; k < count_zombie; k++) {
-                X[k] = random.nextInt(20, 419);
-                Y[k] = random.nextInt(250, 650);
+                X[k] = random.nextInt(20, 700);
+                Y[k] = random.nextInt(250, 800);
             }
             Arrays.sort(Y);
             Random ran = new Random();
