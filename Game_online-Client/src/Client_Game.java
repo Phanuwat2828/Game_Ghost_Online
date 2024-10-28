@@ -454,41 +454,35 @@ public class Client_Game extends JPanel {
         FontMetrics fmSub = g.getFontMetrics(subFont);
     
         if (win) {
-            // Center "YOU WIN !!"
             String winText = "YOU WIN !!";
             int winX = (getWidth() - fmMain.stringWidth(winText)) / 2;
             int winY = getHeight() / 2 - fmMain.getHeight();
             g.setColor(Color.YELLOW);
             g.drawString(winText, winX, winY);
     
-            // Center "you are team work"
             g.setFont(subFont);
             String teamText = "you are team work";
             int teamX = (getWidth() - fmSub.stringWidth(teamText)) / 2;
             int teamY = winY + fmMain.getHeight() + fmSub.getHeight();
             g.drawString(teamText, teamX, teamY);
         } else {
-            // Center "WAVE <wave> CLEAR"
             String waveText = "WAVE " + wave + " CLEAR";
             int waveX = (getWidth() - fmMain.stringWidth(waveText)) / 2;
             int waveY = getHeight() / 2 - fmMain.getHeight();
             g.setColor(Color.YELLOW);
             g.drawString(waveText, waveX, waveY);
     
-            // Center "Next Wave..."
             g.setFont(subFont);
             String nextWaveText = "Next Wave...";
             int nextWaveX = (getWidth() - fmSub.stringWidth(nextWaveText)) / 2;
-            int countdownBottomY = (getHeight() + 100) / 2; // Bottom edge of countdown image
-            int nextWaveY = countdownBottomY + fmSub.getHeight() + 10; // Reduced margin to 10 pixels
+            int countdownBottomY = (getHeight() + 100) / 2; 
+            int nextWaveY = countdownBottomY + fmSub.getHeight() + 10; 
     
             g.drawString(nextWaveText, nextWaveX, nextWaveY);
 
-            // Display centered countdown image
             countdown = true;
             paintCountDown(g);
     
-            // Start timer for next wave
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
