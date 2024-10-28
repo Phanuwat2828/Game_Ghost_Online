@@ -63,7 +63,7 @@ public class Client_Game extends JPanel {
     Random rand = new Random();
     boolean ready = false;
     boolean exit_game = false;
-
+    private boolean dev = false;
     // Var
     private Map<String, Map<String, Object>> monsterData = new LinkedHashMap<>();
 
@@ -282,6 +282,8 @@ public class Client_Game extends JPanel {
         data_monster.put("position_level", wave);
         data_monster.put("level", type);
 
+
+
         monsterData.put(index, data_monster);
         ready_ = ready;
         // System.out.println("=================== " + index +
@@ -416,11 +418,13 @@ public class Client_Game extends JPanel {
             Boolean drop = (Boolean) data_now.get("dropped");
             Boolean chance_drop = (Boolean) data_now.get("Chance_Drop");
             Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
+
+
             if (!status_ && drop) {
                 if (MouseAxisX >= position[0] && MouseAxisX <= position[0] + 70 &&
                         MouseAxisY >= position[1] && MouseAxisY <= position[1] + 70) {
                     status = true;
-                    Bullets_Manage(1, null);
+                    // Bullets_Manage(1, null);
                     if (chance_drop_rare) {
                         Bullets_Manage(20, null);
                     } else if (chance_drop) {
@@ -520,6 +524,9 @@ public class Client_Game extends JPanel {
             Wave_ += 1;
             Game_Win(g, GameWin, Wave_);
         }
+        if(GameOver){
+            Game_Over(g);
+        }
 
         for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
             String name = entry.getKey();
@@ -535,6 +542,7 @@ public class Client_Game extends JPanel {
             Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
             String type = (String) data_now.get("level");
             int wave = (Integer) data_now.get("position_level");
+            Boolean lose = (Boolean) data_now.get("");
             Wave_ = wave;
             if (!GameOver) {
                 int frameDelay = (speed > 0) ? 500 / speed : 500;
@@ -586,7 +594,7 @@ public class Client_Game extends JPanel {
             g.setFont(font);
             g.setColor(Color.GREEN);
 
-            if (true) {
+            if (dev) {
                 y_text += 17;
                 g.drawString(
                         name + " : xy[" + position[0] + "," + position[1] + "] status[" + status_ + "] type[" + type
