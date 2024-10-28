@@ -55,7 +55,7 @@ public class Client_Game extends JPanel {
     Image wink = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Wink2.gif");
     Image Border2 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border2.PNG");
     Image Border3 = Toolkit.getDefaultToolkit().createImage(path_png + File.separator + "Border3.PNG");
-    Image CountDown = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "countdown.gif");
+    Image loading = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "Loading.gif");
     Image blood = Toolkit.getDefaultToolkit().createImage(path_gif + File.separator + "blood.gif");
     String pathSound = System.getProperty("user.dir") + File.separator + "Game_online-Client" + File.separator + "src"
             + File.separator + "sound";
