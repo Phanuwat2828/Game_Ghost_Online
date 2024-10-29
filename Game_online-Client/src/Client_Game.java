@@ -204,6 +204,7 @@ public class Client_Game extends JPanel {
                             server_01.stopServer();
                         } catch (Exception ex) {
                             // TODO: handle exception
+                            System.out.println(ex);
                         }
                     }
                     CardLayout cl = (CardLayout) (cardLayout.getLayout());
@@ -454,6 +455,10 @@ public class Client_Game extends JPanel {
         FontMetrics fmSub = g.getFontMetrics(subFont);
     
         if (win) {
+            for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
+                String name = entry.getKey();
+                    monsterData.get(name).put("dropped", false);
+            }
             int winX = (getWidth() - 800) / 2;
             int winY = (getHeight() - 400) / 2;
             g.drawImage(png_win, winX, winY, 800, 400, this);
@@ -604,10 +609,8 @@ public class Client_Game extends JPanel {
             }else if (GameOver) {
                 monsterData.get(name).put("dropped", false);
                 Game_Over(g);
-            } else if (checkdead() == 30) {
-                GameWin = true;
-                Game_Win(g);
             }
+            
 
             g.setFont(font);
             g.setColor(Color.GREEN);
@@ -876,17 +879,17 @@ class recive_data extends Thread {
                     this.panel.repaint();
 
                     index++;
-                    System.out.println(name);
-                    System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
-                    System.out.println("Status: " + status);
-                    System.out.println("Speed: " + speed);
-                    System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
-                    System.out.println("Chance to Drop: " + chanceDrop);
-                    System.out.println("Chance to Drop Rare: " + chanceDropRare);
-                    System.out.println("Level: " + wave);
-                    System.out.println("win: " + win);
-                    System.out.println("lose: " + lose);
-                    System.out.println("=========================================================");
+                    // System.out.println(name);
+                    // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
+                    // System.out.println("Status: " + status);
+                    // System.out.println("Speed: " + speed);
+                    // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
+                    // System.out.println("Chance to Drop: " + chanceDrop);
+                    // System.out.println("Chance to Drop Rare: " + chanceDropRare);
+                    // System.out.println("Level: " + wave);
+                    // System.out.println("win: " + win);
+                    // System.out.println("lose: " + lose);
+                    // System.out.println("=========================================================");
                 }
                 data.setCount_monster(count_monstaer);
                 first = false;
