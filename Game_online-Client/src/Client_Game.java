@@ -444,11 +444,9 @@ public class Client_Game extends JPanel {
     }
 
     public void Game_Win(Graphics g, boolean win, int wave) {
-        // Background
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, getWidth(), getHeight());
     
-        // Set up fonts
         Font mainFont = new Font("Tahoma", Font.BOLD, 75);
         Font subFont = new Font("Tahoma", Font.BOLD, 20);
         g.setFont(mainFont);
@@ -456,18 +454,14 @@ public class Client_Game extends JPanel {
         FontMetrics fmSub = g.getFontMetrics(subFont);
     
         if (win) {
-            String winText = "YOU WIN !!";
-            int winX = (getWidth() - fmMain.stringWidth(winText)) / 2;
-            int winY = getHeight() / 2 - fmMain.getHeight();
-            g.setColor(Color.YELLOW);
-            g.drawImage(png_win, winX, winY, 800,400,this);
-            // g.drawString(winText, winX, winY);
+            int winX = (getWidth() - 800) / 2;
+            int winY = (getHeight() - 400) / 2;
+            g.drawImage(png_win, winX, winY, 800, 400, this);
     
             g.setFont(subFont);
             String teamText = "you are team work";
             int teamX = (getWidth() - fmSub.stringWidth(teamText)) / 2;
             int teamY = winY + fmMain.getHeight() + fmSub.getHeight();
-            //g.drawString(teamText, teamX, teamY);
         } else {
             String waveText = "WAVE " + wave + " CLEAR";
             int waveX = (getWidth() - fmMain.stringWidth(waveText)) / 2;
