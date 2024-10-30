@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -127,10 +126,12 @@ public class Client_Game extends JPanel {
         panel.setOpaque(false);
         // panel.setBackground(Color.BLUE);
         JButton bt_s = new JButton("Start");
+        bt_s.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
         JButton bt_e = new JButton("Exit");
-        bt_s.setPreferredSize(new Dimension(100, 50));
-        bt_e.setPreferredSize(new Dimension(100, 50));
+        bt_e.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        bt_s.setPreferredSize(new Dimension(150, 50));
+        bt_e.setPreferredSize(new Dimension(150, 50));
         bt_e.setForeground(Color.WHITE);
         bt_s.setForeground(Color.WHITE);
         bt_s.setBackground(Color.green);
@@ -144,7 +145,6 @@ public class Client_Game extends JPanel {
                 @Override
                 public void mouseMoved(MouseEvent e) {
                     try {
-
                         mouseX = e.getX();
                         mouseY = e.getY();
                         if (clientId != -1) { // ตรวจสอบว่ามี clientId แล้ว
