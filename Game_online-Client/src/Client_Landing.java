@@ -70,6 +70,15 @@ public class Client_Landing extends JPanel {
         });
 
         JButton developer = new JButton("Developer");
+        developer.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) (cardPanel.getLayout());
+                cl.show(cardPanel, "dev"); // สลับไปยัง Room
+            }
+
+        });
         JButton exit = new JButton("Exit");
 
         name_game.add(game_name);

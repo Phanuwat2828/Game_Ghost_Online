@@ -127,7 +127,7 @@ public class Client_Game extends JPanel {
         panel.setOpaque(false);
         // panel.setBackground(Color.BLUE);
         JButton bt_s = new JButton("Start");
-            
+
         JButton bt_e = new JButton("Exit");
         bt_s.setPreferredSize(new Dimension(100, 50));
         bt_e.setPreferredSize(new Dimension(100, 50));
@@ -287,8 +287,6 @@ public class Client_Game extends JPanel {
         data_monster.put("position_level", wave);
         data_monster.put("level", type);
 
-
-
         monsterData.put(index, data_monster);
         ready_ = ready;
         // System.out.println("=================== " + index +
@@ -424,7 +422,6 @@ public class Client_Game extends JPanel {
             Boolean chance_drop = (Boolean) data_now.get("Chance_Drop");
             Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
 
-
             if (!status_ && drop) {
                 if (MouseAxisX >= position[0] && MouseAxisX <= position[0] + 70 &&
                         MouseAxisY >= position[1] && MouseAxisY <= position[1] + 70) {
@@ -447,22 +444,22 @@ public class Client_Game extends JPanel {
     public void Game_Win(Graphics g, boolean win, int wave) {
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, getWidth(), getHeight());
-    
+
         Font mainFont = new Font("Tahoma", Font.BOLD, 75);
         Font subFont = new Font("Tahoma", Font.BOLD, 20);
         g.setFont(mainFont);
         FontMetrics fmMain = g.getFontMetrics(mainFont);
         FontMetrics fmSub = g.getFontMetrics(subFont);
-    
+
         if (win) {
             for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
                 String name = entry.getKey();
-                    monsterData.get(name).put("dropped", false);
+                monsterData.get(name).put("dropped", false);
             }
             int winX = (getWidth() - 800) / 2;
             int winY = (getHeight() - 400) / 2;
             g.drawImage(png_win, winX, winY, 800, 400, this);
-    
+
             g.setFont(subFont);
             String teamText = "you are team work";
             int teamX = (getWidth() - fmSub.stringWidth(teamText)) / 2;
@@ -473,18 +470,18 @@ public class Client_Game extends JPanel {
             int waveY = getHeight() / 2 - fmMain.getHeight();
             g.setColor(Color.YELLOW);
             g.drawString(waveText, waveX, waveY);
-    
+
             g.setFont(subFont);
             String nextWaveText = "Next Wave...";
             int nextWaveX = (getWidth() - fmSub.stringWidth(nextWaveText)) / 2;
-            int countdownBottomY = (getHeight() + 100) / 2; 
-            int nextWaveY = countdownBottomY + fmSub.getHeight() + 10; 
-    
+            int countdownBottomY = (getHeight() + 100) / 2;
+            int nextWaveY = countdownBottomY + fmSub.getHeight() + 10;
+
             g.drawString(nextWaveText, nextWaveX, nextWaveY);
 
             countdown = true;
             paintCountDown(g);
-    
+
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
@@ -495,7 +492,7 @@ public class Client_Game extends JPanel {
             }, 4500);
         }
     }
-    
+
     public void paintCountDown(Graphics g) {
         if (countdown) {
             int centerX = (getWidth() - 650) / 2;
@@ -503,7 +500,6 @@ public class Client_Game extends JPanel {
             g.drawImage(loading, centerX, centerY, 650, 650, this);
         }
     }
-    
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -547,7 +543,7 @@ public class Client_Game extends JPanel {
             Wave_ += 1;
             Game_Win(g, GameWin, Wave_);
         }
-        if(GameOver){
+        if (GameOver) {
             Game_Over(g);
         }
 
@@ -605,12 +601,11 @@ public class Client_Game extends JPanel {
                     monsterData.get(name).put("status", false);
                     continue;
                 }
-                display_north_bar(g,die,count_monster,wave);
-            }else if (GameOver) {
+                display_north_bar(g, die, count_monster, wave);
+            } else if (GameOver) {
                 monsterData.get(name).put("dropped", false);
                 Game_Over(g);
             }
-            
 
             g.setFont(font);
             g.setColor(Color.GREEN);
@@ -626,8 +621,7 @@ public class Client_Game extends JPanel {
 
                 g.drawRect(1200, 100, 700, 875);
             }
-        
-        
+
         }
     }
 
@@ -709,18 +703,19 @@ public class Client_Game extends JPanel {
             }, 5000);
         }
     }
-    public void display_north_bar(Graphics g,int die,int count_monster,int wave){
+
+    public void display_north_bar(Graphics g, int die, int count_monster, int wave) {
         g.drawImage(Border4, 425, -10, 500, 150, this);
         g.drawImage(Border4, 1000, -10, 500, 150, this);
 
         g.setFont(new Font("Tahoma", Font.BOLD, 33));
         g.setColor(Color.DARK_GRAY);
-        if(die<10){
-            g.drawString("Zombie Dead : " + die + " / " + count_monster , 490, 75);
-        }else{
-            g.drawString("Zombie Dead : " + die + " / " + count_monster , 482, 75);
+        if (die < 10) {
+            g.drawString("Zombie Dead : " + die + " / " + count_monster, 490, 75);
+        } else {
+            g.drawString("Zombie Dead : " + die + " / " + count_monster, 482, 75);
         }
-        g.drawString("Wave Monster : " + wave,1100,75);
+        g.drawString("Wave Monster : " + wave, 1100, 75);
     }
 
     public void BulletBar(Graphics g) {
@@ -734,13 +729,13 @@ public class Client_Game extends JPanel {
         g.drawString("bullet", 106, 90);
         g.drawImage(bullet, 79, 75, 120, 120, this);
 
-        if(bullets<10){
+        if (bullets < 10) {
             g.drawString(bullets + "", 132, 204);
-        }else if(bullets<100){
+        } else if (bullets < 100) {
             g.drawString(bullets + "", 124, 204);
-        }else if(bullets<1000){
+        } else if (bullets < 1000) {
             g.drawString(bullets + "", 117, 204);
-        }else if(bullets<10000){
+        } else if (bullets < 10000) {
             g.drawString(bullets + "", 110, 204);
         }
         if (AddBullet) {
@@ -766,7 +761,7 @@ public class Client_Game extends JPanel {
         // g.setFont(new Font("Tahoma", Font.BOLD, 70));
         // g.setColor(Color.YELLOW);
         // g.drawString("YOU WIN!", 600, 300);
-        //g.drawImage(png_win, 0, 0, 400, 400, this);
+        // g.drawImage(png_win, 0, 0, 400, 400, this);
         g.drawImage(png_win, 100, 100, 100, 100, this);
     }
 

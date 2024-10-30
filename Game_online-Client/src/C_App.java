@@ -36,8 +36,10 @@ public class C_App extends JFrame {
         JPanel cardPanel = new JPanel(new CardLayout());
         Client_Landing firstPage = new Client_Landing(cardPanel);
         Client_Room cardRoom = new Client_Room(cardPanel, setting);
+        Devolop dev = new Devolop(cardPanel);
         cardPanel.add(firstPage, "First");
         cardPanel.add(cardRoom, "Room");
+        cardPanel.add(dev, "dev");
         add(cardPanel);
 
     }
