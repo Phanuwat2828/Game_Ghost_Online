@@ -79,7 +79,7 @@ public class Client_Game extends JPanel {
     boolean AddBullet = false;
     boolean ready_ = false;
     boolean countdown = false;
-    int bullets = 20;
+    int bullets = 30;
     int amountBullet;
     int CountDead = 0;
     int mouseX = 0;
@@ -520,20 +520,7 @@ public class Client_Game extends JPanel {
                 g.drawString("Player : " + id, p.x + 5, p.y - 5);
             }
         }
-        // for (Map.Entry<String, Map<String, Object>> entry : monsterData.entrySet()) {
-        // String name = entry.getKey();
-        // Map<String, Object> data_now = entry.getValue();
-        // int[] position = (int[]) data_now.get("position");
-        // Boolean status_ = (Boolean) data_now.get("status");
-        // int speed = (int) data_now.get("Speed");
-        // Boolean drop = (Boolean) data_now.get("dropped");
-        // int hp = (int) data_now.get("Hp_");
-        // int hp_max = (int) data_now.get("Hp_max");
-        // int hp_percent = (int) data_now.get("Hp_percent");
-        // Boolean chance_drop = (Boolean) data_now.get("Chance_Drop");
-        // Boolean chance_drop_rare = (Boolean) data_now.get("Chance_Drop_rare");
 
-        // }
         Font font = new Font("Arial", Font.BOLD, 13);
         int y_text = 100;
         int die = 0;
@@ -658,27 +645,6 @@ public class Client_Game extends JPanel {
             }
         }
     }
-
-    // ฟังก์ชันเพิ่มตำแหน่ง X ของ Zombie
-    // public void addZombieX(int i, int num) {
-    // axisX.set(i, axisX.get(i) + num);
-
-    // }
-
-    // // Function to increase the Y position of a Zombie
-    // public void addZombieY(int i, int num) {
-    // axisY.set(i, axisY.get(i) + num);
-    // }
-
-    // // Function to get the X position of a Zombie
-    // public int getZombieX(int i) {
-    // return axisX.get(i);
-    // }
-
-    // // Function to get the Y position of a Zombie
-    // public int getZombieY(int i) {
-    // return axisY.get(i);
-    // }
 
     public void Bullets_Manage(int amountBullet, Graphics g) {
         this.amountBullet = amountBullet;
@@ -899,8 +865,7 @@ class recive_data extends Thread {
 
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+
             } // รอการอัพเดตครั้งต่อไป
 
         }

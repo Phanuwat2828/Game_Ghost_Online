@@ -4,7 +4,7 @@ public class Client_setting_ {
     private String name;
     private boolean ready = false;
     private boolean readychange = false;
-    private String ip_setting = "localhost";
+    private String ip_setting = "192.168.1.53";
 
     public String getIp() {
         return ip;

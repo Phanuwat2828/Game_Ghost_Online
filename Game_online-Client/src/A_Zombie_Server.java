@@ -162,7 +162,7 @@ class Data {
     private static Random random = new Random();
     private int[] X;
     private int[] Y;
-    private int level = 5;
+    private int level = 1;
     private Client_setting_ setting;
 
     Data(Client_setting_ setting) {
@@ -248,8 +248,8 @@ class Data {
                         data_monster.put("level", "Boss");
                         data_monster.put("status", false);
                         data_monster.put("Speed", random.nextInt(1, 3));
-                        data_monster.put("Hp_", 3000);
-                        data_monster.put("Hp_max", 3000);
+                        data_monster.put("Hp_", 1000);
+                        data_monster.put("Hp_max", 1000);
                         data_monster.put("Hp_percent", Math.max(0, Math.min(100, 100)));
                     } else {
                         data_monster.put("level", "common");
@@ -279,7 +279,7 @@ class Data {
             int y = position[1];
 
             if (status) {
-                int damage = 200;
+                int damage = 20;
                 int barrea = 100;
                 if (type.equals("Boss")) {
                     barrea = 250;
@@ -293,6 +293,7 @@ class Data {
                     if (Hp - damage <= 0) {
                         monsterData.get(name).put("status", false);
                     }
+
                 }
 
             }
@@ -380,7 +381,7 @@ class Data {
 
                 if (position[0] >= 1650) {
                     getMonsterData().get("monster1").put("lose", true);
-                    
+
                 }
 
                 if (!status && boss.equals("common")) {

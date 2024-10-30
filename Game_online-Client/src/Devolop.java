@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.awt.geom.*;
 import java.io.File;
 
 public class Devolop extends JPanel {
