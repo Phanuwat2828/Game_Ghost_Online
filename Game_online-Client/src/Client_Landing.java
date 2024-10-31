@@ -121,26 +121,3 @@ public class Client_Landing extends JPanel {
         g.drawImage(bg, 0, 0, 1920, 1080, this);
     }
 }
-
-// การสร้าง JFrame และ cardPa
-
-// class MyPanel_background extends JPanel {
-// // Image bg = new ImageIcon(System.getProperty("user.dir") + File.separator +
-// // "Background_firstPage.gif").getImage();
-// Font f = new Font("Tahoma", Font.PLAIN, 75);
-
-// String path_Bg = System.getProperty("user.dir") + File.separator +
-// "Game_online-Client" + File.separator + "src"
-// + File.separator + "Image";
-// Image bg = Toolkit.getDefaultToolkit().createImage(path_Bg + File.separator +
-// "Background_FirstPage.gif");
-
-// @Override
-// protected void paintComponent(Graphics g) {
-// g.drawImage(bg, 0, 0, 1920, 1080, this);
-// g.setColor(Color.WHITE);
-// g.setFont(f);
-// g.drawString("Zombie Remake", 520, 220);
-// }
-
-// }
