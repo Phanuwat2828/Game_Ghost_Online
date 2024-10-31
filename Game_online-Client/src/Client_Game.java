@@ -115,6 +115,7 @@ public class Client_Game extends JPanel {
             server02 = new A_Zombie_Server(setting);
             server02.start();
         }
+
         recive_data th = new recive_data(this, setting, cardLayout, this);
         th.start();
 
@@ -141,6 +142,7 @@ public class Client_Game extends JPanel {
             socket = new Socket(SERVER_IP, SERVER_PORT1);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
+
             addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
@@ -175,6 +177,7 @@ public class Client_Game extends JPanel {
                             out2 = new PrintWriter(socket2.getOutputStream(), true);
                             out2.println(e.getX() + "," + e.getY());
                         }
+
                     }
                     if (ready_ && !getitem) {
 
@@ -851,6 +854,7 @@ class recive_data extends Thread {
                     // System.out.println("win: " + win);
                     // System.out.println("lose: " + lose);
                     // System.out.println("=========================================================");
+
                 }
                 data.setCount_monster(count_monstaer);
                 first = false;

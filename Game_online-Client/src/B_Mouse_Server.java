@@ -29,13 +29,14 @@ public class B_Mouse_Server extends Thread {
                 socket = serverSocket.accept();
                 int clientId;
                 String clientIp = socket.getInetAddress().getHostAddress();
+
                 if (ip_all.containsKey(clientIp)) {
                     clientId = ip_all.get(clientIp);
-
                 } else {
                     clientId = clientIdCounter.incrementAndGet();
                     ip_all.put(clientIp, clientId);
                 }
+
                 System.out.println("Client #" + clientId + " เชื่อมต่อ: " + socket.getInetAddress());
                 ClientHandler handler = new ClientHandler(socket, clientId, data);
                 clientHandlers.add(handler);
@@ -109,7 +110,7 @@ public class B_Mouse_Server extends Thread {
             this.clientId = clientId;
             this.data = data;
             try {
-                in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+                // in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
                 out = new PrintWriter(this.socket.getOutputStream(), true);
                 // ส่ง Client ID ให้กับ Client
                 out.println("ID," + this.clientId);

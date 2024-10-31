@@ -208,10 +208,8 @@ public class Client_Room extends JPanel {
             ipLabel.setForeground(Color.YELLOW);
             ipLabel.setFont(new Font("Arial", Font.PLAIN, 16));
             roomPanel.add(ipLabel, BorderLayout.CENTER);
-
             JButton joinButton = createStyledButton("Join");
             joinButton.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     setting.setIp(ip);
@@ -273,7 +271,6 @@ class ReceiveIP extends Thread {
                 // รับข้อมูล Map<String, String> จากเซิร์ฟเวอร์
                 Map<String, String> data = (Map<String, String>) in.readObject();
                 panel.setIp_all(data);
-
                 // รอ 50 มิลลิวินาทีเพื่อรับข้อมูลใหม่
                 Thread.sleep(50);
                 socket.close();

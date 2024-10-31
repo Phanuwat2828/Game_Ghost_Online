@@ -232,9 +232,9 @@ class Data {
                     if (j == random_boss1) {
                         data_monster.put("Speed", random.nextInt(1, 3));
                         data_monster.put("level", "Boss");
-                        data_monster.put("Hp_", 3000);
+                        data_monster.put("Hp_", 1000);
                         data_monster.put("status", false);
-                        data_monster.put("Hp_max", 3000);
+                        data_monster.put("Hp_max", 1000);
                         data_monster.put("Hp_percent", Math.max(0, Math.min(100, 100)));
                     } else {
                         data_monster.put("level", "common");
@@ -295,7 +295,6 @@ class Data {
                     }
 
                 }
-
             }
         }
     }

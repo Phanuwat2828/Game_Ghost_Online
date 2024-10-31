@@ -23,7 +23,6 @@ public class C_App extends JFrame {
                         out = new PrintWriter(socket.getOutputStream(), true);
                         out.println("Remove," + setting.getName() + "," + setting.getIp());
                     } catch (Exception ex) {
-                        // TODO: handle exception
                     }
                 }
                 System.exit(0);
@@ -32,7 +31,6 @@ public class C_App extends JFrame {
         setTitle("My Window");
         setSize(1920, 1080);
         setLocationRelativeTo(null);
-
         JPanel cardPanel = new JPanel(new CardLayout());
         Client_Landing firstPage = new Client_Landing(cardPanel);
         Client_Room cardRoom = new Client_Room(cardPanel, setting);
