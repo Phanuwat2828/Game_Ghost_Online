@@ -299,12 +299,12 @@ class Data {
         }
     }
 
-    public static Boolean Chance_To_Drop() {
+    public Boolean Chance_To_Drop() {
         int chance = random.nextInt(100);
         return chance <= 20;
     }
 
-    public static Boolean Chance_To_Drop_rare(boolean chance_) {
+    public Boolean Chance_To_Drop_rare(boolean chance_) {
         int chance = random.nextInt(100);
         return chance <= 10 && !chance_;
     }
@@ -388,23 +388,20 @@ class Data {
                 }
 
             }
+
             for (Map.Entry<String, Map<String, Object>> entry : monsterMap.entrySet()) {
                 String name = entry.getKey();
                 Map<String, Object> data_now = entry.getValue();
                 Boolean status = (Boolean) data_now.get("status");
                 String boss = (String) data_now.get("level");
                 int hp = (int) data_now.get("Hp_");
-                int[] position = (int[]) data_now.get("position");
-
-                if (position[0] >= 1500) {
-                    getMonsterData().get("monster1").put("lose", true);
-                }
                 if (boss.equals("Boss")) {
 
                     if (!status && hp <= 0) {
                         count += 1;
 
                     }
+
                     if (level == 4) {
                         if (count == 44 && hp > 0) {
                             getMonsterData().get(name).put("status", true);
@@ -465,7 +462,6 @@ class check_change extends Thread {
                 }
                 setting.setReadychange(false);
             }
-
             data.setLevel(level2);
             Thread.sleep(10);
         } catch (Exception e) {

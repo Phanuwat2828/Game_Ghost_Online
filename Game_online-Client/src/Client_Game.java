@@ -292,15 +292,6 @@ public class Client_Game extends JPanel {
 
         monsterData.put(index, data_monster);
         ready_ = ready;
-        // System.out.println("=================== " + index +
-        // "=======================");
-        // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
-        // System.out.println("Status: " + status);
-        // System.out.println("Speed: " + speed);
-        // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
-        // System.out.println("Chance to Drop: " + chanceDrop);
-        // System.out.println("Chance to Drop Rare: " + chanceDropRare);
-        // System.out.println("=========================================================");
     }
 
     public void setAll_data02(String index, int x, int y, int speed, boolean status, int hp, int max_hp, int percent_hp,
@@ -313,15 +304,6 @@ public class Client_Game extends JPanel {
         monsterData.get(index).put("Hp_percent", percent_hp);
 
         ready_ = ready;
-        // System.out.println("=================== " + index +
-        // "=======================");
-        // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
-        // System.out.println("Status: " + status);
-        // System.out.println("Speed: " + speed);
-        // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
-        // System.out.println("Chance to Drop: " + chanceDrop);
-        // System.out.println("Chance to Drop Rare: " + chanceDropRare);
-        // System.out.println("=========================================================");
     }
 
     class IncomingReader implements Runnable {
@@ -828,6 +810,7 @@ class recive_data extends Thread {
                         first = true;
                         waved = wave;
                     }
+
                     if (first) {
                         chanceDrop = (Boolean) data.get("Chance_Drop");
                         chanceDropRare = (Boolean) data.get("Chance_Drop_rare");
@@ -843,18 +826,6 @@ class recive_data extends Thread {
                     this.panel.repaint();
 
                     index++;
-                    // System.out.println(name);
-                    // System.out.println("Position: [" + position[0] + ", " + position[1] + "]");
-                    // System.out.println("Status: " + status);
-                    // System.out.println("Speed: " + speed);
-                    // System.out.println("HP: " + hp_ + "/" + hp_max + " (" + hp_percent + "%)");
-                    // System.out.println("Chance to Drop: " + chanceDrop);
-                    // System.out.println("Chance to Drop Rare: " + chanceDropRare);
-                    // System.out.println("Level: " + wave);
-                    // System.out.println("win: " + win);
-                    // System.out.println("lose: " + lose);
-                    // System.out.println("=========================================================");
-
                 }
                 data.setCount_monster(count_monstaer);
                 first = false;
