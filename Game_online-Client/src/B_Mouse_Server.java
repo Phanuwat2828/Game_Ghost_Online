@@ -110,7 +110,7 @@ public class B_Mouse_Server extends Thread {
             this.clientId = clientId;
             this.data = data;
             try {
-                // in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+                in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
                 out = new PrintWriter(this.socket.getOutputStream(), true);
                 // ส่ง Client ID ให้กับ Client
                 out.println("ID," + this.clientId);
