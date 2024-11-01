@@ -279,7 +279,7 @@ class Data {
             int y = position[1];
 
             if (status) {
-                int damage = 100;
+                int damage = 50;
                 int barrea = 100;
                 if (type.equals("Boss")) {
                     barrea = 250;
