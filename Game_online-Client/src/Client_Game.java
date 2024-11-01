@@ -84,7 +84,7 @@ public class Client_Game extends JPanel {
     int CountDead = 0;
     int mouseX = 0;
     int mouseY = 0;
-
+    private int Wave_ = 0; 
     // =========================== to_server
     private String SERVER_IP; // เปลี่ยนเป็น IP ของ Server ถ้าไม่ใช่ localhost
     private int SERVER_PORT1 = 8000;
@@ -509,11 +509,10 @@ public class Client_Game extends JPanel {
         Font font = new Font("Arial", Font.BOLD, 13);
         int y_text = 100;
         int die = 0;
-        int Wave_ = 0;
         die = checkdead();
         if (die == count_monster) {
             Wave_ += 1;
-            Game_Win(g, GameWin, Wave_);
+            Game_Win(g, GameWin, Wave_-1);
         }
         if (GameOver) {
             Game_Over(g);
@@ -706,15 +705,15 @@ public class Client_Game extends JPanel {
         repaint();
     }
 
-    public void Game_Win(Graphics g) {
-        g.setColor(new Color(0, 0, 0, 150));
-        g.fillRect(0, 0, getWidth(), getHeight());
-        // g.setFont(new Font("Tahoma", Font.BOLD, 70));
-        // g.setColor(Color.YELLOW);
-        // g.drawString("YOU WIN!", 600, 300);
-        // g.drawImage(png_win, 0, 0, 400, 400, this);
-        g.drawImage(png_win, 100, 100, 100, 100, this);
-    }
+    // public void Game_Win(Graphics g) {
+    //     g.setColor(new Color(0, 0, 0, 150));
+    //     g.fillRect(0, 0, getWidth(), getHeight());
+    //     // g.setFont(new Font("Tahoma", Font.BOLD, 70));
+    //     // g.setColor(Color.YELLOW);
+    //     // g.drawString("YOU WIN!", 600, 300);
+    //     // g.drawImage(png_win, 0, 0, 400, 400, this);
+    //     g.drawImage(png_win, 100, 100, 100, 100, this);
+    // }
 
     public int checkdead() {
         int count = 0;
